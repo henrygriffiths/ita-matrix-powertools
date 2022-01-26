@@ -59,6 +59,7 @@ function getPage() {
   } else if (
     window.location.href.indexOf("#search:") != -1 ||
     window.location.href == "https://matrix.itasoftware.com/" ||
+    window.location.href == "https://oldmatrix.itasoftware.com/" ||
     !window.location.hash
   ) {
     startPage();

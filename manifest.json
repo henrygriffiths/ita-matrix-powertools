@@ -12,7 +12,10 @@
   },
   "content_scripts": [
     {
-      "matches": ["*://matrix.itasoftware.com/*"],
+      "matches": [
+        "*://matrix.itasoftware.com/*",
+        "*://oldmatrix.itasoftware.com/*"
+      ],
       "js": ["webext.js"]
     }
   ],
