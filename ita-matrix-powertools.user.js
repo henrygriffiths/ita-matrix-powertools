@@ -2,14 +2,14 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.54.0
+// @version 0.54.1
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
 // @grant GM_setValue
 // @grant GM.setValue
 // @grant GM_setValue
-// @include http*://matrix.itasoftware.com/*
+// @include /https?://(old)?matrix\.itasoftware\.com/.*$/
 // @updateURL https://greasyfork.org/scripts/395661-ita-matrix-powertools/code/ITA%20Matrix%20Powertools.meta.js
 // @installURL https://greasyfork.org/scripts/395661-ita-matrix-powertools/code/ITA%20Matrix%20Powertools.user.js
 // @downloadURL https://greasyfork.org/scripts/395661-ita-matrix-powertools/code/ITA%20Matrix%20Powertools.user.js
@@ -3381,7 +3381,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.54.0",
+    version: "0.54.1",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -13677,6 +13677,7 @@ function getPage() {
   } else if (
     window.location.href.indexOf("#search:") != -1 ||
     window.location.href == "https://matrix.itasoftware.com/" ||
+    window.location.href == "https://oldmatrix.itasoftware.com/" ||
     !window.location.hash
   ) {
     startPage();
