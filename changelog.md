@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.55.0] - 2022-02-07
+
+Edited by IAkH
+
+- added preliminary Matrix 5 support
+
 ## [0.54.1] - 2022-01-26
 
 Edited by IAkH
