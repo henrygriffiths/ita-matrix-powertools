@@ -14,7 +14,8 @@
     {
       "matches": [
         "*://matrix.itasoftware.com/*",
-        "*://oldmatrix.itasoftware.com/*"
+        "*://oldmatrix.itasoftware.com/*",
+        "*://newmatrix.itasoftware.com/*"
       ],
       "js": ["webext.js"]
     }
