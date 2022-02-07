@@ -5,7 +5,7 @@ const path = require("path");
 const { replace, tokens } = require("./scripts/replaceTokens");
 
 module.exports = {
-  entry: "./src/index.js",
+  entry: "./src/index.ts",
   output: {
     filename: "ita-matrix-powertools.user.js",
     path: __dirname

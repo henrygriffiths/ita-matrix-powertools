@@ -9,7 +9,7 @@
 // @grant GM_setValue
 // @grant GM.setValue
 // @grant GM_setValue
-// @include /https?://(old)?matrix\.itasoftware\.com/.*$/
+// @include /https?://((new)|(old))?matrix\.itasoftware\.com/.*$/
 // @updateURL https://greasyfork.org/scripts/395661-ita-matrix-powertools/code/ITA%20Matrix%20Powertools.meta.js
 // @installURL https://greasyfork.org/scripts/395661-ita-matrix-powertools/code/ITA%20Matrix%20Powertools.user.js
 // @downloadURL https://greasyfork.org/scripts/395661-ita-matrix-powertools/code/ITA%20Matrix%20Powertools.user.js
