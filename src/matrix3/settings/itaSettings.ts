@@ -1,5 +1,20 @@
 import { findtarget } from "../utils";
 
+let _getAngularContext: (o: any) => any;
+const getAngularContext = (o: any) => {
+  if (!_getAngularContext) {
+    const _window = unsafeWindow || window;
+    for (const key of Object.keys(_window)) {
+      if (typeof _window[key] !== "function") continue;
+      if (_window[key].toString().includes("__ngContext__;")) {
+        _getAngularContext = _window[key];
+        break;
+      }
+    }
+  }
+  return _getAngularContext && _getAngularContext(o);
+};
+
 // ITA Matrix CSS class definitions:
 const itaSettings = [
   {
@@ -8,11 +23,15 @@ const itaSettings = [
       maindiv: "mat-app-background"
     },
     resultpage: {
-      getBookingDetails: () =>
-        getAllAngularRootElements &&
-        getAllAngularRootElements()[0].getElementsByTagName(
-          "mat-card-content"
-        )[3]?.__ngContext__[8].Qd.bookingDetails,
+      getBookingDetails: () => {
+        const card =
+          getAllAngularRootElements &&
+          getAllAngularRootElements()[0].getElementsByTagName(
+            "mat-card-content"
+          )[3];
+        const ngContext = card && getAngularContext(card);
+        return ngContext?.find(ctx => !!ctx?.bookingDetails)?.bookingDetails;
+      },
       mcDiv: "info-container",
       mcHeader: "info-title"
     }
