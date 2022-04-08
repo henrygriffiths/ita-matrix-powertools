@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.0
+// @version 0.55.1
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -3564,7 +3564,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.0",
+    version: "0.55.1",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -3652,6 +3652,21 @@ function getForcedCabin() {
 /* harmony export */ });
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/utils.js");
 
+let _getAngularContext;
+const getAngularContext = (o) => {
+    if (!_getAngularContext) {
+        const _window = unsafeWindow || window;
+        for (const key of Object.keys(_window)) {
+            if (typeof _window[key] !== "function")
+                continue;
+            if (_window[key].toString().includes("__ngContext__;")) {
+                _getAngularContext = _window[key];
+                break;
+            }
+        }
+    }
+    return _getAngularContext && _getAngularContext(o);
+};
 // ITA Matrix CSS class definitions:
 const itaSettings = [
     {
@@ -3662,7 +3677,10 @@ const itaSettings = [
         resultpage: {
             getBookingDetails: () => {
                 var _a;
-                return getAllAngularRootElements && ((_a = getAllAngularRootElements()[0].getElementsByTagName("mat-card-content")[3]) === null || _a === void 0 ? void 0 : _a.__ngContext__[8].Qd.bookingDetails);
+                const card = getAllAngularRootElements &&
+                    getAllAngularRootElements()[0].getElementsByTagName("mat-card-content")[3];
+                const ngContext = card && getAngularContext(card);
+                return (_a = ngContext === null || ngContext === void 0 ? void 0 : ngContext.find(ctx => !!(ctx === null || ctx === void 0 ? void 0 : ctx.bookingDetails))) === null || _a === void 0 ? void 0 : _a.bookingDetails;
             },
             mcDiv: "info-container",
             mcHeader: "info-title"
