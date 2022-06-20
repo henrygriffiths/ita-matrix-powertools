@@ -3,7 +3,8 @@ import { printNotification } from "../../utils";
 import { validatePax, register } from "..";
 import { currentItin } from "../../../matrix5/parse/itin";
 
-const editions = [
+const expedia = [
+  { name: "expedia.com", host: "www.expedia.com" },
   { name: "euro.expedia.net", host: "euro.expedia.net" },
   { name: "expedia.at", host: "www.expedia.at" },
   { name: "expedia.be", host: "www.expedia.be" },
@@ -16,7 +17,6 @@ const editions = [
   { name: "expedia.co.nz", host: "www.expedia.co.nz" },
   { name: "expedia.co.th", host: "www.expedia.co.th" },
   { name: "expedia.co.uk", host: "www.expedia.co.uk" },
-  { name: "expedia.com", host: "www.expedia.com" },
   { name: "expedia.com.au", host: "www.expedia.com.au" },
   { name: "expedia.com.br", host: "www.expedia.com.br" },
   { name: "expedia.com.hk", host: "www.expedia.com.hk" },
@@ -37,14 +37,31 @@ const editions = [
   { name: "expedia.se", host: "www.expedia.se" }
 ];
 
-const editions2 = [
-  { name: "cheaptickets.com", host: "www.cheaptickets.com" },
-  { name: "ebookers.ch", host: "www.ebookers.ch" },
+const cheaptickets = [
+  { name: "cheaptickets.com", host: "www.cheaptickets.com" }
+];
+
+const ebookers = [
   { name: "ebookers.com", host: "www.ebookers.com" },
+  { name: "ebookers.ch", host: "www.ebookers.ch" },
   { name: "ebookers.de", host: "www.ebookers.de" },
   { name: "ebookers.fi", host: "www.ebookers.fi" },
   { name: "ebookers.fr", host: "www.ebookers.fr" },
-  { name: "ebookers.ie", host: "www.ebookers.ie" },
+  { name: "ebookers.ie", host: "www.ebookers.ie" }
+];
+
+const hotwire = [{ name: "hotwire.com", host: "vacation.hotwire.com" }];
+
+const mrjet = [{ name: "mrjet.se", host: "www.mrjet.se" }];
+
+const orbitz = [{ name: "orbitz.com", host: "www.orbitz.com" }];
+
+const travelocity = [
+  { name: "travelocity.com", host: "www.travelocity.com" },
+  { name: "travelocity.ca", host: "www.travelocity.ca" }
+];
+
+const others = [
   { name: "hotels.com", host: "travel.hotels.com" },
   { name: "hotels.com (ca)", host: "travel.ca.hotels.com" },
   { name: "hotels.com (fr)", host: "travel.fr.hotels.com" },
@@ -52,19 +69,14 @@ const editions2 = [
   { name: "hotels.com (no)", host: "travel.no.hotels.com" },
   { name: "hotels.com (se)", host: "travel.se.hotels.com" },
   { name: "hotels.com (uk)", host: "travel.uk.hotels.com" },
-  { name: "hotwire.com", host: "vacation.hotwire.com" },
   { name: "lastminute.co.nz", host: "www.lastminute.co.nz" },
   { name: "lastminute.com.au", host: "www.lastminute.com.au" },
-  { name: "mrjet.se", host: "www.mrjet.se" },
-  { name: "orbitz.com", host: "www.orbitz.com" },
-  { name: "travelocity.ca", host: "www.travelocity.ca" },
-  { name: "travelocity.com", host: "www.travelocity.com" },
   { name: "wotif.co.nz", host: "www.wotif.co.nz" },
   { name: "wotif.com", host: "www.wotif.com" }
 ];
 
-function printExpedia() {
-  var pax = validatePax({
+function printExpedia(title, editions) {
+  const pax = validatePax({
     maxPaxcount: 9,
     countInf: true,
     childAsAdult: 18,
@@ -140,39 +152,36 @@ function printExpedia() {
     baseUrl += "&adults=" + pax.adults;
     return baseUrl + segUrl;
   };
-  var ExpediaUrl = ExpediaCreateUrl("expedia.com");
-  var container =
-    ' <span class="pt-hover-container">[+]<span class="pt-hover-menu-flex"><div style="margin-right: 1rem;">';
-  container += editions
-    .map(function(obj, i) {
-      return (
-        '<a href="' +
-        ExpediaCreateUrl(obj.host) +
-        '" target="_blank">' +
-        obj.name +
-        "</a>"
-      );
-    })
-    .join("<br/>");
-  container += "</div><div>";
-  container += editions2
-    .map(function(obj, i) {
-      return (
-        '<a href="' +
-        ExpediaCreateUrl(obj.host) +
-        '" target="_blank">' +
-        obj.name +
-        "</a>"
-      );
-    })
-    .join("<br/>");
-  container += "</div></span></span>";
+  let container = "";
+  if (editions && editions.length > 1) {
+    container +=
+      ' <span class="pt-hover-container">[+]<span class="pt-hover-menu-flex"><div style="margin-right: 1rem;">';
+    container += editions
+      .slice(1)
+      .map(function(obj, i) {
+        return (
+          '<a href="' +
+          ExpediaCreateUrl(obj.host) +
+          '" target="_blank">' +
+          obj.name +
+          "</a>"
+        );
+      })
+      .join("<br/>");
+    container += "</div></span></span>";
+  }
 
   return {
-    url: ExpediaUrl,
-    title: "Expedia",
+    url: ExpediaCreateUrl(editions[0].host),
+    title,
     extra: container
   };
 }
 
-register("otas", printExpedia);
+register("otas", () => printExpedia("Expedia", expedia.concat(others)));
+register("otas", () => printExpedia("CheapTickets", cheaptickets));
+register("otas", () => printExpedia("Ebookers", ebookers));
+register("otas", () => printExpedia("Hotwire", hotwire));
+register("otas", () => printExpedia("MrJet.se", mrjet));
+register("otas", () => printExpedia("Orbitz", orbitz));
+register("otas", () => printExpedia("Travelocity", travelocity));
