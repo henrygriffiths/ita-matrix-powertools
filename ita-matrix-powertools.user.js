@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.2
+// @version 0.55.3
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -36,18 +36,18 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "./node_modules/date-fns/esm/_lib/cloneObject/index.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ "./node_modules/date-fns/_lib/assign/index.js":
+/***/ ((module, exports) => {
 
 "use strict";
 
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  "default": () => (/* binding */ cloneObject)
-});
 
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/assign/index.js
-function assign_assign(target, dirtyObject) {
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = assign;
+
+function assign(target, dirtyObject) {
   if (target == null) {
     throw new TypeError('assign requires that input parameter not be null or undefined');
   }
@@ -55,28 +55,52 @@ function assign_assign(target, dirtyObject) {
   dirtyObject = dirtyObject || {};
 
   for (var property in dirtyObject) {
-    if (dirtyObject.hasOwnProperty(property)) {
+    if (Object.prototype.hasOwnProperty.call(dirtyObject, property)) {
       target[property] = dirtyObject[property];
     }
   }
 
   return target;
 }
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/cloneObject/index.js
 
-function cloneObject(dirtyObject) {
-  return assign_assign({}, dirtyObject);
-}
+module.exports = exports.default;
 
 /***/ }),
 
-/***/ "./node_modules/date-fns/esm/_lib/getTimezoneOffsetInMilliseconds/index.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ "./node_modules/date-fns/_lib/cloneObject/index.js":
+/***/ ((module, exports, __webpack_require__) => {
 
 "use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ getTimezoneOffsetInMilliseconds)
-/* harmony export */ });
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = cloneObject;
+
+var _index = _interopRequireDefault(__webpack_require__("./node_modules/date-fns/_lib/assign/index.js"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function cloneObject(dirtyObject) {
+  return (0, _index.default)({}, dirtyObject);
+}
+
+module.exports = exports.default;
+
+/***/ }),
+
+/***/ "./node_modules/date-fns/_lib/getTimezoneOffsetInMilliseconds/index.js":
+/***/ ((module, exports) => {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = getTimezoneOffsetInMilliseconds;
+
 /**
  * Google Chrome as of 67.0.3396.87 introduced timezones with offset that includes seconds.
  * They usually appear for dates that denote time before the timezones were introduced
@@ -94,662 +118,36 @@ function getTimezoneOffsetInMilliseconds(date) {
   return date.getTime() - utcDate.getTime();
 }
 
-/***/ }),
-
-/***/ "./node_modules/date-fns/esm/_lib/requiredArgs/index.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ requiredArgs)
-/* harmony export */ });
-function requiredArgs(required, args) {
-  if (args.length < required) {
-    throw new TypeError(required + ' argument' + (required > 1 ? 's' : '') + ' required, but only ' + args.length + ' present');
-  }
-}
+module.exports = exports.default;
 
 /***/ }),
 
-/***/ "./node_modules/date-fns/esm/locale/_lib/buildFormatLongFn/index.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ buildFormatLongFn)
-/* harmony export */ });
-function buildFormatLongFn(args) {
-  return function (dirtyOptions) {
-    var options = dirtyOptions || {};
-    var width = options.width ? String(options.width) : args.defaultWidth;
-    var format = args.formats[width] || args.formats[args.defaultWidth];
-    return format;
-  };
-}
-
-/***/ }),
-
-/***/ "./node_modules/date-fns/esm/locale/_lib/buildLocalizeFn/index.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ buildLocalizeFn)
-/* harmony export */ });
-function buildLocalizeFn(args) {
-  return function (dirtyIndex, dirtyOptions) {
-    var options = dirtyOptions || {};
-    var context = options.context ? String(options.context) : 'standalone';
-    var valuesArray;
-
-    if (context === 'formatting' && args.formattingValues) {
-      var defaultWidth = args.defaultFormattingWidth || args.defaultWidth;
-      var width = options.width ? String(options.width) : defaultWidth;
-      valuesArray = args.formattingValues[width] || args.formattingValues[defaultWidth];
-    } else {
-      var _defaultWidth = args.defaultWidth;
-
-      var _width = options.width ? String(options.width) : args.defaultWidth;
-
-      valuesArray = args.values[_width] || args.values[_defaultWidth];
-    }
-
-    var index = args.argumentCallback ? args.argumentCallback(dirtyIndex) : dirtyIndex;
-    return valuesArray[index];
-  };
-}
-
-/***/ }),
-
-/***/ "./node_modules/date-fns/esm/locale/_lib/buildMatchFn/index.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ buildMatchFn)
-/* harmony export */ });
-function buildMatchFn(args) {
-  return function (dirtyString, dirtyOptions) {
-    var string = String(dirtyString);
-    var options = dirtyOptions || {};
-    var width = options.width;
-    var matchPattern = width && args.matchPatterns[width] || args.matchPatterns[args.defaultMatchWidth];
-    var matchResult = string.match(matchPattern);
-
-    if (!matchResult) {
-      return null;
-    }
-
-    var matchedString = matchResult[0];
-    var parsePatterns = width && args.parsePatterns[width] || args.parsePatterns[args.defaultParseWidth];
-    var value;
-
-    if (Object.prototype.toString.call(parsePatterns) === '[object Array]') {
-      value = findIndex(parsePatterns, function (pattern) {
-        return pattern.test(matchedString);
-      });
-    } else {
-      value = findKey(parsePatterns, function (pattern) {
-        return pattern.test(matchedString);
-      });
-    }
-
-    value = args.valueCallback ? args.valueCallback(value) : value;
-    value = options.valueCallback ? options.valueCallback(value) : value;
-    return {
-      value: value,
-      rest: string.slice(matchedString.length)
-    };
-  };
-}
-
-function findKey(object, predicate) {
-  for (var key in object) {
-    if (object.hasOwnProperty(key) && predicate(object[key])) {
-      return key;
-    }
-  }
-}
-
-function findIndex(array, predicate) {
-  for (var key = 0; key < array.length; key++) {
-    if (predicate(array[key])) {
-      return key;
-    }
-  }
-}
-
-/***/ }),
-
-/***/ "./node_modules/date-fns/esm/locale/_lib/buildMatchPatternFn/index.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ buildMatchPatternFn)
-/* harmony export */ });
-function buildMatchPatternFn(args) {
-  return function (dirtyString, dirtyOptions) {
-    var string = String(dirtyString);
-    var options = dirtyOptions || {};
-    var matchResult = string.match(args.matchPattern);
-
-    if (!matchResult) {
-      return null;
-    }
-
-    var matchedString = matchResult[0];
-    var parseResult = string.match(args.parsePattern);
-
-    if (!parseResult) {
-      return null;
-    }
-
-    var value = args.valueCallback ? args.valueCallback(parseResult[0]) : parseResult[0];
-    value = options.valueCallback ? options.valueCallback(value) : value;
-    return {
-      value: value,
-      rest: string.slice(matchedString.length)
-    };
-  };
-}
-
-/***/ }),
-
-/***/ "./node_modules/date-fns/esm/locale/en-US/index.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+/***/ "./node_modules/date-fns/_lib/toInteger/index.js":
+/***/ ((module, exports) => {
 
 "use strict";
 
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  "default": () => (/* binding */ en_US)
-});
 
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/formatDistance/index.js
-var formatDistanceLocale = {
-  lessThanXSeconds: {
-    one: 'less than a second',
-    other: 'less than {{count}} seconds'
-  },
-  xSeconds: {
-    one: '1 second',
-    other: '{{count}} seconds'
-  },
-  halfAMinute: 'half a minute',
-  lessThanXMinutes: {
-    one: 'less than a minute',
-    other: 'less than {{count}} minutes'
-  },
-  xMinutes: {
-    one: '1 minute',
-    other: '{{count}} minutes'
-  },
-  aboutXHours: {
-    one: 'about 1 hour',
-    other: 'about {{count}} hours'
-  },
-  xHours: {
-    one: '1 hour',
-    other: '{{count}} hours'
-  },
-  xDays: {
-    one: '1 day',
-    other: '{{count}} days'
-  },
-  aboutXWeeks: {
-    one: 'about 1 week',
-    other: 'about {{count}} weeks'
-  },
-  xWeeks: {
-    one: '1 week',
-    other: '{{count}} weeks'
-  },
-  aboutXMonths: {
-    one: 'about 1 month',
-    other: 'about {{count}} months'
-  },
-  xMonths: {
-    one: '1 month',
-    other: '{{count}} months'
-  },
-  aboutXYears: {
-    one: 'about 1 year',
-    other: 'about {{count}} years'
-  },
-  xYears: {
-    one: '1 year',
-    other: '{{count}} years'
-  },
-  overXYears: {
-    one: 'over 1 year',
-    other: 'over {{count}} years'
-  },
-  almostXYears: {
-    one: 'almost 1 year',
-    other: 'almost {{count}} years'
-  }
-};
-function formatDistance(token, count, options) {
-  options = options || {};
-  var result;
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+exports["default"] = toInteger;
 
-  if (typeof formatDistanceLocale[token] === 'string') {
-    result = formatDistanceLocale[token];
-  } else if (count === 1) {
-    result = formatDistanceLocale[token].one;
-  } else {
-    result = formatDistanceLocale[token].other.replace('{{count}}', count);
+function toInteger(dirtyNumber) {
+  if (dirtyNumber === null || dirtyNumber === true || dirtyNumber === false) {
+    return NaN;
   }
 
-  if (options.addSuffix) {
-    if (options.comparison > 0) {
-      return 'in ' + result;
-    } else {
-      return result + ' ago';
-    }
+  var number = Number(dirtyNumber);
+
+  if (isNaN(number)) {
+    return number;
   }
 
-  return result;
-}
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/locale/_lib/buildFormatLongFn/index.js
-var buildFormatLongFn = __webpack_require__("./node_modules/date-fns/esm/locale/_lib/buildFormatLongFn/index.js");
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/formatLong/index.js
-
-var dateFormats = {
-  full: 'EEEE, MMMM do, y',
-  long: 'MMMM do, y',
-  medium: 'MMM d, y',
-  short: 'MM/dd/yyyy'
-};
-var timeFormats = {
-  full: 'h:mm:ss a zzzz',
-  long: 'h:mm:ss a z',
-  medium: 'h:mm:ss a',
-  short: 'h:mm a'
-};
-var dateTimeFormats = {
-  full: "{{date}} 'at' {{time}}",
-  long: "{{date}} 'at' {{time}}",
-  medium: '{{date}}, {{time}}',
-  short: '{{date}}, {{time}}'
-};
-var formatLong = {
-  date: (0,buildFormatLongFn.default)({
-    formats: dateFormats,
-    defaultWidth: 'full'
-  }),
-  time: (0,buildFormatLongFn.default)({
-    formats: timeFormats,
-    defaultWidth: 'full'
-  }),
-  dateTime: (0,buildFormatLongFn.default)({
-    formats: dateTimeFormats,
-    defaultWidth: 'full'
-  })
-};
-/* harmony default export */ const _lib_formatLong = (formatLong);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/formatRelative/index.js
-var formatRelativeLocale = {
-  lastWeek: "'last' eeee 'at' p",
-  yesterday: "'yesterday at' p",
-  today: "'today at' p",
-  tomorrow: "'tomorrow at' p",
-  nextWeek: "eeee 'at' p",
-  other: 'P'
-};
-function formatRelative(token, _date, _baseDate, _options) {
-  return formatRelativeLocale[token];
-}
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/locale/_lib/buildLocalizeFn/index.js
-var buildLocalizeFn = __webpack_require__("./node_modules/date-fns/esm/locale/_lib/buildLocalizeFn/index.js");
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/localize/index.js
-
-var eraValues = {
-  narrow: ['B', 'A'],
-  abbreviated: ['BC', 'AD'],
-  wide: ['Before Christ', 'Anno Domini']
-};
-var quarterValues = {
-  narrow: ['1', '2', '3', '4'],
-  abbreviated: ['Q1', 'Q2', 'Q3', 'Q4'],
-  wide: ['1st quarter', '2nd quarter', '3rd quarter', '4th quarter'] // Note: in English, the names of days of the week and months are capitalized.
-  // If you are making a new locale based on this one, check if the same is true for the language you're working on.
-  // Generally, formatted dates should look like they are in the middle of a sentence,
-  // e.g. in Spanish language the weekdays and months should be in the lowercase.
-
-};
-var monthValues = {
-  narrow: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-  abbreviated: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  wide: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-};
-var dayValues = {
-  narrow: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-  short: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-  abbreviated: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-  wide: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-};
-var dayPeriodValues = {
-  narrow: {
-    am: 'a',
-    pm: 'p',
-    midnight: 'mi',
-    noon: 'n',
-    morning: 'morning',
-    afternoon: 'afternoon',
-    evening: 'evening',
-    night: 'night'
-  },
-  abbreviated: {
-    am: 'AM',
-    pm: 'PM',
-    midnight: 'midnight',
-    noon: 'noon',
-    morning: 'morning',
-    afternoon: 'afternoon',
-    evening: 'evening',
-    night: 'night'
-  },
-  wide: {
-    am: 'a.m.',
-    pm: 'p.m.',
-    midnight: 'midnight',
-    noon: 'noon',
-    morning: 'morning',
-    afternoon: 'afternoon',
-    evening: 'evening',
-    night: 'night'
-  }
-};
-var formattingDayPeriodValues = {
-  narrow: {
-    am: 'a',
-    pm: 'p',
-    midnight: 'mi',
-    noon: 'n',
-    morning: 'in the morning',
-    afternoon: 'in the afternoon',
-    evening: 'in the evening',
-    night: 'at night'
-  },
-  abbreviated: {
-    am: 'AM',
-    pm: 'PM',
-    midnight: 'midnight',
-    noon: 'noon',
-    morning: 'in the morning',
-    afternoon: 'in the afternoon',
-    evening: 'in the evening',
-    night: 'at night'
-  },
-  wide: {
-    am: 'a.m.',
-    pm: 'p.m.',
-    midnight: 'midnight',
-    noon: 'noon',
-    morning: 'in the morning',
-    afternoon: 'in the afternoon',
-    evening: 'in the evening',
-    night: 'at night'
-  }
-};
-
-function ordinalNumber(dirtyNumber, _dirtyOptions) {
-  var number = Number(dirtyNumber); // If ordinal numbers depend on context, for example,
-  // if they are different for different grammatical genders,
-  // use `options.unit`:
-  //
-  //   var options = dirtyOptions || {}
-  //   var unit = String(options.unit)
-  //
-  // where `unit` can be 'year', 'quarter', 'month', 'week', 'date', 'dayOfYear',
-  // 'day', 'hour', 'minute', 'second'
-
-  var rem100 = number % 100;
-
-  if (rem100 > 20 || rem100 < 10) {
-    switch (rem100 % 10) {
-      case 1:
-        return number + 'st';
-
-      case 2:
-        return number + 'nd';
-
-      case 3:
-        return number + 'rd';
-    }
-  }
-
-  return number + 'th';
+  return number < 0 ? Math.ceil(number) : Math.floor(number);
 }
 
-var localize = {
-  ordinalNumber: ordinalNumber,
-  era: (0,buildLocalizeFn.default)({
-    values: eraValues,
-    defaultWidth: 'wide'
-  }),
-  quarter: (0,buildLocalizeFn.default)({
-    values: quarterValues,
-    defaultWidth: 'wide',
-    argumentCallback: function (quarter) {
-      return Number(quarter) - 1;
-    }
-  }),
-  month: (0,buildLocalizeFn.default)({
-    values: monthValues,
-    defaultWidth: 'wide'
-  }),
-  day: (0,buildLocalizeFn.default)({
-    values: dayValues,
-    defaultWidth: 'wide'
-  }),
-  dayPeriod: (0,buildLocalizeFn.default)({
-    values: dayPeriodValues,
-    defaultWidth: 'wide',
-    formattingValues: formattingDayPeriodValues,
-    defaultFormattingWidth: 'wide'
-  })
-};
-/* harmony default export */ const _lib_localize = (localize);
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/locale/_lib/buildMatchPatternFn/index.js
-var buildMatchPatternFn = __webpack_require__("./node_modules/date-fns/esm/locale/_lib/buildMatchPatternFn/index.js");
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/locale/_lib/buildMatchFn/index.js
-var buildMatchFn = __webpack_require__("./node_modules/date-fns/esm/locale/_lib/buildMatchFn/index.js");
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/match/index.js
-
-
-var matchOrdinalNumberPattern = /^(\d+)(th|st|nd|rd)?/i;
-var parseOrdinalNumberPattern = /\d+/i;
-var matchEraPatterns = {
-  narrow: /^(b|a)/i,
-  abbreviated: /^(b\.?\s?c\.?|b\.?\s?c\.?\s?e\.?|a\.?\s?d\.?|c\.?\s?e\.?)/i,
-  wide: /^(before christ|before common era|anno domini|common era)/i
-};
-var parseEraPatterns = {
-  any: [/^b/i, /^(a|c)/i]
-};
-var matchQuarterPatterns = {
-  narrow: /^[1234]/i,
-  abbreviated: /^q[1234]/i,
-  wide: /^[1234](th|st|nd|rd)? quarter/i
-};
-var parseQuarterPatterns = {
-  any: [/1/i, /2/i, /3/i, /4/i]
-};
-var matchMonthPatterns = {
-  narrow: /^[jfmasond]/i,
-  abbreviated: /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i,
-  wide: /^(january|february|march|april|may|june|july|august|september|october|november|december)/i
-};
-var parseMonthPatterns = {
-  narrow: [/^j/i, /^f/i, /^m/i, /^a/i, /^m/i, /^j/i, /^j/i, /^a/i, /^s/i, /^o/i, /^n/i, /^d/i],
-  any: [/^ja/i, /^f/i, /^mar/i, /^ap/i, /^may/i, /^jun/i, /^jul/i, /^au/i, /^s/i, /^o/i, /^n/i, /^d/i]
-};
-var matchDayPatterns = {
-  narrow: /^[smtwf]/i,
-  short: /^(su|mo|tu|we|th|fr|sa)/i,
-  abbreviated: /^(sun|mon|tue|wed|thu|fri|sat)/i,
-  wide: /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)/i
-};
-var parseDayPatterns = {
-  narrow: [/^s/i, /^m/i, /^t/i, /^w/i, /^t/i, /^f/i, /^s/i],
-  any: [/^su/i, /^m/i, /^tu/i, /^w/i, /^th/i, /^f/i, /^sa/i]
-};
-var matchDayPeriodPatterns = {
-  narrow: /^(a|p|mi|n|(in the|at) (morning|afternoon|evening|night))/i,
-  any: /^([ap]\.?\s?m\.?|midnight|noon|(in the|at) (morning|afternoon|evening|night))/i
-};
-var parseDayPeriodPatterns = {
-  any: {
-    am: /^a/i,
-    pm: /^p/i,
-    midnight: /^mi/i,
-    noon: /^no/i,
-    morning: /morning/i,
-    afternoon: /afternoon/i,
-    evening: /evening/i,
-    night: /night/i
-  }
-};
-var match = {
-  ordinalNumber: (0,buildMatchPatternFn.default)({
-    matchPattern: matchOrdinalNumberPattern,
-    parsePattern: parseOrdinalNumberPattern,
-    valueCallback: function (value) {
-      return parseInt(value, 10);
-    }
-  }),
-  era: (0,buildMatchFn.default)({
-    matchPatterns: matchEraPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: parseEraPatterns,
-    defaultParseWidth: 'any'
-  }),
-  quarter: (0,buildMatchFn.default)({
-    matchPatterns: matchQuarterPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: parseQuarterPatterns,
-    defaultParseWidth: 'any',
-    valueCallback: function (index) {
-      return index + 1;
-    }
-  }),
-  month: (0,buildMatchFn.default)({
-    matchPatterns: matchMonthPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: parseMonthPatterns,
-    defaultParseWidth: 'any'
-  }),
-  day: (0,buildMatchFn.default)({
-    matchPatterns: matchDayPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: parseDayPatterns,
-    defaultParseWidth: 'any'
-  }),
-  dayPeriod: (0,buildMatchFn.default)({
-    matchPatterns: matchDayPeriodPatterns,
-    defaultMatchWidth: 'any',
-    parsePatterns: parseDayPeriodPatterns,
-    defaultParseWidth: 'any'
-  })
-};
-/* harmony default export */ const _lib_match = (match);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/index.js
-
-
-
-
-
-/**
- * @type {Locale}
- * @category Locales
- * @summary English locale (United States).
- * @language English
- * @iso-639-2 eng
- * @author Sasha Koss [@kossnocorp]{@link https://github.com/kossnocorp}
- * @author Lesha Koss [@leshakoss]{@link https://github.com/leshakoss}
- */
-
-var locale = {
-  code: 'en-US',
-  formatDistance: formatDistance,
-  formatLong: _lib_formatLong,
-  formatRelative: formatRelative,
-  localize: _lib_localize,
-  match: _lib_match,
-  options: {
-    weekStartsOn: 0
-    /* Sunday */
-    ,
-    firstWeekContainsDate: 1
-  }
-};
-/* harmony default export */ const en_US = (locale);
-
-/***/ }),
-
-/***/ "./node_modules/date-fns/esm/toDate/index.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ toDate)
-/* harmony export */ });
-/* harmony import */ var _lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
-
-/**
- * @name toDate
- * @category Common Helpers
- * @summary Convert the given argument to an instance of Date.
- *
- * @description
- * Convert the given argument to an instance of Date.
- *
- * If the argument is an instance of Date, the function returns its clone.
- *
- * If the argument is a number, it is treated as a timestamp.
- *
- * If the argument is none of the above, the function returns Invalid Date.
- *
- * **Note**: *all* Date arguments passed to any *date-fns* function is processed by `toDate`.
- *
- * @param {Date|Number} argument - the value to convert
- * @returns {Date} the parsed date in the local time zone
- * @throws {TypeError} 1 argument required
- *
- * @example
- * // Clone the date:
- * const result = toDate(new Date(2014, 1, 11, 11, 30, 30))
- * //=> Tue Feb 11 2014 11:30:30
- *
- * @example
- * // Convert the timestamp to date:
- * const result = toDate(1392098430000)
- * //=> Tue Feb 11 2014 11:30:30
- */
-
-function toDate(argument) {
-  (0,_lib_requiredArgs_index_js__WEBPACK_IMPORTED_MODULE_0__.default)(1, arguments);
-  var argStr = Object.prototype.toString.call(argument); // Clone the date
-
-  if (argument instanceof Date || typeof argument === 'object' && argStr === '[object Date]') {
-    // Prevent the date to lose the milliseconds when passed to new Date() in IE10
-    return new Date(argument.getTime());
-  } else if (typeof argument === 'number' || argStr === '[object Number]') {
-    return new Date(argument);
-  } else {
-    if ((typeof argument === 'string' || argStr === '[object String]') && typeof console !== 'undefined') {
-      // eslint-disable-next-line no-console
-      console.warn("Starting with v2.0.0-beta.1 date-fns doesn't accept strings as date arguments. Please use `parseISO` to parse strings. See: https://git.io/fjule"); // eslint-disable-next-line no-console
-
-      console.warn(new Error().stack);
-    }
-
-    return new Date(NaN);
-  }
-}
+module.exports = exports.default;
 
 /***/ }),
 
@@ -969,10 +367,65 @@ const React = {
 /* harmony default export */ const dom_chef = (React);
 
 
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/toDate/index.js
-var toDate = __webpack_require__("./node_modules/date-fns/esm/toDate/index.js");
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/_lib/requiredArgs/index.js
-var requiredArgs = __webpack_require__("./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/requiredArgs/index.js
+function requiredArgs(required, args) {
+  if (args.length < required) {
+    throw new TypeError(required + ' argument' + (required > 1 ? 's' : '') + ' required, but only ' + args.length + ' present');
+  }
+}
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/toDate/index.js
+
+/**
+ * @name toDate
+ * @category Common Helpers
+ * @summary Convert the given argument to an instance of Date.
+ *
+ * @description
+ * Convert the given argument to an instance of Date.
+ *
+ * If the argument is an instance of Date, the function returns its clone.
+ *
+ * If the argument is a number, it is treated as a timestamp.
+ *
+ * If the argument is none of the above, the function returns Invalid Date.
+ *
+ * **Note**: *all* Date arguments passed to any *date-fns* function is processed by `toDate`.
+ *
+ * @param {Date|Number} argument - the value to convert
+ * @returns {Date} the parsed date in the local time zone
+ * @throws {TypeError} 1 argument required
+ *
+ * @example
+ * // Clone the date:
+ * const result = toDate(new Date(2014, 1, 11, 11, 30, 30))
+ * //=> Tue Feb 11 2014 11:30:30
+ *
+ * @example
+ * // Convert the timestamp to date:
+ * const result = toDate(1392098430000)
+ * //=> Tue Feb 11 2014 11:30:30
+ */
+
+function toDate(argument) {
+  requiredArgs(1, arguments);
+  var argStr = Object.prototype.toString.call(argument); // Clone the date
+
+  if (argument instanceof Date || typeof argument === 'object' && argStr === '[object Date]') {
+    // Prevent the date to lose the milliseconds when passed to new Date() in IE10
+    return new Date(argument.getTime());
+  } else if (typeof argument === 'number' || argStr === '[object Number]') {
+    return new Date(argument);
+  } else {
+    if ((typeof argument === 'string' || argStr === '[object String]') && typeof console !== 'undefined') {
+      // eslint-disable-next-line no-console
+      console.warn("Starting with v2.0.0-beta.1 date-fns doesn't accept strings as date arguments. Please use `parseISO` to parse strings. See: https://git.io/fjule"); // eslint-disable-next-line no-console
+
+      console.warn(new Error().stack);
+    }
+
+    return new Date(NaN);
+  }
+}
 ;// CONCATENATED MODULE: ./node_modules/date-fns/esm/compareAsc/index.js
 
 
@@ -1014,9 +467,9 @@ var requiredArgs = __webpack_require__("./node_modules/date-fns/esm/_lib/require
  */
 
 function compareAsc(dirtyDateLeft, dirtyDateRight) {
-  (0,requiredArgs.default)(2, arguments);
-  var dateLeft = (0,toDate.default)(dirtyDateLeft);
-  var dateRight = (0,toDate.default)(dirtyDateRight);
+  requiredArgs(2, arguments);
+  var dateLeft = toDate(dirtyDateLeft);
+  var dateRight = toDate(dirtyDateRight);
   var diff = dateLeft.getTime() - dateRight.getTime();
 
   if (diff < 0) {
@@ -1057,9 +510,9 @@ function compareAsc(dirtyDateLeft, dirtyDateRight) {
  */
 
 function differenceInCalendarMonths(dirtyDateLeft, dirtyDateRight) {
-  (0,requiredArgs.default)(2, arguments);
-  var dateLeft = (0,toDate.default)(dirtyDateLeft);
-  var dateRight = (0,toDate.default)(dirtyDateRight);
+  requiredArgs(2, arguments);
+  var dateLeft = toDate(dirtyDateLeft);
+  var dateRight = toDate(dirtyDateRight);
   var yearDiff = dateLeft.getFullYear() - dateRight.getFullYear();
   var monthDiff = dateLeft.getMonth() - dateRight.getMonth();
   return yearDiff * 12 + monthDiff;
@@ -1091,8 +544,8 @@ function differenceInCalendarMonths(dirtyDateLeft, dirtyDateRight) {
  */
 
 function endOfDay(dirtyDate) {
-  (0,requiredArgs.default)(1, arguments);
-  var date = (0,toDate.default)(dirtyDate);
+  requiredArgs(1, arguments);
+  var date = toDate(dirtyDate);
   date.setHours(23, 59, 59, 999);
   return date;
 }
@@ -1123,8 +576,8 @@ function endOfDay(dirtyDate) {
  */
 
 function endOfMonth(dirtyDate) {
-  (0,requiredArgs.default)(1, arguments);
-  var date = (0,toDate.default)(dirtyDate);
+  requiredArgs(1, arguments);
+  var date = toDate(dirtyDate);
   var month = date.getMonth();
   date.setFullYear(date.getFullYear(), month + 1, 0);
   date.setHours(23, 59, 59, 999);
@@ -1158,8 +611,8 @@ function endOfMonth(dirtyDate) {
  */
 
 function isLastDayOfMonth(dirtyDate) {
-  (0,requiredArgs.default)(1, arguments);
-  var date = (0,toDate.default)(dirtyDate);
+  requiredArgs(1, arguments);
+  var date = toDate(dirtyDate);
   return endOfDay(date).getTime() === endOfMonth(date).getTime();
 }
 ;// CONCATENATED MODULE: ./node_modules/date-fns/esm/differenceInMonths/index.js
@@ -1174,7 +627,7 @@ function isLastDayOfMonth(dirtyDate) {
  * @summary Get the number of full months between the given dates.
  *
  * @description
- * Get the number of full months between the given dates.
+ * Get the number of full months between the given dates using trunc as a default rounding method.
  *
  * ### v2.0.0 breaking changes:
  *
@@ -1187,14 +640,14 @@ function isLastDayOfMonth(dirtyDate) {
  *
  * @example
  * // How many full months are between 31 January 2014 and 1 September 2014?
- * var result = differenceInMonths(new Date(2014, 8, 1), new Date(2014, 0, 31))
+ * const result = differenceInMonths(new Date(2014, 8, 1), new Date(2014, 0, 31))
  * //=> 7
  */
 
 function differenceInMonths(dirtyDateLeft, dirtyDateRight) {
-  (0,requiredArgs.default)(2, arguments);
-  var dateLeft = (0,toDate.default)(dirtyDateLeft);
-  var dateRight = (0,toDate.default)(dirtyDateRight);
+  requiredArgs(2, arguments);
+  var dateLeft = toDate(dirtyDateLeft);
+  var dateRight = toDate(dirtyDateRight);
   var sign = compareAsc(dateLeft, dateRight);
   var difference = Math.abs(differenceInCalendarMonths(dateLeft, dateRight));
   var result; // Check for the difference of less than month
@@ -1213,7 +666,7 @@ function differenceInMonths(dirtyDateLeft, dirtyDateRight) {
 
     var isLastMonthNotFull = compareAsc(dateLeft, dateRight) === -sign; // Check for cases of one full calendar month
 
-    if (isLastDayOfMonth((0,toDate.default)(dirtyDateLeft)) && difference === 1 && compareAsc(dirtyDateLeft, dateRight) === 1) {
+    if (isLastDayOfMonth(toDate(dirtyDateLeft)) && difference === 1 && compareAsc(dirtyDateLeft, dateRight) === 1) {
       isLastMonthNotFull = false;
     }
 
@@ -1253,13 +706,26 @@ function differenceInMonths(dirtyDateLeft, dirtyDateRight) {
  * //=> 1100
  */
 
-function differenceInMilliseconds(dirtyDateLeft, dirtyDateRight) {
-  (0,requiredArgs.default)(2, arguments);
-  var dateLeft = (0,toDate.default)(dirtyDateLeft);
-  var dateRight = (0,toDate.default)(dirtyDateRight);
-  return dateLeft.getTime() - dateRight.getTime();
+function differenceInMilliseconds(dateLeft, dateRight) {
+  requiredArgs(2, arguments);
+  return toDate(dateLeft).getTime() - toDate(dateRight).getTime();
+}
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/roundingMethods/index.js
+var roundingMap = {
+  ceil: Math.ceil,
+  round: Math.round,
+  floor: Math.floor,
+  trunc: function (value) {
+    return value < 0 ? Math.ceil(value) : Math.floor(value);
+  } // Math.trunc is not supported by IE
+
+};
+var defaultRoundingMethod = 'trunc';
+function getRoundingMethod(method) {
+  return method ? roundingMap[method] : roundingMap[defaultRoundingMethod];
 }
 ;// CONCATENATED MODULE: ./node_modules/date-fns/esm/differenceInSeconds/index.js
+
 
 
 /**
@@ -1276,6 +742,8 @@ function differenceInMilliseconds(dirtyDateLeft, dirtyDateRight) {
  *
  * @param {Date|Number} dateLeft - the later date
  * @param {Date|Number} dateRight - the earlier date
+ * @param {Object} [options] - an object with options.
+ * @param {String} [options.roundingMethod='trunc'] - a rounding method (`ceil`, `floor`, `round` or `trunc`)
  * @returns {Number} the number of seconds
  * @throws {TypeError} 2 arguments required
  *
@@ -1289,17 +757,566 @@ function differenceInMilliseconds(dirtyDateLeft, dirtyDateRight) {
  * //=> 12
  */
 
-function differenceInSeconds(dirtyDateLeft, dirtyDateRight) {
-  (0,requiredArgs.default)(2, arguments);
-  var diff = differenceInMilliseconds(dirtyDateLeft, dirtyDateRight) / 1000;
-  return diff > 0 ? Math.floor(diff) : Math.ceil(diff);
+function differenceInSeconds(dateLeft, dateRight, options) {
+  requiredArgs(2, arguments);
+  var diff = differenceInMilliseconds(dateLeft, dateRight) / 1000;
+  return getRoundingMethod(options === null || options === void 0 ? void 0 : options.roundingMethod)(diff);
 }
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/locale/en-US/index.js + 5 modules
-var en_US = __webpack_require__("./node_modules/date-fns/esm/locale/en-US/index.js");
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/_lib/cloneObject/index.js + 1 modules
-var cloneObject = __webpack_require__("./node_modules/date-fns/esm/_lib/cloneObject/index.js");
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/_lib/getTimezoneOffsetInMilliseconds/index.js
-var getTimezoneOffsetInMilliseconds = __webpack_require__("./node_modules/date-fns/esm/_lib/getTimezoneOffsetInMilliseconds/index.js");
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/formatDistance/index.js
+var formatDistanceLocale = {
+  lessThanXSeconds: {
+    one: 'less than a second',
+    other: 'less than {{count}} seconds'
+  },
+  xSeconds: {
+    one: '1 second',
+    other: '{{count}} seconds'
+  },
+  halfAMinute: 'half a minute',
+  lessThanXMinutes: {
+    one: 'less than a minute',
+    other: 'less than {{count}} minutes'
+  },
+  xMinutes: {
+    one: '1 minute',
+    other: '{{count}} minutes'
+  },
+  aboutXHours: {
+    one: 'about 1 hour',
+    other: 'about {{count}} hours'
+  },
+  xHours: {
+    one: '1 hour',
+    other: '{{count}} hours'
+  },
+  xDays: {
+    one: '1 day',
+    other: '{{count}} days'
+  },
+  aboutXWeeks: {
+    one: 'about 1 week',
+    other: 'about {{count}} weeks'
+  },
+  xWeeks: {
+    one: '1 week',
+    other: '{{count}} weeks'
+  },
+  aboutXMonths: {
+    one: 'about 1 month',
+    other: 'about {{count}} months'
+  },
+  xMonths: {
+    one: '1 month',
+    other: '{{count}} months'
+  },
+  aboutXYears: {
+    one: 'about 1 year',
+    other: 'about {{count}} years'
+  },
+  xYears: {
+    one: '1 year',
+    other: '{{count}} years'
+  },
+  overXYears: {
+    one: 'over 1 year',
+    other: 'over {{count}} years'
+  },
+  almostXYears: {
+    one: 'almost 1 year',
+    other: 'almost {{count}} years'
+  }
+};
+
+var formatDistance = function (token, count, options) {
+  var result;
+  var tokenValue = formatDistanceLocale[token];
+
+  if (typeof tokenValue === 'string') {
+    result = tokenValue;
+  } else if (count === 1) {
+    result = tokenValue.one;
+  } else {
+    result = tokenValue.other.replace('{{count}}', count.toString());
+  }
+
+  if (options !== null && options !== void 0 && options.addSuffix) {
+    if (options.comparison && options.comparison > 0) {
+      return 'in ' + result;
+    } else {
+      return result + ' ago';
+    }
+  }
+
+  return result;
+};
+
+/* harmony default export */ const _lib_formatDistance = (formatDistance);
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/_lib/buildFormatLongFn/index.js
+function buildFormatLongFn(args) {
+  return function () {
+    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+    // TODO: Remove String()
+    var width = options.width ? String(options.width) : args.defaultWidth;
+    var format = args.formats[width] || args.formats[args.defaultWidth];
+    return format;
+  };
+}
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/formatLong/index.js
+
+var dateFormats = {
+  full: 'EEEE, MMMM do, y',
+  long: 'MMMM do, y',
+  medium: 'MMM d, y',
+  short: 'MM/dd/yyyy'
+};
+var timeFormats = {
+  full: 'h:mm:ss a zzzz',
+  long: 'h:mm:ss a z',
+  medium: 'h:mm:ss a',
+  short: 'h:mm a'
+};
+var dateTimeFormats = {
+  full: "{{date}} 'at' {{time}}",
+  long: "{{date}} 'at' {{time}}",
+  medium: '{{date}}, {{time}}',
+  short: '{{date}}, {{time}}'
+};
+var formatLong = {
+  date: buildFormatLongFn({
+    formats: dateFormats,
+    defaultWidth: 'full'
+  }),
+  time: buildFormatLongFn({
+    formats: timeFormats,
+    defaultWidth: 'full'
+  }),
+  dateTime: buildFormatLongFn({
+    formats: dateTimeFormats,
+    defaultWidth: 'full'
+  })
+};
+/* harmony default export */ const _lib_formatLong = (formatLong);
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/formatRelative/index.js
+var formatRelativeLocale = {
+  lastWeek: "'last' eeee 'at' p",
+  yesterday: "'yesterday at' p",
+  today: "'today at' p",
+  tomorrow: "'tomorrow at' p",
+  nextWeek: "eeee 'at' p",
+  other: 'P'
+};
+
+var formatRelative = function (token, _date, _baseDate, _options) {
+  return formatRelativeLocale[token];
+};
+
+/* harmony default export */ const _lib_formatRelative = (formatRelative);
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/_lib/buildLocalizeFn/index.js
+function buildLocalizeFn(args) {
+  return function (dirtyIndex, dirtyOptions) {
+    var options = dirtyOptions || {};
+    var context = options.context ? String(options.context) : 'standalone';
+    var valuesArray;
+
+    if (context === 'formatting' && args.formattingValues) {
+      var defaultWidth = args.defaultFormattingWidth || args.defaultWidth;
+      var width = options.width ? String(options.width) : defaultWidth;
+      valuesArray = args.formattingValues[width] || args.formattingValues[defaultWidth];
+    } else {
+      var _defaultWidth = args.defaultWidth;
+
+      var _width = options.width ? String(options.width) : args.defaultWidth;
+
+      valuesArray = args.values[_width] || args.values[_defaultWidth];
+    }
+
+    var index = args.argumentCallback ? args.argumentCallback(dirtyIndex) : dirtyIndex; // @ts-ignore: For some reason TypeScript just don't want to match it, no matter how hard we try. I challenge you to try to remove it!
+
+    return valuesArray[index];
+  };
+}
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/localize/index.js
+
+var eraValues = {
+  narrow: ['B', 'A'],
+  abbreviated: ['BC', 'AD'],
+  wide: ['Before Christ', 'Anno Domini']
+};
+var quarterValues = {
+  narrow: ['1', '2', '3', '4'],
+  abbreviated: ['Q1', 'Q2', 'Q3', 'Q4'],
+  wide: ['1st quarter', '2nd quarter', '3rd quarter', '4th quarter']
+}; // Note: in English, the names of days of the week and months are capitalized.
+// If you are making a new locale based on this one, check if the same is true for the language you're working on.
+// Generally, formatted dates should look like they are in the middle of a sentence,
+// e.g. in Spanish language the weekdays and months should be in the lowercase.
+
+var monthValues = {
+  narrow: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+  abbreviated: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  wide: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+};
+var dayValues = {
+  narrow: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+  short: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
+  abbreviated: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  wide: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+};
+var dayPeriodValues = {
+  narrow: {
+    am: 'a',
+    pm: 'p',
+    midnight: 'mi',
+    noon: 'n',
+    morning: 'morning',
+    afternoon: 'afternoon',
+    evening: 'evening',
+    night: 'night'
+  },
+  abbreviated: {
+    am: 'AM',
+    pm: 'PM',
+    midnight: 'midnight',
+    noon: 'noon',
+    morning: 'morning',
+    afternoon: 'afternoon',
+    evening: 'evening',
+    night: 'night'
+  },
+  wide: {
+    am: 'a.m.',
+    pm: 'p.m.',
+    midnight: 'midnight',
+    noon: 'noon',
+    morning: 'morning',
+    afternoon: 'afternoon',
+    evening: 'evening',
+    night: 'night'
+  }
+};
+var formattingDayPeriodValues = {
+  narrow: {
+    am: 'a',
+    pm: 'p',
+    midnight: 'mi',
+    noon: 'n',
+    morning: 'in the morning',
+    afternoon: 'in the afternoon',
+    evening: 'in the evening',
+    night: 'at night'
+  },
+  abbreviated: {
+    am: 'AM',
+    pm: 'PM',
+    midnight: 'midnight',
+    noon: 'noon',
+    morning: 'in the morning',
+    afternoon: 'in the afternoon',
+    evening: 'in the evening',
+    night: 'at night'
+  },
+  wide: {
+    am: 'a.m.',
+    pm: 'p.m.',
+    midnight: 'midnight',
+    noon: 'noon',
+    morning: 'in the morning',
+    afternoon: 'in the afternoon',
+    evening: 'in the evening',
+    night: 'at night'
+  }
+};
+
+var ordinalNumber = function (dirtyNumber, _options) {
+  var number = Number(dirtyNumber); // If ordinal numbers depend on context, for example,
+  // if they are different for different grammatical genders,
+  // use `options.unit`.
+  //
+  // `unit` can be 'year', 'quarter', 'month', 'week', 'date', 'dayOfYear',
+  // 'day', 'hour', 'minute', 'second'.
+
+  var rem100 = number % 100;
+
+  if (rem100 > 20 || rem100 < 10) {
+    switch (rem100 % 10) {
+      case 1:
+        return number + 'st';
+
+      case 2:
+        return number + 'nd';
+
+      case 3:
+        return number + 'rd';
+    }
+  }
+
+  return number + 'th';
+};
+
+var localize = {
+  ordinalNumber: ordinalNumber,
+  era: buildLocalizeFn({
+    values: eraValues,
+    defaultWidth: 'wide'
+  }),
+  quarter: buildLocalizeFn({
+    values: quarterValues,
+    defaultWidth: 'wide',
+    argumentCallback: function (quarter) {
+      return quarter - 1;
+    }
+  }),
+  month: buildLocalizeFn({
+    values: monthValues,
+    defaultWidth: 'wide'
+  }),
+  day: buildLocalizeFn({
+    values: dayValues,
+    defaultWidth: 'wide'
+  }),
+  dayPeriod: buildLocalizeFn({
+    values: dayPeriodValues,
+    defaultWidth: 'wide',
+    formattingValues: formattingDayPeriodValues,
+    defaultFormattingWidth: 'wide'
+  })
+};
+/* harmony default export */ const _lib_localize = (localize);
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/_lib/buildMatchFn/index.js
+function buildMatchFn(args) {
+  return function (string) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var width = options.width;
+    var matchPattern = width && args.matchPatterns[width] || args.matchPatterns[args.defaultMatchWidth];
+    var matchResult = string.match(matchPattern);
+
+    if (!matchResult) {
+      return null;
+    }
+
+    var matchedString = matchResult[0];
+    var parsePatterns = width && args.parsePatterns[width] || args.parsePatterns[args.defaultParseWidth];
+    var key = Array.isArray(parsePatterns) ? findIndex(parsePatterns, function (pattern) {
+      return pattern.test(matchedString);
+    }) : findKey(parsePatterns, function (pattern) {
+      return pattern.test(matchedString);
+    });
+    var value;
+    value = args.valueCallback ? args.valueCallback(key) : key;
+    value = options.valueCallback ? options.valueCallback(value) : value;
+    var rest = string.slice(matchedString.length);
+    return {
+      value: value,
+      rest: rest
+    };
+  };
+}
+
+function findKey(object, predicate) {
+  for (var key in object) {
+    if (object.hasOwnProperty(key) && predicate(object[key])) {
+      return key;
+    }
+  }
+
+  return undefined;
+}
+
+function findIndex(array, predicate) {
+  for (var key = 0; key < array.length; key++) {
+    if (predicate(array[key])) {
+      return key;
+    }
+  }
+
+  return undefined;
+}
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/_lib/buildMatchPatternFn/index.js
+function buildMatchPatternFn(args) {
+  return function (string) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    var matchResult = string.match(args.matchPattern);
+    if (!matchResult) return null;
+    var matchedString = matchResult[0];
+    var parseResult = string.match(args.parsePattern);
+    if (!parseResult) return null;
+    var value = args.valueCallback ? args.valueCallback(parseResult[0]) : parseResult[0];
+    value = options.valueCallback ? options.valueCallback(value) : value;
+    var rest = string.slice(matchedString.length);
+    return {
+      value: value,
+      rest: rest
+    };
+  };
+}
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/match/index.js
+
+
+var matchOrdinalNumberPattern = /^(\d+)(th|st|nd|rd)?/i;
+var parseOrdinalNumberPattern = /\d+/i;
+var matchEraPatterns = {
+  narrow: /^(b|a)/i,
+  abbreviated: /^(b\.?\s?c\.?|b\.?\s?c\.?\s?e\.?|a\.?\s?d\.?|c\.?\s?e\.?)/i,
+  wide: /^(before christ|before common era|anno domini|common era)/i
+};
+var parseEraPatterns = {
+  any: [/^b/i, /^(a|c)/i]
+};
+var matchQuarterPatterns = {
+  narrow: /^[1234]/i,
+  abbreviated: /^q[1234]/i,
+  wide: /^[1234](th|st|nd|rd)? quarter/i
+};
+var parseQuarterPatterns = {
+  any: [/1/i, /2/i, /3/i, /4/i]
+};
+var matchMonthPatterns = {
+  narrow: /^[jfmasond]/i,
+  abbreviated: /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i,
+  wide: /^(january|february|march|april|may|june|july|august|september|october|november|december)/i
+};
+var parseMonthPatterns = {
+  narrow: [/^j/i, /^f/i, /^m/i, /^a/i, /^m/i, /^j/i, /^j/i, /^a/i, /^s/i, /^o/i, /^n/i, /^d/i],
+  any: [/^ja/i, /^f/i, /^mar/i, /^ap/i, /^may/i, /^jun/i, /^jul/i, /^au/i, /^s/i, /^o/i, /^n/i, /^d/i]
+};
+var matchDayPatterns = {
+  narrow: /^[smtwf]/i,
+  short: /^(su|mo|tu|we|th|fr|sa)/i,
+  abbreviated: /^(sun|mon|tue|wed|thu|fri|sat)/i,
+  wide: /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)/i
+};
+var parseDayPatterns = {
+  narrow: [/^s/i, /^m/i, /^t/i, /^w/i, /^t/i, /^f/i, /^s/i],
+  any: [/^su/i, /^m/i, /^tu/i, /^w/i, /^th/i, /^f/i, /^sa/i]
+};
+var matchDayPeriodPatterns = {
+  narrow: /^(a|p|mi|n|(in the|at) (morning|afternoon|evening|night))/i,
+  any: /^([ap]\.?\s?m\.?|midnight|noon|(in the|at) (morning|afternoon|evening|night))/i
+};
+var parseDayPeriodPatterns = {
+  any: {
+    am: /^a/i,
+    pm: /^p/i,
+    midnight: /^mi/i,
+    noon: /^no/i,
+    morning: /morning/i,
+    afternoon: /afternoon/i,
+    evening: /evening/i,
+    night: /night/i
+  }
+};
+var match = {
+  ordinalNumber: buildMatchPatternFn({
+    matchPattern: matchOrdinalNumberPattern,
+    parsePattern: parseOrdinalNumberPattern,
+    valueCallback: function (value) {
+      return parseInt(value, 10);
+    }
+  }),
+  era: buildMatchFn({
+    matchPatterns: matchEraPatterns,
+    defaultMatchWidth: 'wide',
+    parsePatterns: parseEraPatterns,
+    defaultParseWidth: 'any'
+  }),
+  quarter: buildMatchFn({
+    matchPatterns: matchQuarterPatterns,
+    defaultMatchWidth: 'wide',
+    parsePatterns: parseQuarterPatterns,
+    defaultParseWidth: 'any',
+    valueCallback: function (index) {
+      return index + 1;
+    }
+  }),
+  month: buildMatchFn({
+    matchPatterns: matchMonthPatterns,
+    defaultMatchWidth: 'wide',
+    parsePatterns: parseMonthPatterns,
+    defaultParseWidth: 'any'
+  }),
+  day: buildMatchFn({
+    matchPatterns: matchDayPatterns,
+    defaultMatchWidth: 'wide',
+    parsePatterns: parseDayPatterns,
+    defaultParseWidth: 'any'
+  }),
+  dayPeriod: buildMatchFn({
+    matchPatterns: matchDayPeriodPatterns,
+    defaultMatchWidth: 'any',
+    parsePatterns: parseDayPeriodPatterns,
+    defaultParseWidth: 'any'
+  })
+};
+/* harmony default export */ const _lib_match = (match);
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/index.js
+
+
+
+
+
+
+/**
+ * @type {Locale}
+ * @category Locales
+ * @summary English locale (United States).
+ * @language English
+ * @iso-639-2 eng
+ * @author Sasha Koss [@kossnocorp]{@link https://github.com/kossnocorp}
+ * @author Lesha Koss [@leshakoss]{@link https://github.com/leshakoss}
+ */
+var locale = {
+  code: 'en-US',
+  formatDistance: _lib_formatDistance,
+  formatLong: _lib_formatLong,
+  formatRelative: _lib_formatRelative,
+  localize: _lib_localize,
+  match: _lib_match,
+  options: {
+    weekStartsOn: 0
+    /* Sunday */
+    ,
+    firstWeekContainsDate: 1
+  }
+};
+/* harmony default export */ const en_US = (locale);
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/assign/index.js
+function assign_assign(target, dirtyObject) {
+  if (target == null) {
+    throw new TypeError('assign requires that input parameter not be null or undefined');
+  }
+
+  dirtyObject = dirtyObject || {};
+
+  for (var property in dirtyObject) {
+    if (Object.prototype.hasOwnProperty.call(dirtyObject, property)) {
+      target[property] = dirtyObject[property];
+    }
+  }
+
+  return target;
+}
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/cloneObject/index.js
+
+function cloneObject(dirtyObject) {
+  return assign_assign({}, dirtyObject);
+}
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/getTimezoneOffsetInMilliseconds/index.js
+/**
+ * Google Chrome as of 67.0.3396.87 introduced timezones with offset that includes seconds.
+ * They usually appear for dates that denote time before the timezones were introduced
+ * (e.g. for 'Europe/Prague' timezone the offset is GMT+00:57:44 before 1 October 1891
+ * and GMT+01:00:00 after that date)
+ *
+ * Date#getTimezoneOffset returns the offset in minutes and would return 57 for the example above,
+ * which would lead to incorrect calculations.
+ *
+ * This function returns the timezone offset in milliseconds that takes seconds in account.
+ */
+function getTimezoneOffsetInMilliseconds(date) {
+  var utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
+  utcDate.setUTCFullYear(date.getFullYear());
+  return date.getTime() - utcDate.getTime();
+}
 ;// CONCATENATED MODULE: ./node_modules/date-fns/esm/formatDistance/index.js
 
 
@@ -1422,10 +1439,10 @@ var MINUTES_IN_TWO_MONTHS = 86400;
  * //=> 'pli ol 1 jaro'
  */
 
-function formatDistance(dirtyDate, dirtyBaseDate) {
+function formatDistance_formatDistance(dirtyDate, dirtyBaseDate) {
   var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  (0,requiredArgs.default)(2, arguments);
-  var locale = options.locale || en_US.default;
+  requiredArgs(2, arguments);
+  var locale = options.locale || en_US;
 
   if (!locale.formatDistance) {
     throw new RangeError('locale must contain formatDistance property');
@@ -1437,22 +1454,22 @@ function formatDistance(dirtyDate, dirtyBaseDate) {
     throw new RangeError('Invalid time value');
   }
 
-  var localizeOptions = (0,cloneObject.default)(options);
+  var localizeOptions = cloneObject(options);
   localizeOptions.addSuffix = Boolean(options.addSuffix);
   localizeOptions.comparison = comparison;
   var dateLeft;
   var dateRight;
 
   if (comparison > 0) {
-    dateLeft = (0,toDate.default)(dirtyBaseDate);
-    dateRight = (0,toDate.default)(dirtyDate);
+    dateLeft = toDate(dirtyBaseDate);
+    dateRight = toDate(dirtyDate);
   } else {
-    dateLeft = (0,toDate.default)(dirtyDate);
-    dateRight = (0,toDate.default)(dirtyBaseDate);
+    dateLeft = toDate(dirtyDate);
+    dateRight = toDate(dirtyBaseDate);
   }
 
   var seconds = differenceInSeconds(dateRight, dateLeft);
-  var offsetInSeconds = ((0,getTimezoneOffsetInMilliseconds.default)(dateRight) - (0,getTimezoneOffsetInMilliseconds.default)(dateLeft)) / 1000;
+  var offsetInSeconds = (getTimezoneOffsetInMilliseconds(dateRight) - getTimezoneOffsetInMilliseconds(dateLeft)) / 1000;
   var minutes = Math.round((seconds - offsetInSeconds) / 60);
   var months; // 0 up to 2 mins
 
@@ -1624,181 +1641,181 @@ function formatDistance(dirtyDate, dirtyBaseDate) {
  */
 
 function formatDistanceToNow(dirtyDate, dirtyOptions) {
-  (0,requiredArgs.default)(1, arguments);
-  return formatDistance(dirtyDate, Date.now(), dirtyOptions);
+  requiredArgs(1, arguments);
+  return formatDistance_formatDistance(dirtyDate, Date.now(), dirtyOptions);
 }
 ;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/_lib/formatDistance/index.js
-var formatDistanceLocale = {
+var formatDistance_formatDistanceLocale = {
   lessThanXSeconds: {
     standalone: {
-      one: 'weniger als eine Sekunde',
+      one: 'weniger als 1 Sekunde',
       other: 'weniger als {{count}} Sekunden'
     },
     withPreposition: {
-      one: 'weniger als einer Sekunde',
+      one: 'weniger als 1 Sekunde',
       other: 'weniger als {{count}} Sekunden'
     }
   },
   xSeconds: {
     standalone: {
-      one: 'eine Sekunde',
+      one: '1 Sekunde',
       other: '{{count}} Sekunden'
     },
     withPreposition: {
-      one: 'einer Sekunde',
+      one: '1 Sekunde',
       other: '{{count}} Sekunden'
     }
   },
   halfAMinute: {
-    standalone: 'eine halbe Minute',
-    withPreposition: 'einer halben Minute'
+    standalone: 'halbe Minute',
+    withPreposition: 'halben Minute'
   },
   lessThanXMinutes: {
     standalone: {
-      one: 'weniger als eine Minute',
+      one: 'weniger als 1 Minute',
       other: 'weniger als {{count}} Minuten'
     },
     withPreposition: {
-      one: 'weniger als einer Minute',
+      one: 'weniger als 1 Minute',
       other: 'weniger als {{count}} Minuten'
     }
   },
   xMinutes: {
     standalone: {
-      one: 'eine Minute',
+      one: '1 Minute',
       other: '{{count}} Minuten'
     },
     withPreposition: {
-      one: 'einer Minute',
+      one: '1 Minute',
       other: '{{count}} Minuten'
     }
   },
   aboutXHours: {
     standalone: {
-      one: 'etwa eine Stunde',
+      one: 'etwa 1 Stunde',
       other: 'etwa {{count}} Stunden'
     },
     withPreposition: {
-      one: 'etwa einer Stunde',
+      one: 'etwa 1 Stunde',
       other: 'etwa {{count}} Stunden'
     }
   },
   xHours: {
     standalone: {
-      one: 'eine Stunde',
+      one: '1 Stunde',
       other: '{{count}} Stunden'
     },
     withPreposition: {
-      one: 'einer Stunde',
+      one: '1 Stunde',
       other: '{{count}} Stunden'
     }
   },
   xDays: {
     standalone: {
-      one: 'ein Tag',
+      one: '1 Tag',
       other: '{{count}} Tage'
     },
     withPreposition: {
-      one: 'einem Tag',
+      one: '1 Tag',
       other: '{{count}} Tagen'
     }
   },
   aboutXWeeks: {
     standalone: {
-      one: 'etwa ein Woche',
+      one: 'etwa 1 Woche',
       other: 'etwa {{count}} Wochen'
     },
     withPreposition: {
-      one: 'etwa einem Woche',
+      one: 'etwa 1 Woche',
       other: 'etwa {{count}} Wochen'
     }
   },
   xWeeks: {
     standalone: {
-      one: 'ein Woche',
+      one: '1 Woche',
       other: '{{count}} Wochen'
     },
     withPreposition: {
-      one: 'einem Woche',
+      one: '1 Woche',
       other: '{{count}} Wochen'
     }
   },
   aboutXMonths: {
     standalone: {
-      one: 'etwa ein Monat',
+      one: 'etwa 1 Monat',
       other: 'etwa {{count}} Monate'
     },
     withPreposition: {
-      one: 'etwa einem Monat',
+      one: 'etwa 1 Monat',
       other: 'etwa {{count}} Monaten'
     }
   },
   xMonths: {
     standalone: {
-      one: 'ein Monat',
+      one: '1 Monat',
       other: '{{count}} Monate'
     },
     withPreposition: {
-      one: 'einem Monat',
+      one: '1 Monat',
       other: '{{count}} Monaten'
     }
   },
   aboutXYears: {
     standalone: {
-      one: 'etwa ein Jahr',
+      one: 'etwa 1 Jahr',
       other: 'etwa {{count}} Jahre'
     },
     withPreposition: {
-      one: 'etwa einem Jahr',
+      one: 'etwa 1 Jahr',
       other: 'etwa {{count}} Jahren'
     }
   },
   xYears: {
     standalone: {
-      one: 'ein Jahr',
+      one: '1 Jahr',
       other: '{{count}} Jahre'
     },
     withPreposition: {
-      one: 'einem Jahr',
+      one: '1 Jahr',
       other: '{{count}} Jahren'
     }
   },
   overXYears: {
     standalone: {
-      one: 'mehr als ein Jahr',
+      one: 'mehr als 1 Jahr',
       other: 'mehr als {{count}} Jahre'
     },
     withPreposition: {
-      one: 'mehr als einem Jahr',
+      one: 'mehr als 1 Jahr',
       other: 'mehr als {{count}} Jahren'
     }
   },
   almostXYears: {
     standalone: {
-      one: 'fast ein Jahr',
+      one: 'fast 1 Jahr',
       other: 'fast {{count}} Jahre'
     },
     withPreposition: {
-      one: 'fast einem Jahr',
+      one: 'fast 1 Jahr',
       other: 'fast {{count}} Jahren'
     }
   }
 };
-function formatDistance_formatDistance(token, count, options) {
-  options = options || {};
-  var usageGroup = options.addSuffix ? formatDistanceLocale[token].withPreposition : formatDistanceLocale[token].standalone;
-  var result;
 
-  if (typeof usageGroup === 'string') {
-    result = usageGroup;
+var _lib_formatDistance_formatDistance = function (token, count, options) {
+  var result;
+  var tokenValue = options !== null && options !== void 0 && options.addSuffix ? formatDistance_formatDistanceLocale[token].withPreposition : formatDistance_formatDistanceLocale[token].standalone;
+
+  if (typeof tokenValue === 'string') {
+    result = tokenValue;
   } else if (count === 1) {
-    result = usageGroup.one;
+    result = tokenValue.one;
   } else {
-    result = usageGroup.other.replace('{{count}}', count);
+    result = tokenValue.other.replace('{{count}}', String(count));
   }
 
-  if (options.addSuffix) {
-    if (options.comparison > 0) {
+  if (options !== null && options !== void 0 && options.addSuffix) {
+    if (options.comparison && options.comparison > 0) {
       return 'in ' + result;
     } else {
       return 'vor ' + result;
@@ -1806,51 +1823,51 @@ function formatDistance_formatDistance(token, count, options) {
   }
 
   return result;
-}
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/locale/_lib/buildFormatLongFn/index.js
-var buildFormatLongFn = __webpack_require__("./node_modules/date-fns/esm/locale/_lib/buildFormatLongFn/index.js");
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/_lib/formatLong/index.js
- // DIN 5008: https://de.wikipedia.org/wiki/Datumsformat#DIN_5008
+};
 
-var dateFormats = {
+/* harmony default export */ const de_lib_formatDistance = (_lib_formatDistance_formatDistance);
+;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/_lib/formatLong/index.js
+
+// DIN 5008: https://de.wikipedia.org/wiki/Datumsformat#DIN_5008
+var formatLong_dateFormats = {
   full: 'EEEE, do MMMM y',
   // Montag, 7. Januar 2018
   long: 'do MMMM y',
   // 7. Januar 2018
-  medium: 'do MMM. y',
+  medium: 'do MMM y',
   // 7. Jan. 2018
   short: 'dd.MM.y' // 07.01.2018
 
 };
-var timeFormats = {
+var formatLong_timeFormats = {
   full: 'HH:mm:ss zzzz',
   long: 'HH:mm:ss z',
   medium: 'HH:mm:ss',
   short: 'HH:mm'
 };
-var dateTimeFormats = {
+var formatLong_dateTimeFormats = {
   full: "{{date}} 'um' {{time}}",
   long: "{{date}} 'um' {{time}}",
   medium: '{{date}} {{time}}',
   short: '{{date}} {{time}}'
 };
-var formatLong = {
-  date: (0,buildFormatLongFn.default)({
-    formats: dateFormats,
+var formatLong_formatLong = {
+  date: buildFormatLongFn({
+    formats: formatLong_dateFormats,
     defaultWidth: 'full'
   }),
-  time: (0,buildFormatLongFn.default)({
-    formats: timeFormats,
+  time: buildFormatLongFn({
+    formats: formatLong_timeFormats,
     defaultWidth: 'full'
   }),
-  dateTime: (0,buildFormatLongFn.default)({
-    formats: dateTimeFormats,
+  dateTime: buildFormatLongFn({
+    formats: formatLong_dateTimeFormats,
     defaultWidth: 'full'
   })
 };
-/* harmony default export */ const _lib_formatLong = (formatLong);
+/* harmony default export */ const de_lib_formatLong = (formatLong_formatLong);
 ;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/_lib/formatRelative/index.js
-var formatRelativeLocale = {
+var formatRelative_formatRelativeLocale = {
   lastWeek: "'letzten' eeee 'um' p",
   yesterday: "'gestern um' p",
   today: "'heute um' p",
@@ -1858,40 +1875,47 @@ var formatRelativeLocale = {
   nextWeek: "eeee 'um' p",
   other: 'P'
 };
-function formatRelative(token, _date, _baseDate, _options) {
-  return formatRelativeLocale[token];
-}
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/locale/_lib/buildLocalizeFn/index.js
-var buildLocalizeFn = __webpack_require__("./node_modules/date-fns/esm/locale/_lib/buildLocalizeFn/index.js");
+
+var formatRelative_formatRelative = function (token, _date, _baseDate, _options) {
+  return formatRelative_formatRelativeLocale[token];
+};
+
+/* harmony default export */ const de_lib_formatRelative = (formatRelative_formatRelative);
 ;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/_lib/localize/index.js
 
-var eraValues = {
+var localize_eraValues = {
   narrow: ['v.Chr.', 'n.Chr.'],
   abbreviated: ['v.Chr.', 'n.Chr.'],
   wide: ['vor Christus', 'nach Christus']
 };
-var quarterValues = {
+var localize_quarterValues = {
   narrow: ['1', '2', '3', '4'],
   abbreviated: ['Q1', 'Q2', 'Q3', 'Q4'],
-  wide: ['1. Quartal', '2. Quartal', '3. Quartal', '4. Quartal'] // Note: in German, the names of days of the week and months are capitalized.
-  // If you are making a new locale based on this one, check if the same is true for the language you're working on.
-  // Generally, formatted dates should look like they are in the middle of a sentence,
-  // e.g. in Spanish language the weekdays and months should be in the lowercase.
+  wide: ['1. Quartal', '2. Quartal', '3. Quartal', '4. Quartal']
+}; // Note: in German, the names of days of the week and months are capitalized.
+// If you are making a new locale based on this one, check if the same is true for the language you're working on.
+// Generally, formatted dates should look like they are in the middle of a sentence,
+// e.g. in Spanish language the weekdays and months should be in the lowercase.
 
-};
-var monthValues = {
+var localize_monthValues = {
   narrow: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
   abbreviated: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
   wide: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
+}; // https://st.unicode.org/cldr-apps/v#/de/Gregorian/
+
+var formattingMonthValues = {
+  narrow: localize_monthValues.narrow,
+  abbreviated: ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'],
+  wide: localize_monthValues.wide
 };
-var dayValues = {
+var localize_dayValues = {
   narrow: ['S', 'M', 'D', 'M', 'D', 'F', 'S'],
   short: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
   abbreviated: ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
-  wide: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'] // https://www.unicode.org/cldr/charts/32/summary/de.html#1881
+  wide: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag']
+}; // https://www.unicode.org/cldr/charts/32/summary/de.html#1881
 
-};
-var dayPeriodValues = {
+var localize_dayPeriodValues = {
   narrow: {
     am: 'vm.',
     pm: 'nm.',
@@ -1923,7 +1947,7 @@ var dayPeriodValues = {
     night: 'Nacht'
   }
 };
-var formattingDayPeriodValues = {
+var localize_formattingDayPeriodValues = {
   narrow: {
     am: 'vm.',
     pm: 'nm.',
@@ -1956,89 +1980,86 @@ var formattingDayPeriodValues = {
   }
 };
 
-function ordinalNumber(dirtyNumber, _dirtyOptions) {
+var localize_ordinalNumber = function (dirtyNumber) {
   var number = Number(dirtyNumber);
   return number + '.';
-}
+};
 
-var localize = {
-  ordinalNumber: ordinalNumber,
-  era: (0,buildLocalizeFn.default)({
-    values: eraValues,
+var localize_localize = {
+  ordinalNumber: localize_ordinalNumber,
+  era: buildLocalizeFn({
+    values: localize_eraValues,
     defaultWidth: 'wide'
   }),
-  quarter: (0,buildLocalizeFn.default)({
-    values: quarterValues,
+  quarter: buildLocalizeFn({
+    values: localize_quarterValues,
     defaultWidth: 'wide',
     argumentCallback: function (quarter) {
-      return Number(quarter) - 1;
+      return quarter - 1;
     }
   }),
-  month: (0,buildLocalizeFn.default)({
-    values: monthValues,
+  month: buildLocalizeFn({
+    values: localize_monthValues,
+    formattingValues: formattingMonthValues,
     defaultWidth: 'wide'
   }),
-  day: (0,buildLocalizeFn.default)({
-    values: dayValues,
+  day: buildLocalizeFn({
+    values: localize_dayValues,
     defaultWidth: 'wide'
   }),
-  dayPeriod: (0,buildLocalizeFn.default)({
-    values: dayPeriodValues,
+  dayPeriod: buildLocalizeFn({
+    values: localize_dayPeriodValues,
     defaultWidth: 'wide',
-    formattingValues: formattingDayPeriodValues,
+    formattingValues: localize_formattingDayPeriodValues,
     defaultFormattingWidth: 'wide'
   })
 };
-/* harmony default export */ const _lib_localize = (localize);
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/locale/_lib/buildMatchPatternFn/index.js
-var buildMatchPatternFn = __webpack_require__("./node_modules/date-fns/esm/locale/_lib/buildMatchPatternFn/index.js");
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/locale/_lib/buildMatchFn/index.js
-var buildMatchFn = __webpack_require__("./node_modules/date-fns/esm/locale/_lib/buildMatchFn/index.js");
+/* harmony default export */ const de_lib_localize = (localize_localize);
 ;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/_lib/match/index.js
 
 
-var matchOrdinalNumberPattern = /^(\d+)(\.)?/i;
-var parseOrdinalNumberPattern = /\d+/i;
-var matchEraPatterns = {
+var match_matchOrdinalNumberPattern = /^(\d+)(\.)?/i;
+var match_parseOrdinalNumberPattern = /\d+/i;
+var match_matchEraPatterns = {
   narrow: /^(v\.? ?Chr\.?|n\.? ?Chr\.?)/i,
   abbreviated: /^(v\.? ?Chr\.?|n\.? ?Chr\.?)/i,
   wide: /^(vor Christus|vor unserer Zeitrechnung|nach Christus|unserer Zeitrechnung)/i
 };
-var parseEraPatterns = {
+var match_parseEraPatterns = {
   any: [/^v/i, /^n/i]
 };
-var matchQuarterPatterns = {
+var match_matchQuarterPatterns = {
   narrow: /^[1234]/i,
   abbreviated: /^q[1234]/i,
   wide: /^[1234](\.)? Quartal/i
 };
-var parseQuarterPatterns = {
+var match_parseQuarterPatterns = {
   any: [/1/i, /2/i, /3/i, /4/i]
 };
-var matchMonthPatterns = {
+var match_matchMonthPatterns = {
   narrow: /^[jfmasond]/i,
-  abbreviated: /^(jan|feb|mär|apr|mai|jun|jul|aug|sep|okt|nov|dez)/i,
+  abbreviated: /^(j[aä]n|feb|mär[z]?|apr|mai|jun[i]?|jul[i]?|aug|sep|okt|nov|dez)\.?/i,
   wide: /^(januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember)/i
 };
-var parseMonthPatterns = {
+var match_parseMonthPatterns = {
   narrow: [/^j/i, /^f/i, /^m/i, /^a/i, /^m/i, /^j/i, /^j/i, /^a/i, /^s/i, /^o/i, /^n/i, /^d/i],
-  any: [/^ja/i, /^f/i, /^mär/i, /^ap/i, /^mai/i, /^jun/i, /^jul/i, /^au/i, /^s/i, /^o/i, /^n/i, /^d/i]
+  any: [/^j[aä]/i, /^f/i, /^mär/i, /^ap/i, /^mai/i, /^jun/i, /^jul/i, /^au/i, /^s/i, /^o/i, /^n/i, /^d/i]
 };
-var matchDayPatterns = {
+var match_matchDayPatterns = {
   narrow: /^[smdmf]/i,
   short: /^(so|mo|di|mi|do|fr|sa)/i,
   abbreviated: /^(son?|mon?|die?|mit?|don?|fre?|sam?)\.?/i,
   wide: /^(sonntag|montag|dienstag|mittwoch|donnerstag|freitag|samstag)/i
 };
-var parseDayPatterns = {
+var match_parseDayPatterns = {
   any: [/^so/i, /^mo/i, /^di/i, /^mi/i, /^do/i, /^f/i, /^sa/i]
 };
-var matchDayPeriodPatterns = {
+var match_matchDayPeriodPatterns = {
   narrow: /^(vm\.?|nm\.?|Mitternacht|Mittag|morgens|nachm\.?|abends|nachts)/i,
   abbreviated: /^(vorm\.?|nachm\.?|Mitternacht|Mittag|morgens|nachm\.?|abends|nachts)/i,
   wide: /^(vormittags|nachmittags|Mitternacht|Mittag|morgens|nachmittags|abends|nachts)/i
 };
-var parseDayPeriodPatterns = {
+var match_parseDayPeriodPatterns = {
   any: {
     am: /^v/i,
     pm: /^n/i,
@@ -2052,50 +2073,51 @@ var parseDayPeriodPatterns = {
 
   }
 };
-var match = {
-  ordinalNumber: (0,buildMatchPatternFn.default)({
-    matchPattern: matchOrdinalNumberPattern,
-    parsePattern: parseOrdinalNumberPattern,
+var match_match = {
+  ordinalNumber: buildMatchPatternFn({
+    matchPattern: match_matchOrdinalNumberPattern,
+    parsePattern: match_parseOrdinalNumberPattern,
     valueCallback: function (value) {
-      return parseInt(value, 10);
+      return parseInt(value);
     }
   }),
-  era: (0,buildMatchFn.default)({
-    matchPatterns: matchEraPatterns,
+  era: buildMatchFn({
+    matchPatterns: match_matchEraPatterns,
     defaultMatchWidth: 'wide',
-    parsePatterns: parseEraPatterns,
+    parsePatterns: match_parseEraPatterns,
     defaultParseWidth: 'any'
   }),
-  quarter: (0,buildMatchFn.default)({
-    matchPatterns: matchQuarterPatterns,
+  quarter: buildMatchFn({
+    matchPatterns: match_matchQuarterPatterns,
     defaultMatchWidth: 'wide',
-    parsePatterns: parseQuarterPatterns,
+    parsePatterns: match_parseQuarterPatterns,
     defaultParseWidth: 'any',
     valueCallback: function (index) {
       return index + 1;
     }
   }),
-  month: (0,buildMatchFn.default)({
-    matchPatterns: matchMonthPatterns,
+  month: buildMatchFn({
+    matchPatterns: match_matchMonthPatterns,
     defaultMatchWidth: 'wide',
-    parsePatterns: parseMonthPatterns,
+    parsePatterns: match_parseMonthPatterns,
     defaultParseWidth: 'any'
   }),
-  day: (0,buildMatchFn.default)({
-    matchPatterns: matchDayPatterns,
+  day: buildMatchFn({
+    matchPatterns: match_matchDayPatterns,
     defaultMatchWidth: 'wide',
-    parsePatterns: parseDayPatterns,
+    parsePatterns: match_parseDayPatterns,
     defaultParseWidth: 'any'
   }),
-  dayPeriod: (0,buildMatchFn.default)({
-    matchPatterns: matchDayPeriodPatterns,
+  dayPeriod: buildMatchFn({
+    matchPatterns: match_matchDayPeriodPatterns,
     defaultMatchWidth: 'wide',
-    parsePatterns: parseDayPeriodPatterns,
+    parsePatterns: match_parseDayPeriodPatterns,
     defaultParseWidth: 'any'
   })
 };
-/* harmony default export */ const _lib_match = (match);
+/* harmony default export */ const de_lib_match = (match_match);
 ;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/index.js
+
 
 
 
@@ -2113,14 +2135,13 @@ var match = {
  * @author RomanErnst [@pex]{@link https://github.com/pex}
  * @author Philipp Keck [@Philipp91]{@link https://github.com/Philipp91}
  */
-
-var locale = {
+var de_locale = {
   code: 'de',
-  formatDistance: formatDistance_formatDistance,
-  formatLong: _lib_formatLong,
-  formatRelative: formatRelative,
-  localize: _lib_localize,
-  match: _lib_match,
+  formatDistance: de_lib_formatDistance,
+  formatLong: de_lib_formatLong,
+  formatRelative: de_lib_formatRelative,
+  localize: de_lib_localize,
+  match: de_lib_match,
   options: {
     weekStartsOn: 1
     /* Monday */
@@ -2128,7 +2149,7 @@ var locale = {
     firstWeekContainsDate: 4
   }
 };
-/* harmony default export */ const de = (locale);
+/* harmony default export */ const de = (de_locale);
 // EXTERNAL MODULE: ./src/matrix3/settings/userSettings.js
 var userSettings = __webpack_require__("./src/matrix3/settings/userSettings.js");
 // EXTERNAL MODULE: ./src/matrix3/settings/appSettings.ts
@@ -2158,14 +2179,14 @@ const MAX_HISTORY_LENGTH = 100;
 let container;
 function showHistory() {
     var _a, _b;
-    return userSettings.default.enableHistory && ((_b = (_a = window.Storage) === null || _a === void 0 ? void 0 : _a.prototype) === null || _b === void 0 ? void 0 : _b.setItem);
+    return userSettings["default"].enableHistory && ((_b = (_a = window.Storage) === null || _a === void 0 ? void 0 : _a.prototype) === null || _b === void 0 ? void 0 : _b.setItem);
 }
 function renderHistory() {
     var _a;
     if (!showHistory())
         return;
     subscribeSearchChanges();
-    if ((_a = userSettings.default.history) === null || _a === void 0 ? void 0 : _a.length) {
+    if ((_a = userSettings["default"].history) === null || _a === void 0 ? void 0 : _a.length) {
         container = renderHistoryContainer();
         (async function () {
             await redrawHistory("pins");
@@ -2186,13 +2207,13 @@ function subscribeSearchChanges() {
         if (key !== "savedSearch.0")
             return;
         const search = getSearchObject(value);
-        userSettings.default.history = [
+        userSettings["default"].history = [
             {
                 ts: new Date().toISOString(),
                 savedSearch: value,
                 url: getSearchUrl(search[1], value)
             },
-            ...userSettings.default.history.filter(h => {
+            ...userSettings["default"].history.filter(h => {
                 const hist = getSearchObject(h.savedSearch);
                 return JSON.stringify(hist) !== JSON.stringify(search);
             })
@@ -2243,15 +2264,15 @@ async function redrawHistory(setting) {
         container.appendChild(div);
     }
     div.innerHTML = null;
-    if (!userSettings.default[setting] || !userSettings.default[setting].length)
+    if (!userSettings["default"][setting] || !userSettings["default"][setting].length)
         return;
     div.appendChild(dom_chef.createElement("p", null, section.title));
     let lastDistance;
-    await userSettings.default[setting].reduce(async (last, h) => {
+    await userSettings["default"][setting].reduce(async (last, h) => {
         await last;
         if (section.showDistanceToNow) {
             const distance = formatDistanceToNow(new Date(h.ts), {
-                locale: userSettings.default.language === "de" ? de : en_US.default,
+                locale: userSettings["default"].language === "de" ? de : en_US,
                 addSuffix: true
             });
             const label = distance !== lastDistance ? dom_chef.createElement("div", null, distance) : null;
@@ -2295,9 +2316,9 @@ async function redrawHistory(setting) {
                     dom_chef.createElement("path", { d: "M335.188 351.188c-4.094 0-8.191-1.555-11.305-4.691L165.484 188.117a16 16 0 1 1 22.633-22.633l158.398 158.398a16 16 0 0 1 0 22.633c-3.133 3.117-7.23 4.672-11.328 4.672zm0 0" })))));
         function pin(search) {
             const searchObj = getSearchObject(search.savedSearch);
-            userSettings.default.pins = [
+            userSettings["default"].pins = [
                 search,
-                ...userSettings.default.pins.filter(h => {
+                ...userSettings["default"].pins.filter(h => {
                     const hist = getSearchObject(h.savedSearch);
                     return JSON.stringify(hist) !== JSON.stringify(searchObj);
                 })
@@ -2306,7 +2327,7 @@ async function redrawHistory(setting) {
             redrawHistory("pins");
         }
         function remove(e, search) {
-            userSettings.default[setting] = userSettings.default[setting].filter(h => {
+            userSettings["default"][setting] = userSettings["default"][setting].filter(h => {
                 const hist = getSearchObject(h.savedSearch);
                 return JSON.stringify(hist) !== JSON.stringify(search);
             });
@@ -2353,8 +2374,8 @@ function getSearchUrl(key, search) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "render": () => (/* binding */ render),
-/* harmony export */   "cleanUp": () => (/* binding */ cleanUp)
+/* harmony export */   "cleanUp": () => (/* binding */ cleanUp),
+/* harmony export */   "render": () => (/* binding */ render)
 /* harmony export */ });
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/itaSettings.ts");
@@ -2370,7 +2391,7 @@ function getSearchUrl(key, search) {
 
 function render() {
     // Editor mode?
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableEditormode == 1 &&
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableEditormode == 1 &&
         (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtargets)("editoritem").length === 0) {
         (0,_utils__WEBPACK_IMPORTED_MODULE_5__.toggleVis)(document.getElementById("mptStartparse"), "inline-block");
         addEditor();
@@ -2382,23 +2403,23 @@ function render() {
         (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.readItinerary)();
     }
     bindPageLayout();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableFarerules == 1)
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableFarerules == 1)
         bindRulelinks();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.timeformat == "24h")
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].timeformat == "24h")
         bind24HourTime();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language !== "en" &&
-        _settings_translations__WEBPACK_IMPORTED_MODULE_2__.default[_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language].resultpage !== undefined)
-        bindTranslations("resultpage", _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language, (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.itin, 1).nextElementSibling);
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enablePricebreakdown == 1)
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language !== "en" &&
+        _settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language].resultpage !== undefined)
+        bindTranslations("resultpage", _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language, (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.itin, 1).nextElementSibling);
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enablePricebreakdown == 1)
         bindPriceBreakdown();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableInlineMode == 1)
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableInlineMode == 1)
         printCPM();
     (0,_links__WEBPACK_IMPORTED_MODULE_4__.printLinksContainer)();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableSeatguru == 1)
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableSeatguru == 1)
         bindSeatguru();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enablePlanefinder == 1)
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enablePlanefinder == 1)
         bindPlanefinder();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableWheretocredit == 1)
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableWheretocredit == 1)
         bindWheretocredit();
 }
 function cleanUp() {
@@ -2463,8 +2484,8 @@ function removeEditor() {
     }
 }
 function bindPageLayout() {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.milagecontainer, 1).setAttribute("rowspan", "10");
-    const target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbContainer, 1)
+    (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.milagecontainer, 1).setAttribute("rowspan", "10");
+    const target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbContainer, 1)
         .parentElement.parentElement;
     target.setAttribute("valign", "top");
     target.setAttribute("height", "100%");
@@ -2473,7 +2494,7 @@ function bind24HourTime() {
     // lets do the time-replacement
     const segs = (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.getCurrentSegs)();
     if (segs.length > 0) {
-        const target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.itin, 1)
+        const target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.itin, 1)
             .nextElementSibling;
         for (let i = 0; i < segs.length; i++) {
             target.innerHTML = target.innerHTML.replace(new RegExp(segs[i].dep.timeDisplay, "g"), segs[i].dep.time24);
@@ -2485,7 +2506,7 @@ function bindRulelinks() {
     var i = 0;
     var j = 0;
     var t = 1;
-    let target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.rulescontainer, t);
+    let target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.rulescontainer, t);
     if (target != undefined) {
         do {
             var current = Number(target.firstElementChild.innerHTML.replace(/[^\d]/gi, ""));
@@ -2508,7 +2529,7 @@ function bindRulelinks() {
             target.parentElement.replaceChild(newlink, target);
             i++;
             t++;
-            target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.rulescontainer, t);
+            target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.rulescontainer, t);
         } while (target != undefined);
     }
 }
@@ -2521,8 +2542,8 @@ function bindPriceBreakdown() {
     // define searchpattern to detect carrier imposed surcharges
     var searchpatt = new RegExp("((YQ|YR))");
     var t = 1;
-    var target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbLeft, t);
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableInlineMode == 0) {
+    var target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft, t);
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableInlineMode == 0) {
         var output = "";
         var count = 0;
     }
@@ -2541,18 +2562,18 @@ function bindPriceBreakdown() {
                 //its a pricenode
                 var name = target.firstElementChild.innerHTML;
                 var price = Number(target.nextElementSibling.firstElementChild.innerHTML.replace(/[^\d\.]/gi, ""));
-                if ((0,_utils__WEBPACK_IMPORTED_MODULE_5__.hasClass)(target.nextElementSibling, _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbGreyBorder)) {
+                if ((0,_utils__WEBPACK_IMPORTED_MODULE_5__.hasClass)(target.nextElementSibling, _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbGreyBorder)) {
                     //we are done for this container
                     var sum = basefares + taxes + surcharges;
-                    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableInlineMode == 1) {
+                    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableInlineMode == 1) {
                         var newtr = document.createElement("tr");
                         newtr.innerHTML =
                             '<td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbLeft +
+                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft +
                                 '"><div class="gwt-Label">Basefare per passenger (' +
                                 ((basefares / sum) * 100).toFixed(2).toString() +
                                 '%)</div></td><td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbGreyBorder +
+                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbGreyBorder +
                                 '"><div class="gwt-Label">' +
                                 cur +
                                 basefares
@@ -2564,11 +2585,11 @@ function bindPriceBreakdown() {
                         var newtr = document.createElement("tr");
                         newtr.innerHTML =
                             '<td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbLeft +
+                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft +
                                 '"><div class="gwt-Label">Taxes per passenger (' +
                                 ((taxes / sum) * 100).toFixed(2).toString() +
                                 '%)</div></td><td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbRight +
+                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbRight +
                                 '"><div class="gwt-Label">' +
                                 cur +
                                 taxes
@@ -2580,11 +2601,11 @@ function bindPriceBreakdown() {
                         var newtr = document.createElement("tr");
                         newtr.innerHTML =
                             '<td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbLeft +
+                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft +
                                 '"><div class="gwt-Label">Surcharges per passenger (' +
                                 ((surcharges / sum) * 100).toFixed(2).toString() +
                                 '%)</div></td><td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbRight +
+                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbRight +
                                 '"><div class="gwt-Label">' +
                                 cur +
                                 surcharges
@@ -2596,11 +2617,11 @@ function bindPriceBreakdown() {
                         var newtr = document.createElement("tr");
                         newtr.innerHTML =
                             '<td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbLeft +
+                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft +
                                 '"><div class="gwt-Label">Basefare + Taxes per passenger (' +
                                 (((basefares + taxes) / sum) * 100).toFixed(2).toString() +
                                 '%)</div></td><td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbGreyBorder +
+                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbGreyBorder +
                                 '"><div class="gwt-Label">' +
                                 cur +
                                 (basefares + taxes)
@@ -2685,11 +2706,11 @@ function bindPriceBreakdown() {
                 }
             }
             t++;
-            target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbLeft, t);
+            target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft, t);
         } while (target != undefined);
     }
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableInlineMode == 0) {
-        var printtarget = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.htbContainer, 1)
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableInlineMode == 0) {
+        var printtarget = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbContainer, 1)
             .parentElement.parentElement.parentElement;
         var newtr = document.createElement("tr");
         newtr.setAttribute("class", "pricebreakdown");
@@ -2698,17 +2719,17 @@ function bindPriceBreakdown() {
     }
 }
 function bindTranslations(page, lang, target) {
-    if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__.default[lang] === undefined) {
+    if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][lang] === undefined) {
         (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Translation " + lang + " not found");
         return false;
     }
-    if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__.default[lang][page] === undefined) {
+    if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][lang][page] === undefined) {
         (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Translation " + lang + " not found for page " + page);
         return false;
     }
-    for (let i in _settings_translations__WEBPACK_IMPORTED_MODULE_2__.default[lang][page]) {
+    for (let i in _settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][lang][page]) {
         const re = new RegExp(i, "g");
-        target.innerHTML = target.innerHTML.replace(re, _settings_translations__WEBPACK_IMPORTED_MODULE_2__.default[lang][page][i]);
+        target.innerHTML = target.innerHTML.replace(re, _settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][lang][page][i]);
     }
 }
 function printCPM() {
@@ -2825,7 +2846,7 @@ function bindWheretocredit() {
     }
 }
 function findItinTarget(leg, seg, tcell) {
-    var target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.itin, 1);
+    var target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.itin, 1);
     if (!target) {
         (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Itin not found in findItinTarget-function");
         return;
@@ -2844,7 +2865,7 @@ function findItinTarget(leg, seg, tcell) {
         var j = 0;
         let i = 0;
         for (i = 0; i < targetSeg.length; i++) {
-            if ((0,_utils__WEBPACK_IMPORTED_MODULE_5__.hasClass)(targetSeg[i], _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.itinRow)) {
+            if ((0,_utils__WEBPACK_IMPORTED_MODULE_5__.hasClass)(targetSeg[i], _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.itinRow)) {
                 j++;
                 if (j >= seg) {
                     index = i;
@@ -2924,9 +2945,9 @@ function findItinTarget(leg, seg, tcell) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "registerLink": () => (/* binding */ registerLink),
+/* harmony export */   "getSidebarContainer": () => (/* binding */ getSidebarContainer),
 /* harmony export */   "printLinksContainer": () => (/* binding */ printLinksContainer),
-/* harmony export */   "getSidebarContainer": () => (/* binding */ getSidebarContainer)
+/* harmony export */   "registerLink": () => (/* binding */ registerLink)
 /* harmony export */ });
 /* unused harmony export printImage */
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
@@ -2982,14 +3003,14 @@ function printLinksContainer() {
             if (link.img) {
                 printImage(link);
             }
-            else if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableInlineMode == 1) {
+            else if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableInlineMode == 1) {
                 printUrlInline(link);
             }
             else {
                 printUrl(link);
             }
         });
-        _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableDeviders == 1 &&
+        _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableDeviders == 1 &&
             links[group].length &&
             i != groups.length - 1 &&
             printSeperator();
@@ -2998,7 +3019,7 @@ function printLinksContainer() {
     bindLinkClicks();
 }
 function bindLinkClicks() {
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableAffiliates == 1) {
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableAffiliates == 1) {
         skimlinks.parentNode && skimlinks.parentNode.removeChild(skimlinks);
         document.body.appendChild(skimlinks);
     }
@@ -3020,7 +3041,7 @@ function printImage(link) {
         (!link.url ? ' class="powertoolsitem"' : "") +
         "/>" +
         (link.url ? "</a>" : "");
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableIMGautoload == 1) {
+    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableIMGautoload == 1) {
         container && container.insertAdjacentHTML("beforeend", (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_3__.unsafeHTML)(item));
     }
     else {
@@ -3034,28 +3055,28 @@ function printImage(link) {
 }
 function getSidebarContainer() {
     return (document.getElementById("powertoolslinkcontainer") ||
-        (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableInlineMode == 1 || _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.matrixVersion == 5
+        (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableInlineMode == 1 || _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].matrixVersion == 5
             ? createUrlContainerInline()
             : createUrlContainer()));
 }
 function createUrlContainerInline() {
-    const target = (0,_utils__WEBPACK_IMPORTED_MODULE_4__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.mcDiv, 1);
+    const target = (0,_utils__WEBPACK_IMPORTED_MODULE_4__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.mcDiv, 1);
     if (!target)
         return;
-    if (_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.matrixVersion == 5) {
+    if (_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].matrixVersion == 5) {
         const matCard = document.createElement("mat-card");
         matCard.classList.add("mat-card", "mat-focus-indicator", "mat-elevation-z8", "powertoolslinkinlinecontainer");
-        matCard.innerHTML = (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_3__.unsafeHTML)(`<h2 class="${_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.mcHeader}">Powertools</h2><ul id="powertoolslinkcontainer" style="padding-left: 20px;"></ul>`);
+        matCard.innerHTML = (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_3__.unsafeHTML)(`<h2 class="${_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.mcHeader}">Powertools</h2><ul id="powertoolslinkcontainer" style="padding-left: 20px;"></ul>`);
         target.prepend(matCard);
     }
     else {
         const newdiv = document.createElement("div");
-        newdiv.classList.add(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.mcDiv);
+        newdiv.classList.add(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.mcDiv);
         newdiv.classList.add(`powertoolslinkinlinecontainer`);
         newdiv.innerHTML = (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_3__.unsafeHTML)('<div class="' +
-            _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.mcHeader +
+            _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.mcHeader +
             '">Powertools</div><ul id="powertoolslinkcontainer" class="' +
-            _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.mcLinkList +
+            _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.mcLinkList +
             '"></ul>');
         target.parentElement.appendChild(newdiv);
     }
@@ -3068,20 +3089,20 @@ function printUrl(link) {
     container && container.insertAdjacentHTML("beforeend", (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_3__.unsafeHTML)(item));
 }
 function printLink(link) {
-    let html = `<div><label style="font-size:${Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.linkFontsize)}%;">
-    <a href="${link.url}" target=${link.target || "_blank"}>${(_settings_translations__WEBPACK_IMPORTED_MODULE_2__.default[_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language] &&
-        _settings_translations__WEBPACK_IMPORTED_MODULE_2__.default[_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language]["use"]) ||
+    let html = `<div><label style="font-size:${Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].linkFontsize)}%;">
+    <a href="${link.url}" target=${link.target || "_blank"}>${(_settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language] &&
+        _settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language]["use"]) ||
         "Use "} ${link.title}</a>
   </label>`;
     if (link.extra)
         html += link.extra;
     if (link.desc)
-        html += `<br/><label style="font-size:${Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.linkFontsize) - 15}%">${link.desc}</label>`;
+        html += `<br/><label style="font-size:${Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].linkFontsize) - 15}%">${link.desc}</label>`;
     html += "</div";
     return html;
 }
 function createUrlContainer() {
-    const target = (0,_utils__WEBPACK_IMPORTED_MODULE_4__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.resultpage.milagecontainer, 1);
+    const target = (0,_utils__WEBPACK_IMPORTED_MODULE_4__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.milagecontainer, 1);
     if (!target)
         return;
     const newdiv = document.createElement("div");
@@ -3092,7 +3113,7 @@ function createUrlContainer() {
 function printSeperator() {
     const container = getSidebarContainer();
     container &&
-        container.insertAdjacentHTML("beforeend", (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_3__.unsafeHTML)(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableInlineMode
+        container.insertAdjacentHTML("beforeend", (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_3__.unsafeHTML)(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableInlineMode
             ? '<hr class="powertoolsitem"/>'
             : "<hr/>"));
 }
@@ -3131,8 +3152,8 @@ function createUsersettings(target) {
     settingscontainer.setAttribute("id", "mptSettingsContainer");
     settingscontainer.setAttribute("style", "border-bottom: 1px dashed grey;");
     settingscontainer.innerHTML = (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_6__.unsafeHTML)('<div style="display:inline-block;float:left;cursor:pointer;" id="passengerVisToggler">Passengers (<label id="mtpPaxCount">1a</label>)</div><div id="mptStartparse" class="invis" style="margin-left:20px;display:none;cursor:pointer">Editor-Mode:Parse!</div><div id="mtpNotification" style="margin-left:50px;display:inline-block;"></div><div style="display:inline-block;float:right;"><div id="settingsVisToggler" style="display:inline-block;cursor:pointer;">Settings</div> (v' +
-        _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.version +
-        (_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.matrixVersion == 5 ? " **Matrix 5 BETA**" : "") +
+        _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].version +
+        (_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].matrixVersion == 5 ? " **Matrix 5 BETA**" : "") +
         ') <div id="mptCabintoggler" style="display:inline-block;">(Cabin: <span id="mptcabin"><label style="width:30px;text-align:center;cursor:pointer;display:inline-block">Auto</label></span>)</div></div><div id="mptSettings" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div id="mptPassengers" class="invis" style="display:none;border-top: 1px dotted grey;"></div>');
     target.parentElement.insertBefore(settingscontainer, target);
     document.getElementById("settingsVisToggler").onclick = function () {
@@ -3406,67 +3427,67 @@ function restoreDefaultSettings() {
 function toggleSettings(target) {
     console.log("toggleSettings called. target=" + target);
     if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target] && _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values) {
-        const pos = findPositionForValue(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default[target], _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values);
+        const pos = findPositionForValue(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target], _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values);
         if (pos >= _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values.length - 1 || pos === -1) {
-            _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default[target] = _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values[0].value;
+            _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target] = _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values[0].value;
         }
         else {
-            _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default[target] =
+            _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target] =
                 _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values[pos + 1].value;
         }
     }
     else {
         switch (target) {
             case "timeformat":
-                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.timeformat == "12h") {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.timeformat = "24h";
+                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].timeformat == "12h") {
+                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].timeformat = "24h";
                 }
                 else {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.timeformat = "12h";
+                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].timeformat = "12h";
                 }
                 break;
             case "language":
-                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.language == "de") {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.language = "en";
+                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].language == "de") {
+                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].language = "en";
                 }
                 else {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.language = "de";
+                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].language = "de";
                 }
                 break;
             case "linkFontsize":
-                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.linkFontsize <= 190 &&
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.linkFontsize >= 50) {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.linkFontsize += 10;
+                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].linkFontsize <= 190 &&
+                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].linkFontsize >= 50) {
+                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].linkFontsize += 10;
                 }
                 else {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.linkFontsize = 50;
+                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].linkFontsize = 50;
                 }
                 break;
             case "cabin":
-                if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Auto") {
-                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin = "Y";
+                if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Auto") {
+                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin = "Y";
                 }
-                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Y") {
-                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin = "Y+";
+                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Y") {
+                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin = "Y+";
                 }
-                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Y+") {
-                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin = "C";
+                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Y+") {
+                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin = "C";
                 }
-                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "C") {
-                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin = "F";
+                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "C") {
+                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin = "F";
                 }
-                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "F") {
-                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin = "Auto";
+                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "F") {
+                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin = "Auto";
                 }
                 // refresh links
                 (0,_links__WEBPACK_IMPORTED_MODULE_5__.printLinksContainer)();
                 break;
             default:
-                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default[target] == 1) {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default[target] = 0;
+                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target] == 1) {
+                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target] = 0;
                 }
                 else {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default[target] = 1;
+                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target] = 1;
                 }
         }
     }
@@ -3475,23 +3496,23 @@ function toggleSettings(target) {
 }
 function processPassengers() {
     let e = document.getElementById("numAdults");
-    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.adults = Number(e.options[e.selectedIndex].value);
+    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].adults = Number(e.options[e.selectedIndex].value);
     e = document.getElementById("numInfantsLap");
-    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.infantsLap = Number(e.options[e.selectedIndex].value);
+    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsLap = Number(e.options[e.selectedIndex].value);
     e = document.getElementById("numInfantsSeat");
-    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.infantsSeat = Number(e.options[e.selectedIndex].value);
-    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.cAges = new Array();
+    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsSeat = Number(e.options[e.selectedIndex].value);
+    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].cAges = new Array();
     for (let i = 1; i <= 8; i++) {
         processChild("child" + i + "age");
     }
-    const paxText = _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.adults +
+    const paxText = _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].adults +
         "a" +
-        (_settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.cAges.length > 0
-            ? " " + _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.cAges.length + "c"
+        (_settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].cAges.length > 0
+            ? " " + _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].cAges.length + "c"
             : "") +
-        (_settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.infantsLap + _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.infantsSeat > 0
+        (_settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsLap + _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsSeat > 0
             ? " " +
-                (_settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.infantsLap + _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.infantsSeat) +
+                (_settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsLap + _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsSeat) +
                 "i"
             : "");
     document.getElementById("mtpPaxCount").innerHTML = (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_6__.unsafeHTML)(paxText);
@@ -3500,24 +3521,24 @@ function processChild(target) {
     const e = document.getElementById(target);
     const tmp = Number(e.options[e.selectedIndex].value);
     if (tmp >= 2) {
-        _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__.default.cAges.push(tmp);
+        _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].cAges.push(tmp);
     }
 }
 function printSettingsvalue(target) {
     if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target]) {
-        return findNameForValue(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default[target], _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values);
+        return findNameForValue(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target], _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values);
     }
     switch (target) {
         case "timeformat":
-            return _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.timeformat;
+            return _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].timeformat;
         case "language":
-            return _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.language;
+            return _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].language;
         case "linkFontsize":
-            return _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default.linkFontsize.toString();
+            return _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].linkFontsize.toString();
         case "cabin":
-            return _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin;
+            return _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin;
         default:
-            return boolToEnabled(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.default[target]);
+            return boolToEnabled(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target]);
     }
 }
 function findNameForValue(needle, haystack) {
@@ -3549,11 +3570,11 @@ function boolToEnabled(value) {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "reset": () => (/* binding */ reset),
-/* harmony export */   "getCabinFromITA": () => (/* binding */ getCabinFromITA),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "getCabin": () => (/* binding */ getCabin),
+/* harmony export */   "getCabinFromITA": () => (/* binding */ getCabinFromITA),
 /* harmony export */   "getForcedCabin": () => (/* binding */ getForcedCabin),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "reset": () => (/* binding */ reset)
 /* harmony export */ });
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
 /* harmony import */ var _print_settings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/print/settings.ts");
@@ -3565,7 +3586,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.2",
+    version: "0.55.3",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -3648,15 +3669,21 @@ function getForcedCabin() {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "findTargetSetVersion": () => (/* binding */ findTargetSetVersion),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
+/* harmony export */   "findTargetSetVersion": () => (/* binding */ findTargetSetVersion)
 /* harmony export */ });
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/utils.js");
 
 let _bookingDetails = undefined;
 (function _waitHijack() {
     setTimeout(() => {
-        const _window = unsafeWindow || window;
+        let _window;
+        try {
+            _window = unsafeWindow || window;
+        }
+        catch (_a) {
+            _window = window;
+        }
         for (const key of Object.keys(_window)) {
             if (typeof _window[key] !== "function")
                 continue;
@@ -3999,7 +4026,7 @@ var userSettings = __webpack_require__("./src/matrix3/settings/userSettings.js")
 
 function stateEnabled() {
     var _a, _b;
-    return (userSettings.default.enableMultiSearch &&
+    return (userSettings["default"].enableMultiSearch &&
         window.localStorage &&
         window.history && ((_b = (_a = window.XMLHttpRequest) === null || _a === void 0 ? void 0 : _a.prototype) === null || _b === void 0 ? void 0 : _b.open));
 }
@@ -4142,7 +4169,7 @@ function injectCss() {
     css += ".pt-hover-container:hover .pt-hover-menu { display:inline; }";
     css += ".pt-hover-container:hover .pt-hover-menu-flex { display:flex; }";
     css += ".pt-textlink a { text-decoration: none; color: black; }";
-    css += `.${_matrix3_settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__.default.resultpage.mcDiv}.powertoolslinkinlinecontainer { background-color: #f2f2f2; }`;
+    css += `.${_matrix3_settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__["default"].resultpage.mcDiv}.powertoolslinkinlinecontainer { background-color: #f2f2f2; }`;
     css +=
         ".pt-history-item:hover .pt-history-action { visibility: visible !important; }";
     style.appendChild(document.createTextNode((0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_3__.unsafeHTML)(css)));
@@ -4517,7 +4544,7 @@ var links = __webpack_require__("./src/matrix3/print/links.ts");
 
 const itin_currentItin = {};
 function itin_readItinerary() {
-    if (itaSettings.default.matrixVersion == 5) {
+    if (itaSettings["default"].matrixVersion == 5) {
         Object.assign(itin_currentItin, readItinerary5());
     }
     else {
@@ -4527,7 +4554,7 @@ function itin_readItinerary() {
     console.log("parsed itinerary: ", itin_currentItin);
 }
 function readItinerary5() {
-    const bookingDetails = itaSettings.default.resultpage.getBookingDetails();
+    const bookingDetails = itaSettings["default"].resultpage.getBookingDetails();
     return {
         itin: bookingDetails.itinerary.slices.map(itin => {
             const fareMap = bookingDetails.tickets
@@ -4582,7 +4609,7 @@ function waitForBookingDetails() {
         (function _wait() {
             setTimeout(async () => {
                 var _a;
-                const bookingDetails = await ((_a = itaSettings.default.resultpage) === null || _a === void 0 ? void 0 : _a.getBookingDetails());
+                const bookingDetails = await ((_a = itaSettings["default"].resultpage) === null || _a === void 0 ? void 0 : _a.getBookingDetails());
                 if (!!(bookingDetails === null || bookingDetails === void 0 ? void 0 : bookingDetails.itinerary) && (0,links.getSidebarContainer)())
                     resolve(undefined);
                 // TODO: clean up getSidebarContainer(), currently calling to ensure UI has loaded
@@ -4656,8 +4683,8 @@ function isMulticity() {
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "unsafeHTML": () => (/* binding */ unsafeHTML),
-/* harmony export */   "unsafeScriptURL": () => (/* binding */ unsafeScriptURL),
-/* harmony export */   "unsafeScript": () => (/* binding */ unsafeScript)
+/* harmony export */   "unsafeScript": () => (/* binding */ unsafeScript),
+/* harmony export */   "unsafeScriptURL": () => (/* binding */ unsafeScriptURL)
 /* harmony export */ });
 let unsafePolicy = null;
 if (window.trustedTypes && window.trustedTypes.createPolicy) {
@@ -4726,7 +4753,7 @@ const tokens = {
 let headObserver;
 
 function bindDarkmode() {
-  if (userSettings.default.enableDarkmode && window.MutationObserver) {
+  if (userSettings["default"].enableDarkmode && window.MutationObserver) {
     document.body.classList.add("dark-mode");
     if (!headObserver) {
       document.head.querySelectorAll("style").forEach(transformCss);
@@ -4755,7 +4782,7 @@ const transformCss = node => {
 
 // EXTERNAL MODULE: ./src/matrix3/state/index.ts + 1 modules
 var state = __webpack_require__("./src/matrix3/state/index.ts");
-// EXTERNAL MODULE: ./src/matrix3/print/history.tsx + 17 modules
+// EXTERNAL MODULE: ./src/matrix3/print/history.tsx + 33 modules
 var print_history = __webpack_require__("./src/matrix3/print/history.tsx");
 // EXTERNAL MODULE: ./src/unsafe-policy.ts
 var unsafe_policy = __webpack_require__("./src/unsafe-policy.ts");
@@ -4787,7 +4814,7 @@ var unsafe_policy = __webpack_require__("./src/unsafe-policy.ts");
   bindDarkmode();
 
   if (window.top === window.self) {
-    if (!appSettings.default.isUserscript || document.readyState == "complete") {
+    if (!appSettings["default"].isUserscript || document.readyState == "complete") {
       startScript();
     } else {
       window.addEventListener("load", () => startScript(), false);
@@ -4800,7 +4827,7 @@ function startScript() {
   window.addEventListener(
     "hashchange",
     () => {
-      if (window.location.hash !== appSettings.default.laststatus) {
+      if (window.location.hash !== appSettings["default"].laststatus) {
         pageChanged();
       }
     },
@@ -4814,7 +4841,7 @@ function pageChanged() {
   setTimeout(function() {
     getPage();
   }, 200);
-  appSettings.default.laststatus = window.location.hash;
+  appSettings["default"].laststatus = window.location.hash;
 }
 
 /********************************************* Get page ***********************************************/
@@ -4840,7 +4867,7 @@ function startPage() {
     (0,print_history.renderHistory)();
     fixSearchTab();
     // apply style-fix
-    const target = (0,utils.findtarget)(itaSettings.default.startpage.maindiv, 1);
+    const target = (0,utils.findtarget)(itaSettings["default"].startpage.maindiv, 1);
     target.children[0].children[0].children[0].children[0].setAttribute(
       "valign",
       "top"
@@ -4864,7 +4891,7 @@ function fixSearchTab() {
   if (!searchIndex) return;
 
   const tabBarItems = window.document.querySelectorAll(
-    `.${itaSettings.default.startpage.tabBarItem}`
+    `.${itaSettings["default"].startpage.tabBarItem}`
   );
   tabBarItems[searchIndex] &&
     tabBarItems[searchIndex].firstElementChild &&
@@ -4882,8 +4909,8 @@ function resultPage() {
   }
   // retry if itin not loaded
   if (itin.parentElement.previousElementSibling.style.display != "none") {
-    appSettings.default.retrycount++;
-    if (appSettings.default.retrycount > 50) {
+    appSettings["default"].retrycount++;
+    if (appSettings["default"].retrycount > 50) {
       (0,utils.printNotification)(
         "Error: Timeout on result page. Content not found after 10s."
       );
@@ -4895,11 +4922,11 @@ function resultPage() {
     return false;
   }
   // do some self-testing to prevent crashing on class-changes
-  for (let i in itaSettings.default.resultpage) {
-    if ((0,utils.findtarget)(itaSettings.default.resultpage[i], 1) === undefined) {
+  for (let i in itaSettings["default"].resultpage) {
+    if ((0,utils.findtarget)(itaSettings["default"].resultpage[i], 1) === undefined) {
       (0,utils.printNotification)(
         "Error: Unable to find class " +
-          itaSettings.default.resultpage[i] +
+          itaSettings["default"].resultpage[i] +
           " for " +
           i +
           "."
@@ -4921,7 +4948,7 @@ function injectCss() {
   css += `@media only screen and (max-width: ${984 +
     261 * 2}px) { body.show-history { padding-left: 261px; } }`; // max-width + history-width * 2 for centered content
   css += `body.dark-mode, body.dark-mode input[type='text'], body.dark-mode input[type='radio'], body.dark-mode textarea, body.dark-mode select, body.dark-mode button, body.dark-mode .powertoolsimage, body.dark-mode .pt-hover-menu, body.dark-mode .pt-hover-menu-flex { background-color: #121212; color: #f5f5f5; }`;
-  css += `body.dark-mode .${itaSettings.default.resultpage.mcDiv}.powertoolslinkinlinecontainer { background-color: #1f1f1f; }`;
+  css += `body.dark-mode .${itaSettings["default"].resultpage.mcDiv}.powertoolslinkinlinecontainer { background-color: #1f1f1f; }`;
   css +=
     "body.dark-mode img.logo, body.dark-mode img[src^='data'] { filter: hue-rotate(180deg) brightness(.93) invert(1); }";
   css += "body.dark-mode img[src^='http'] { opacity: 0.75 }";
@@ -4935,7 +4962,7 @@ function injectCss() {
   css += ".pt-hover-container:hover .pt-hover-menu { display:inline; }";
   css += ".pt-hover-container:hover .pt-hover-menu-flex { display:flex; }";
   css += ".pt-textlink a { text-decoration: none; color: black; }";
-  css += `.${itaSettings.default.resultpage.mcDiv}.powertoolslinkinlinecontainer { background-color: #f2f2f2; }`;
+  css += `.${itaSettings["default"].resultpage.mcDiv}.powertoolslinkinlinecontainer { background-color: #f2f2f2; }`;
   css +=
     ".powertoolsimage { width: 184px; height: 100px; background-color: white; border: 1px solid #808080; cursor: pointer; text-align: center; margin-top: 10px; padding-top: 84px; }";
   css +=
@@ -5096,7 +5123,7 @@ function printAA() {
   };
 
   // get edition
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.aaEdition.split("_");
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].aaEdition.split("_");
   if (edition.length != 2) {
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error:Invalid AA-Edition");
     return;
@@ -5154,1866 +5181,12 @@ var utils = __webpack_require__("./src/matrix3/utils.js");
 var links = __webpack_require__("./src/matrix3/links/index.js");
 // EXTERNAL MODULE: ./src/matrix5/parse/itin.ts + 1 modules
 var itin = __webpack_require__("./src/matrix5/parse/itin.ts");
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/_lib/cloneObject/index.js + 1 modules
-var cloneObject = __webpack_require__("./node_modules/date-fns/esm/_lib/cloneObject/index.js");
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/toDate/index.js
-var toDate = __webpack_require__("./node_modules/date-fns/esm/toDate/index.js");
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/_lib/requiredArgs/index.js
-var requiredArgs = __webpack_require__("./node_modules/date-fns/esm/_lib/requiredArgs/index.js");
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/isValid/index.js
-
-
-/**
- * @name isValid
- * @category Common Helpers
- * @summary Is the given date valid?
- *
- * @description
- * Returns false if argument is Invalid Date and true otherwise.
- * Argument is converted to Date using `toDate`. See [toDate]{@link https://date-fns.org/docs/toDate}
- * Invalid Date is a Date, whose time value is NaN.
- *
- * Time value of Date: http://es5.github.io/#x15.9.1.1
- *
- * ### v2.0.0 breaking changes:
- *
- * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
- *
- * - Now `isValid` doesn't throw an exception
- *   if the first argument is not an instance of Date.
- *   Instead, argument is converted beforehand using `toDate`.
- *
- *   Examples:
- *
- *   | `isValid` argument        | Before v2.0.0 | v2.0.0 onward |
- *   |---------------------------|---------------|---------------|
- *   | `new Date()`              | `true`        | `true`        |
- *   | `new Date('2016-01-01')`  | `true`        | `true`        |
- *   | `new Date('')`            | `false`       | `false`       |
- *   | `new Date(1488370835081)` | `true`        | `true`        |
- *   | `new Date(NaN)`           | `false`       | `false`       |
- *   | `'2016-01-01'`            | `TypeError`   | `false`       |
- *   | `''`                      | `TypeError`   | `false`       |
- *   | `1488370835081`           | `TypeError`   | `true`        |
- *   | `NaN`                     | `TypeError`   | `false`       |
- *
- *   We introduce this change to make *date-fns* consistent with ECMAScript behavior
- *   that try to coerce arguments to the expected type
- *   (which is also the case with other *date-fns* functions).
- *
- * @param {*} date - the date to check
- * @returns {Boolean} the date is valid
- * @throws {TypeError} 1 argument required
- *
- * @example
- * // For the valid date:
- * var result = isValid(new Date(2014, 1, 31))
- * //=> true
- *
- * @example
- * // For the value, convertable into a date:
- * var result = isValid(1393804800000)
- * //=> true
- *
- * @example
- * // For the invalid date:
- * var result = isValid(new Date(''))
- * //=> false
- */
-
-function isValid(dirtyDate) {
-  (0,requiredArgs.default)(1, arguments);
-  var date = (0,toDate.default)(dirtyDate);
-  return !isNaN(date);
-}
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/locale/en-US/index.js + 5 modules
-var en_US = __webpack_require__("./node_modules/date-fns/esm/locale/en-US/index.js");
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/toInteger/index.js
-function toInteger(dirtyNumber) {
-  if (dirtyNumber === null || dirtyNumber === true || dirtyNumber === false) {
-    return NaN;
-  }
-
-  var number = Number(dirtyNumber);
-
-  if (isNaN(number)) {
-    return number;
-  }
-
-  return number < 0 ? Math.ceil(number) : Math.floor(number);
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/addMilliseconds/index.js
-
-
-
-/**
- * @name addMilliseconds
- * @category Millisecond Helpers
- * @summary Add the specified number of milliseconds to the given date.
- *
- * @description
- * Add the specified number of milliseconds to the given date.
- *
- * ### v2.0.0 breaking changes:
- *
- * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
- *
- * @param {Date|Number} date - the date to be changed
- * @param {Number} amount - the amount of milliseconds to be added. Positive decimals will be rounded using `Math.floor`, decimals less than zero will be rounded using `Math.ceil`.
- * @returns {Date} the new date with the milliseconds added
- * @throws {TypeError} 2 arguments required
- *
- * @example
- * // Add 750 milliseconds to 10 July 2014 12:45:30.000:
- * const result = addMilliseconds(new Date(2014, 6, 10, 12, 45, 30, 0), 750)
- * //=> Thu Jul 10 2014 12:45:30.750
- */
-
-function addMilliseconds(dirtyDate, dirtyAmount) {
-  (0,requiredArgs.default)(2, arguments);
-  var timestamp = (0,toDate.default)(dirtyDate).getTime();
-  var amount = toInteger(dirtyAmount);
-  return new Date(timestamp + amount);
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/subMilliseconds/index.js
-
-
-
-/**
- * @name subMilliseconds
- * @category Millisecond Helpers
- * @summary Subtract the specified number of milliseconds from the given date.
- *
- * @description
- * Subtract the specified number of milliseconds from the given date.
- *
- * ### v2.0.0 breaking changes:
- *
- * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
- *
- * @param {Date|Number} date - the date to be changed
- * @param {Number} amount - the amount of milliseconds to be subtracted. Positive decimals will be rounded using `Math.floor`, decimals less than zero will be rounded using `Math.ceil`.
- * @returns {Date} the new date with the milliseconds subtracted
- * @throws {TypeError} 2 arguments required
- *
- * @example
- * // Subtract 750 milliseconds from 10 July 2014 12:45:30.000:
- * const result = subMilliseconds(new Date(2014, 6, 10, 12, 45, 30, 0), 750)
- * //=> Thu Jul 10 2014 12:45:29.250
- */
-
-function subMilliseconds(dirtyDate, dirtyAmount) {
-  (0,requiredArgs.default)(2, arguments);
-  var amount = toInteger(dirtyAmount);
-  return addMilliseconds(dirtyDate, -amount);
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/addLeadingZeros/index.js
-function addLeadingZeros(number, targetLength) {
-  var sign = number < 0 ? '-' : '';
-  var output = Math.abs(number).toString();
-
-  while (output.length < targetLength) {
-    output = '0' + output;
-  }
-
-  return sign + output;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/format/lightFormatters/index.js
-
-/*
- * |     | Unit                           |     | Unit                           |
- * |-----|--------------------------------|-----|--------------------------------|
- * |  a  | AM, PM                         |  A* |                                |
- * |  d  | Day of month                   |  D  |                                |
- * |  h  | Hour [1-12]                    |  H  | Hour [0-23]                    |
- * |  m  | Minute                         |  M  | Month                          |
- * |  s  | Second                         |  S  | Fraction of second             |
- * |  y  | Year (abs)                     |  Y  |                                |
- *
- * Letters marked by * are not implemented but reserved by Unicode standard.
- */
-
-var formatters = {
-  // Year
-  y: function (date, token) {
-    // From http://www.unicode.org/reports/tr35/tr35-31/tr35-dates.html#Date_Format_tokens
-    // | Year     |     y | yy |   yyy |  yyyy | yyyyy |
-    // |----------|-------|----|-------|-------|-------|
-    // | AD 1     |     1 | 01 |   001 |  0001 | 00001 |
-    // | AD 12    |    12 | 12 |   012 |  0012 | 00012 |
-    // | AD 123   |   123 | 23 |   123 |  0123 | 00123 |
-    // | AD 1234  |  1234 | 34 |  1234 |  1234 | 01234 |
-    // | AD 12345 | 12345 | 45 | 12345 | 12345 | 12345 |
-    var signedYear = date.getUTCFullYear(); // Returns 1 for 1 BC (which is year 0 in JavaScript)
-
-    var year = signedYear > 0 ? signedYear : 1 - signedYear;
-    return addLeadingZeros(token === 'yy' ? year % 100 : year, token.length);
-  },
-  // Month
-  M: function (date, token) {
-    var month = date.getUTCMonth();
-    return token === 'M' ? String(month + 1) : addLeadingZeros(month + 1, 2);
-  },
-  // Day of the month
-  d: function (date, token) {
-    return addLeadingZeros(date.getUTCDate(), token.length);
-  },
-  // AM or PM
-  a: function (date, token) {
-    var dayPeriodEnumValue = date.getUTCHours() / 12 >= 1 ? 'pm' : 'am';
-
-    switch (token) {
-      case 'a':
-      case 'aa':
-        return dayPeriodEnumValue.toUpperCase();
-
-      case 'aaa':
-        return dayPeriodEnumValue;
-
-      case 'aaaaa':
-        return dayPeriodEnumValue[0];
-
-      case 'aaaa':
-      default:
-        return dayPeriodEnumValue === 'am' ? 'a.m.' : 'p.m.';
-    }
-  },
-  // Hour [1-12]
-  h: function (date, token) {
-    return addLeadingZeros(date.getUTCHours() % 12 || 12, token.length);
-  },
-  // Hour [0-23]
-  H: function (date, token) {
-    return addLeadingZeros(date.getUTCHours(), token.length);
-  },
-  // Minute
-  m: function (date, token) {
-    return addLeadingZeros(date.getUTCMinutes(), token.length);
-  },
-  // Second
-  s: function (date, token) {
-    return addLeadingZeros(date.getUTCSeconds(), token.length);
-  },
-  // Fraction of second
-  S: function (date, token) {
-    var numberOfDigits = token.length;
-    var milliseconds = date.getUTCMilliseconds();
-    var fractionalSeconds = Math.floor(milliseconds * Math.pow(10, numberOfDigits - 3));
-    return addLeadingZeros(fractionalSeconds, token.length);
-  }
-};
-/* harmony default export */ const lightFormatters = (formatters);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/getUTCDayOfYear/index.js
-
-
-var MILLISECONDS_IN_DAY = 86400000; // This function will be a part of public API when UTC function will be implemented.
-// See issue: https://github.com/date-fns/date-fns/issues/376
-
-function getUTCDayOfYear(dirtyDate) {
-  (0,requiredArgs.default)(1, arguments);
-  var date = (0,toDate.default)(dirtyDate);
-  var timestamp = date.getTime();
-  date.setUTCMonth(0, 1);
-  date.setUTCHours(0, 0, 0, 0);
-  var startOfYearTimestamp = date.getTime();
-  var difference = timestamp - startOfYearTimestamp;
-  return Math.floor(difference / MILLISECONDS_IN_DAY) + 1;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/startOfUTCISOWeek/index.js
-
- // This function will be a part of public API when UTC function will be implemented.
-// See issue: https://github.com/date-fns/date-fns/issues/376
-
-function startOfUTCISOWeek(dirtyDate) {
-  (0,requiredArgs.default)(1, arguments);
-  var weekStartsOn = 1;
-  var date = (0,toDate.default)(dirtyDate);
-  var day = date.getUTCDay();
-  var diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn;
-  date.setUTCDate(date.getUTCDate() - diff);
-  date.setUTCHours(0, 0, 0, 0);
-  return date;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/getUTCISOWeekYear/index.js
-
-
- // This function will be a part of public API when UTC function will be implemented.
-// See issue: https://github.com/date-fns/date-fns/issues/376
-
-function getUTCISOWeekYear(dirtyDate) {
-  (0,requiredArgs.default)(1, arguments);
-  var date = (0,toDate.default)(dirtyDate);
-  var year = date.getUTCFullYear();
-  var fourthOfJanuaryOfNextYear = new Date(0);
-  fourthOfJanuaryOfNextYear.setUTCFullYear(year + 1, 0, 4);
-  fourthOfJanuaryOfNextYear.setUTCHours(0, 0, 0, 0);
-  var startOfNextYear = startOfUTCISOWeek(fourthOfJanuaryOfNextYear);
-  var fourthOfJanuaryOfThisYear = new Date(0);
-  fourthOfJanuaryOfThisYear.setUTCFullYear(year, 0, 4);
-  fourthOfJanuaryOfThisYear.setUTCHours(0, 0, 0, 0);
-  var startOfThisYear = startOfUTCISOWeek(fourthOfJanuaryOfThisYear);
-
-  if (date.getTime() >= startOfNextYear.getTime()) {
-    return year + 1;
-  } else if (date.getTime() >= startOfThisYear.getTime()) {
-    return year;
-  } else {
-    return year - 1;
-  }
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/startOfUTCISOWeekYear/index.js
-
-
- // This function will be a part of public API when UTC function will be implemented.
-// See issue: https://github.com/date-fns/date-fns/issues/376
-
-function startOfUTCISOWeekYear(dirtyDate) {
-  (0,requiredArgs.default)(1, arguments);
-  var year = getUTCISOWeekYear(dirtyDate);
-  var fourthOfJanuary = new Date(0);
-  fourthOfJanuary.setUTCFullYear(year, 0, 4);
-  fourthOfJanuary.setUTCHours(0, 0, 0, 0);
-  var date = startOfUTCISOWeek(fourthOfJanuary);
-  return date;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/getUTCISOWeek/index.js
-
-
-
-
-var MILLISECONDS_IN_WEEK = 604800000; // This function will be a part of public API when UTC function will be implemented.
-// See issue: https://github.com/date-fns/date-fns/issues/376
-
-function getUTCISOWeek(dirtyDate) {
-  (0,requiredArgs.default)(1, arguments);
-  var date = (0,toDate.default)(dirtyDate);
-  var diff = startOfUTCISOWeek(date).getTime() - startOfUTCISOWeekYear(date).getTime(); // Round the number of days to the nearest integer
-  // because the number of milliseconds in a week is not constant
-  // (e.g. it's different in the week of the daylight saving time clock shift)
-
-  return Math.round(diff / MILLISECONDS_IN_WEEK) + 1;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/startOfUTCWeek/index.js
-
-
- // This function will be a part of public API when UTC function will be implemented.
-// See issue: https://github.com/date-fns/date-fns/issues/376
-
-function startOfUTCWeek(dirtyDate, dirtyOptions) {
-  (0,requiredArgs.default)(1, arguments);
-  var options = dirtyOptions || {};
-  var locale = options.locale;
-  var localeWeekStartsOn = locale && locale.options && locale.options.weekStartsOn;
-  var defaultWeekStartsOn = localeWeekStartsOn == null ? 0 : toInteger(localeWeekStartsOn);
-  var weekStartsOn = options.weekStartsOn == null ? defaultWeekStartsOn : toInteger(options.weekStartsOn); // Test if weekStartsOn is between 0 and 6 _and_ is not NaN
-
-  if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) {
-    throw new RangeError('weekStartsOn must be between 0 and 6 inclusively');
-  }
-
-  var date = (0,toDate.default)(dirtyDate);
-  var day = date.getUTCDay();
-  var diff = (day < weekStartsOn ? 7 : 0) + day - weekStartsOn;
-  date.setUTCDate(date.getUTCDate() - diff);
-  date.setUTCHours(0, 0, 0, 0);
-  return date;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/getUTCWeekYear/index.js
-
-
-
- // This function will be a part of public API when UTC function will be implemented.
-// See issue: https://github.com/date-fns/date-fns/issues/376
-
-function getUTCWeekYear(dirtyDate, dirtyOptions) {
-  (0,requiredArgs.default)(1, arguments);
-  var date = (0,toDate.default)(dirtyDate, dirtyOptions);
-  var year = date.getUTCFullYear();
-  var options = dirtyOptions || {};
-  var locale = options.locale;
-  var localeFirstWeekContainsDate = locale && locale.options && locale.options.firstWeekContainsDate;
-  var defaultFirstWeekContainsDate = localeFirstWeekContainsDate == null ? 1 : toInteger(localeFirstWeekContainsDate);
-  var firstWeekContainsDate = options.firstWeekContainsDate == null ? defaultFirstWeekContainsDate : toInteger(options.firstWeekContainsDate); // Test if weekStartsOn is between 1 and 7 _and_ is not NaN
-
-  if (!(firstWeekContainsDate >= 1 && firstWeekContainsDate <= 7)) {
-    throw new RangeError('firstWeekContainsDate must be between 1 and 7 inclusively');
-  }
-
-  var firstWeekOfNextYear = new Date(0);
-  firstWeekOfNextYear.setUTCFullYear(year + 1, 0, firstWeekContainsDate);
-  firstWeekOfNextYear.setUTCHours(0, 0, 0, 0);
-  var startOfNextYear = startOfUTCWeek(firstWeekOfNextYear, dirtyOptions);
-  var firstWeekOfThisYear = new Date(0);
-  firstWeekOfThisYear.setUTCFullYear(year, 0, firstWeekContainsDate);
-  firstWeekOfThisYear.setUTCHours(0, 0, 0, 0);
-  var startOfThisYear = startOfUTCWeek(firstWeekOfThisYear, dirtyOptions);
-
-  if (date.getTime() >= startOfNextYear.getTime()) {
-    return year + 1;
-  } else if (date.getTime() >= startOfThisYear.getTime()) {
-    return year;
-  } else {
-    return year - 1;
-  }
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/startOfUTCWeekYear/index.js
-
-
-
- // This function will be a part of public API when UTC function will be implemented.
-// See issue: https://github.com/date-fns/date-fns/issues/376
-
-function startOfUTCWeekYear(dirtyDate, dirtyOptions) {
-  (0,requiredArgs.default)(1, arguments);
-  var options = dirtyOptions || {};
-  var locale = options.locale;
-  var localeFirstWeekContainsDate = locale && locale.options && locale.options.firstWeekContainsDate;
-  var defaultFirstWeekContainsDate = localeFirstWeekContainsDate == null ? 1 : toInteger(localeFirstWeekContainsDate);
-  var firstWeekContainsDate = options.firstWeekContainsDate == null ? defaultFirstWeekContainsDate : toInteger(options.firstWeekContainsDate);
-  var year = getUTCWeekYear(dirtyDate, dirtyOptions);
-  var firstWeek = new Date(0);
-  firstWeek.setUTCFullYear(year, 0, firstWeekContainsDate);
-  firstWeek.setUTCHours(0, 0, 0, 0);
-  var date = startOfUTCWeek(firstWeek, dirtyOptions);
-  return date;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/getUTCWeek/index.js
-
-
-
-
-var getUTCWeek_MILLISECONDS_IN_WEEK = 604800000; // This function will be a part of public API when UTC function will be implemented.
-// See issue: https://github.com/date-fns/date-fns/issues/376
-
-function getUTCWeek(dirtyDate, options) {
-  (0,requiredArgs.default)(1, arguments);
-  var date = (0,toDate.default)(dirtyDate);
-  var diff = startOfUTCWeek(date, options).getTime() - startOfUTCWeekYear(date, options).getTime(); // Round the number of days to the nearest integer
-  // because the number of milliseconds in a week is not constant
-  // (e.g. it's different in the week of the daylight saving time clock shift)
-
-  return Math.round(diff / getUTCWeek_MILLISECONDS_IN_WEEK) + 1;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/format/formatters/index.js
-
-
-
-
-
-
-
-var dayPeriodEnum = {
-  am: 'am',
-  pm: 'pm',
-  midnight: 'midnight',
-  noon: 'noon',
-  morning: 'morning',
-  afternoon: 'afternoon',
-  evening: 'evening',
-  night: 'night'
-  /*
-   * |     | Unit                           |     | Unit                           |
-   * |-----|--------------------------------|-----|--------------------------------|
-   * |  a  | AM, PM                         |  A* | Milliseconds in day            |
-   * |  b  | AM, PM, noon, midnight         |  B  | Flexible day period            |
-   * |  c  | Stand-alone local day of week  |  C* | Localized hour w/ day period   |
-   * |  d  | Day of month                   |  D  | Day of year                    |
-   * |  e  | Local day of week              |  E  | Day of week                    |
-   * |  f  |                                |  F* | Day of week in month           |
-   * |  g* | Modified Julian day            |  G  | Era                            |
-   * |  h  | Hour [1-12]                    |  H  | Hour [0-23]                    |
-   * |  i! | ISO day of week                |  I! | ISO week of year               |
-   * |  j* | Localized hour w/ day period   |  J* | Localized hour w/o day period  |
-   * |  k  | Hour [1-24]                    |  K  | Hour [0-11]                    |
-   * |  l* | (deprecated)                   |  L  | Stand-alone month              |
-   * |  m  | Minute                         |  M  | Month                          |
-   * |  n  |                                |  N  |                                |
-   * |  o! | Ordinal number modifier        |  O  | Timezone (GMT)                 |
-   * |  p! | Long localized time            |  P! | Long localized date            |
-   * |  q  | Stand-alone quarter            |  Q  | Quarter                        |
-   * |  r* | Related Gregorian year         |  R! | ISO week-numbering year        |
-   * |  s  | Second                         |  S  | Fraction of second             |
-   * |  t! | Seconds timestamp              |  T! | Milliseconds timestamp         |
-   * |  u  | Extended year                  |  U* | Cyclic year                    |
-   * |  v* | Timezone (generic non-locat.)  |  V* | Timezone (location)            |
-   * |  w  | Local week of year             |  W* | Week of month                  |
-   * |  x  | Timezone (ISO-8601 w/o Z)      |  X  | Timezone (ISO-8601)            |
-   * |  y  | Year (abs)                     |  Y  | Local week-numbering year      |
-   * |  z  | Timezone (specific non-locat.) |  Z* | Timezone (aliases)             |
-   *
-   * Letters marked by * are not implemented but reserved by Unicode standard.
-   *
-   * Letters marked by ! are non-standard, but implemented by date-fns:
-   * - `o` modifies the previous token to turn it into an ordinal (see `format` docs)
-   * - `i` is ISO day of week. For `i` and `ii` is returns numeric ISO week days,
-   *   i.e. 7 for Sunday, 1 for Monday, etc.
-   * - `I` is ISO week of year, as opposed to `w` which is local week of year.
-   * - `R` is ISO week-numbering year, as opposed to `Y` which is local week-numbering year.
-   *   `R` is supposed to be used in conjunction with `I` and `i`
-   *   for universal ISO week-numbering date, whereas
-   *   `Y` is supposed to be used in conjunction with `w` and `e`
-   *   for week-numbering date specific to the locale.
-   * - `P` is long localized date format
-   * - `p` is long localized time format
-   */
-
-};
-var formatters_formatters = {
-  // Era
-  G: function (date, token, localize) {
-    var era = date.getUTCFullYear() > 0 ? 1 : 0;
-
-    switch (token) {
-      // AD, BC
-      case 'G':
-      case 'GG':
-      case 'GGG':
-        return localize.era(era, {
-          width: 'abbreviated'
-        });
-      // A, B
-
-      case 'GGGGG':
-        return localize.era(era, {
-          width: 'narrow'
-        });
-      // Anno Domini, Before Christ
-
-      case 'GGGG':
-      default:
-        return localize.era(era, {
-          width: 'wide'
-        });
-    }
-  },
-  // Year
-  y: function (date, token, localize) {
-    // Ordinal number
-    if (token === 'yo') {
-      var signedYear = date.getUTCFullYear(); // Returns 1 for 1 BC (which is year 0 in JavaScript)
-
-      var year = signedYear > 0 ? signedYear : 1 - signedYear;
-      return localize.ordinalNumber(year, {
-        unit: 'year'
-      });
-    }
-
-    return lightFormatters.y(date, token);
-  },
-  // Local week-numbering year
-  Y: function (date, token, localize, options) {
-    var signedWeekYear = getUTCWeekYear(date, options); // Returns 1 for 1 BC (which is year 0 in JavaScript)
-
-    var weekYear = signedWeekYear > 0 ? signedWeekYear : 1 - signedWeekYear; // Two digit year
-
-    if (token === 'YY') {
-      var twoDigitYear = weekYear % 100;
-      return addLeadingZeros(twoDigitYear, 2);
-    } // Ordinal number
-
-
-    if (token === 'Yo') {
-      return localize.ordinalNumber(weekYear, {
-        unit: 'year'
-      });
-    } // Padding
-
-
-    return addLeadingZeros(weekYear, token.length);
-  },
-  // ISO week-numbering year
-  R: function (date, token) {
-    var isoWeekYear = getUTCISOWeekYear(date); // Padding
-
-    return addLeadingZeros(isoWeekYear, token.length);
-  },
-  // Extended year. This is a single number designating the year of this calendar system.
-  // The main difference between `y` and `u` localizers are B.C. years:
-  // | Year | `y` | `u` |
-  // |------|-----|-----|
-  // | AC 1 |   1 |   1 |
-  // | BC 1 |   1 |   0 |
-  // | BC 2 |   2 |  -1 |
-  // Also `yy` always returns the last two digits of a year,
-  // while `uu` pads single digit years to 2 characters and returns other years unchanged.
-  u: function (date, token) {
-    var year = date.getUTCFullYear();
-    return addLeadingZeros(year, token.length);
-  },
-  // Quarter
-  Q: function (date, token, localize) {
-    var quarter = Math.ceil((date.getUTCMonth() + 1) / 3);
-
-    switch (token) {
-      // 1, 2, 3, 4
-      case 'Q':
-        return String(quarter);
-      // 01, 02, 03, 04
-
-      case 'QQ':
-        return addLeadingZeros(quarter, 2);
-      // 1st, 2nd, 3rd, 4th
-
-      case 'Qo':
-        return localize.ordinalNumber(quarter, {
-          unit: 'quarter'
-        });
-      // Q1, Q2, Q3, Q4
-
-      case 'QQQ':
-        return localize.quarter(quarter, {
-          width: 'abbreviated',
-          context: 'formatting'
-        });
-      // 1, 2, 3, 4 (narrow quarter; could be not numerical)
-
-      case 'QQQQQ':
-        return localize.quarter(quarter, {
-          width: 'narrow',
-          context: 'formatting'
-        });
-      // 1st quarter, 2nd quarter, ...
-
-      case 'QQQQ':
-      default:
-        return localize.quarter(quarter, {
-          width: 'wide',
-          context: 'formatting'
-        });
-    }
-  },
-  // Stand-alone quarter
-  q: function (date, token, localize) {
-    var quarter = Math.ceil((date.getUTCMonth() + 1) / 3);
-
-    switch (token) {
-      // 1, 2, 3, 4
-      case 'q':
-        return String(quarter);
-      // 01, 02, 03, 04
-
-      case 'qq':
-        return addLeadingZeros(quarter, 2);
-      // 1st, 2nd, 3rd, 4th
-
-      case 'qo':
-        return localize.ordinalNumber(quarter, {
-          unit: 'quarter'
-        });
-      // Q1, Q2, Q3, Q4
-
-      case 'qqq':
-        return localize.quarter(quarter, {
-          width: 'abbreviated',
-          context: 'standalone'
-        });
-      // 1, 2, 3, 4 (narrow quarter; could be not numerical)
-
-      case 'qqqqq':
-        return localize.quarter(quarter, {
-          width: 'narrow',
-          context: 'standalone'
-        });
-      // 1st quarter, 2nd quarter, ...
-
-      case 'qqqq':
-      default:
-        return localize.quarter(quarter, {
-          width: 'wide',
-          context: 'standalone'
-        });
-    }
-  },
-  // Month
-  M: function (date, token, localize) {
-    var month = date.getUTCMonth();
-
-    switch (token) {
-      case 'M':
-      case 'MM':
-        return lightFormatters.M(date, token);
-      // 1st, 2nd, ..., 12th
-
-      case 'Mo':
-        return localize.ordinalNumber(month + 1, {
-          unit: 'month'
-        });
-      // Jan, Feb, ..., Dec
-
-      case 'MMM':
-        return localize.month(month, {
-          width: 'abbreviated',
-          context: 'formatting'
-        });
-      // J, F, ..., D
-
-      case 'MMMMM':
-        return localize.month(month, {
-          width: 'narrow',
-          context: 'formatting'
-        });
-      // January, February, ..., December
-
-      case 'MMMM':
-      default:
-        return localize.month(month, {
-          width: 'wide',
-          context: 'formatting'
-        });
-    }
-  },
-  // Stand-alone month
-  L: function (date, token, localize) {
-    var month = date.getUTCMonth();
-
-    switch (token) {
-      // 1, 2, ..., 12
-      case 'L':
-        return String(month + 1);
-      // 01, 02, ..., 12
-
-      case 'LL':
-        return addLeadingZeros(month + 1, 2);
-      // 1st, 2nd, ..., 12th
-
-      case 'Lo':
-        return localize.ordinalNumber(month + 1, {
-          unit: 'month'
-        });
-      // Jan, Feb, ..., Dec
-
-      case 'LLL':
-        return localize.month(month, {
-          width: 'abbreviated',
-          context: 'standalone'
-        });
-      // J, F, ..., D
-
-      case 'LLLLL':
-        return localize.month(month, {
-          width: 'narrow',
-          context: 'standalone'
-        });
-      // January, February, ..., December
-
-      case 'LLLL':
-      default:
-        return localize.month(month, {
-          width: 'wide',
-          context: 'standalone'
-        });
-    }
-  },
-  // Local week of year
-  w: function (date, token, localize, options) {
-    var week = getUTCWeek(date, options);
-
-    if (token === 'wo') {
-      return localize.ordinalNumber(week, {
-        unit: 'week'
-      });
-    }
-
-    return addLeadingZeros(week, token.length);
-  },
-  // ISO week of year
-  I: function (date, token, localize) {
-    var isoWeek = getUTCISOWeek(date);
-
-    if (token === 'Io') {
-      return localize.ordinalNumber(isoWeek, {
-        unit: 'week'
-      });
-    }
-
-    return addLeadingZeros(isoWeek, token.length);
-  },
-  // Day of the month
-  d: function (date, token, localize) {
-    if (token === 'do') {
-      return localize.ordinalNumber(date.getUTCDate(), {
-        unit: 'date'
-      });
-    }
-
-    return lightFormatters.d(date, token);
-  },
-  // Day of year
-  D: function (date, token, localize) {
-    var dayOfYear = getUTCDayOfYear(date);
-
-    if (token === 'Do') {
-      return localize.ordinalNumber(dayOfYear, {
-        unit: 'dayOfYear'
-      });
-    }
-
-    return addLeadingZeros(dayOfYear, token.length);
-  },
-  // Day of week
-  E: function (date, token, localize) {
-    var dayOfWeek = date.getUTCDay();
-
-    switch (token) {
-      // Tue
-      case 'E':
-      case 'EE':
-      case 'EEE':
-        return localize.day(dayOfWeek, {
-          width: 'abbreviated',
-          context: 'formatting'
-        });
-      // T
-
-      case 'EEEEE':
-        return localize.day(dayOfWeek, {
-          width: 'narrow',
-          context: 'formatting'
-        });
-      // Tu
-
-      case 'EEEEEE':
-        return localize.day(dayOfWeek, {
-          width: 'short',
-          context: 'formatting'
-        });
-      // Tuesday
-
-      case 'EEEE':
-      default:
-        return localize.day(dayOfWeek, {
-          width: 'wide',
-          context: 'formatting'
-        });
-    }
-  },
-  // Local day of week
-  e: function (date, token, localize, options) {
-    var dayOfWeek = date.getUTCDay();
-    var localDayOfWeek = (dayOfWeek - options.weekStartsOn + 8) % 7 || 7;
-
-    switch (token) {
-      // Numerical value (Nth day of week with current locale or weekStartsOn)
-      case 'e':
-        return String(localDayOfWeek);
-      // Padded numerical value
-
-      case 'ee':
-        return addLeadingZeros(localDayOfWeek, 2);
-      // 1st, 2nd, ..., 7th
-
-      case 'eo':
-        return localize.ordinalNumber(localDayOfWeek, {
-          unit: 'day'
-        });
-
-      case 'eee':
-        return localize.day(dayOfWeek, {
-          width: 'abbreviated',
-          context: 'formatting'
-        });
-      // T
-
-      case 'eeeee':
-        return localize.day(dayOfWeek, {
-          width: 'narrow',
-          context: 'formatting'
-        });
-      // Tu
-
-      case 'eeeeee':
-        return localize.day(dayOfWeek, {
-          width: 'short',
-          context: 'formatting'
-        });
-      // Tuesday
-
-      case 'eeee':
-      default:
-        return localize.day(dayOfWeek, {
-          width: 'wide',
-          context: 'formatting'
-        });
-    }
-  },
-  // Stand-alone local day of week
-  c: function (date, token, localize, options) {
-    var dayOfWeek = date.getUTCDay();
-    var localDayOfWeek = (dayOfWeek - options.weekStartsOn + 8) % 7 || 7;
-
-    switch (token) {
-      // Numerical value (same as in `e`)
-      case 'c':
-        return String(localDayOfWeek);
-      // Padded numerical value
-
-      case 'cc':
-        return addLeadingZeros(localDayOfWeek, token.length);
-      // 1st, 2nd, ..., 7th
-
-      case 'co':
-        return localize.ordinalNumber(localDayOfWeek, {
-          unit: 'day'
-        });
-
-      case 'ccc':
-        return localize.day(dayOfWeek, {
-          width: 'abbreviated',
-          context: 'standalone'
-        });
-      // T
-
-      case 'ccccc':
-        return localize.day(dayOfWeek, {
-          width: 'narrow',
-          context: 'standalone'
-        });
-      // Tu
-
-      case 'cccccc':
-        return localize.day(dayOfWeek, {
-          width: 'short',
-          context: 'standalone'
-        });
-      // Tuesday
-
-      case 'cccc':
-      default:
-        return localize.day(dayOfWeek, {
-          width: 'wide',
-          context: 'standalone'
-        });
-    }
-  },
-  // ISO day of week
-  i: function (date, token, localize) {
-    var dayOfWeek = date.getUTCDay();
-    var isoDayOfWeek = dayOfWeek === 0 ? 7 : dayOfWeek;
-
-    switch (token) {
-      // 2
-      case 'i':
-        return String(isoDayOfWeek);
-      // 02
-
-      case 'ii':
-        return addLeadingZeros(isoDayOfWeek, token.length);
-      // 2nd
-
-      case 'io':
-        return localize.ordinalNumber(isoDayOfWeek, {
-          unit: 'day'
-        });
-      // Tue
-
-      case 'iii':
-        return localize.day(dayOfWeek, {
-          width: 'abbreviated',
-          context: 'formatting'
-        });
-      // T
-
-      case 'iiiii':
-        return localize.day(dayOfWeek, {
-          width: 'narrow',
-          context: 'formatting'
-        });
-      // Tu
-
-      case 'iiiiii':
-        return localize.day(dayOfWeek, {
-          width: 'short',
-          context: 'formatting'
-        });
-      // Tuesday
-
-      case 'iiii':
-      default:
-        return localize.day(dayOfWeek, {
-          width: 'wide',
-          context: 'formatting'
-        });
-    }
-  },
-  // AM or PM
-  a: function (date, token, localize) {
-    var hours = date.getUTCHours();
-    var dayPeriodEnumValue = hours / 12 >= 1 ? 'pm' : 'am';
-
-    switch (token) {
-      case 'a':
-      case 'aa':
-        return localize.dayPeriod(dayPeriodEnumValue, {
-          width: 'abbreviated',
-          context: 'formatting'
-        });
-
-      case 'aaa':
-        return localize.dayPeriod(dayPeriodEnumValue, {
-          width: 'abbreviated',
-          context: 'formatting'
-        }).toLowerCase();
-
-      case 'aaaaa':
-        return localize.dayPeriod(dayPeriodEnumValue, {
-          width: 'narrow',
-          context: 'formatting'
-        });
-
-      case 'aaaa':
-      default:
-        return localize.dayPeriod(dayPeriodEnumValue, {
-          width: 'wide',
-          context: 'formatting'
-        });
-    }
-  },
-  // AM, PM, midnight, noon
-  b: function (date, token, localize) {
-    var hours = date.getUTCHours();
-    var dayPeriodEnumValue;
-
-    if (hours === 12) {
-      dayPeriodEnumValue = dayPeriodEnum.noon;
-    } else if (hours === 0) {
-      dayPeriodEnumValue = dayPeriodEnum.midnight;
-    } else {
-      dayPeriodEnumValue = hours / 12 >= 1 ? 'pm' : 'am';
-    }
-
-    switch (token) {
-      case 'b':
-      case 'bb':
-        return localize.dayPeriod(dayPeriodEnumValue, {
-          width: 'abbreviated',
-          context: 'formatting'
-        });
-
-      case 'bbb':
-        return localize.dayPeriod(dayPeriodEnumValue, {
-          width: 'abbreviated',
-          context: 'formatting'
-        }).toLowerCase();
-
-      case 'bbbbb':
-        return localize.dayPeriod(dayPeriodEnumValue, {
-          width: 'narrow',
-          context: 'formatting'
-        });
-
-      case 'bbbb':
-      default:
-        return localize.dayPeriod(dayPeriodEnumValue, {
-          width: 'wide',
-          context: 'formatting'
-        });
-    }
-  },
-  // in the morning, in the afternoon, in the evening, at night
-  B: function (date, token, localize) {
-    var hours = date.getUTCHours();
-    var dayPeriodEnumValue;
-
-    if (hours >= 17) {
-      dayPeriodEnumValue = dayPeriodEnum.evening;
-    } else if (hours >= 12) {
-      dayPeriodEnumValue = dayPeriodEnum.afternoon;
-    } else if (hours >= 4) {
-      dayPeriodEnumValue = dayPeriodEnum.morning;
-    } else {
-      dayPeriodEnumValue = dayPeriodEnum.night;
-    }
-
-    switch (token) {
-      case 'B':
-      case 'BB':
-      case 'BBB':
-        return localize.dayPeriod(dayPeriodEnumValue, {
-          width: 'abbreviated',
-          context: 'formatting'
-        });
-
-      case 'BBBBB':
-        return localize.dayPeriod(dayPeriodEnumValue, {
-          width: 'narrow',
-          context: 'formatting'
-        });
-
-      case 'BBBB':
-      default:
-        return localize.dayPeriod(dayPeriodEnumValue, {
-          width: 'wide',
-          context: 'formatting'
-        });
-    }
-  },
-  // Hour [1-12]
-  h: function (date, token, localize) {
-    if (token === 'ho') {
-      var hours = date.getUTCHours() % 12;
-      if (hours === 0) hours = 12;
-      return localize.ordinalNumber(hours, {
-        unit: 'hour'
-      });
-    }
-
-    return lightFormatters.h(date, token);
-  },
-  // Hour [0-23]
-  H: function (date, token, localize) {
-    if (token === 'Ho') {
-      return localize.ordinalNumber(date.getUTCHours(), {
-        unit: 'hour'
-      });
-    }
-
-    return lightFormatters.H(date, token);
-  },
-  // Hour [0-11]
-  K: function (date, token, localize) {
-    var hours = date.getUTCHours() % 12;
-
-    if (token === 'Ko') {
-      return localize.ordinalNumber(hours, {
-        unit: 'hour'
-      });
-    }
-
-    return addLeadingZeros(hours, token.length);
-  },
-  // Hour [1-24]
-  k: function (date, token, localize) {
-    var hours = date.getUTCHours();
-    if (hours === 0) hours = 24;
-
-    if (token === 'ko') {
-      return localize.ordinalNumber(hours, {
-        unit: 'hour'
-      });
-    }
-
-    return addLeadingZeros(hours, token.length);
-  },
-  // Minute
-  m: function (date, token, localize) {
-    if (token === 'mo') {
-      return localize.ordinalNumber(date.getUTCMinutes(), {
-        unit: 'minute'
-      });
-    }
-
-    return lightFormatters.m(date, token);
-  },
-  // Second
-  s: function (date, token, localize) {
-    if (token === 'so') {
-      return localize.ordinalNumber(date.getUTCSeconds(), {
-        unit: 'second'
-      });
-    }
-
-    return lightFormatters.s(date, token);
-  },
-  // Fraction of second
-  S: function (date, token) {
-    return lightFormatters.S(date, token);
-  },
-  // Timezone (ISO-8601. If offset is 0, output is always `'Z'`)
-  X: function (date, token, _localize, options) {
-    var originalDate = options._originalDate || date;
-    var timezoneOffset = originalDate.getTimezoneOffset();
-
-    if (timezoneOffset === 0) {
-      return 'Z';
-    }
-
-    switch (token) {
-      // Hours and optional minutes
-      case 'X':
-        return formatTimezoneWithOptionalMinutes(timezoneOffset);
-      // Hours, minutes and optional seconds without `:` delimiter
-      // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
-      // so this token always has the same output as `XX`
-
-      case 'XXXX':
-      case 'XX':
-        // Hours and minutes without `:` delimiter
-        return formatTimezone(timezoneOffset);
-      // Hours, minutes and optional seconds with `:` delimiter
-      // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
-      // so this token always has the same output as `XXX`
-
-      case 'XXXXX':
-      case 'XXX': // Hours and minutes with `:` delimiter
-
-      default:
-        return formatTimezone(timezoneOffset, ':');
-    }
-  },
-  // Timezone (ISO-8601. If offset is 0, output is `'+00:00'` or equivalent)
-  x: function (date, token, _localize, options) {
-    var originalDate = options._originalDate || date;
-    var timezoneOffset = originalDate.getTimezoneOffset();
-
-    switch (token) {
-      // Hours and optional minutes
-      case 'x':
-        return formatTimezoneWithOptionalMinutes(timezoneOffset);
-      // Hours, minutes and optional seconds without `:` delimiter
-      // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
-      // so this token always has the same output as `xx`
-
-      case 'xxxx':
-      case 'xx':
-        // Hours and minutes without `:` delimiter
-        return formatTimezone(timezoneOffset);
-      // Hours, minutes and optional seconds with `:` delimiter
-      // Note: neither ISO-8601 nor JavaScript supports seconds in timezone offsets
-      // so this token always has the same output as `xxx`
-
-      case 'xxxxx':
-      case 'xxx': // Hours and minutes with `:` delimiter
-
-      default:
-        return formatTimezone(timezoneOffset, ':');
-    }
-  },
-  // Timezone (GMT)
-  O: function (date, token, _localize, options) {
-    var originalDate = options._originalDate || date;
-    var timezoneOffset = originalDate.getTimezoneOffset();
-
-    switch (token) {
-      // Short
-      case 'O':
-      case 'OO':
-      case 'OOO':
-        return 'GMT' + formatTimezoneShort(timezoneOffset, ':');
-      // Long
-
-      case 'OOOO':
-      default:
-        return 'GMT' + formatTimezone(timezoneOffset, ':');
-    }
-  },
-  // Timezone (specific non-location)
-  z: function (date, token, _localize, options) {
-    var originalDate = options._originalDate || date;
-    var timezoneOffset = originalDate.getTimezoneOffset();
-
-    switch (token) {
-      // Short
-      case 'z':
-      case 'zz':
-      case 'zzz':
-        return 'GMT' + formatTimezoneShort(timezoneOffset, ':');
-      // Long
-
-      case 'zzzz':
-      default:
-        return 'GMT' + formatTimezone(timezoneOffset, ':');
-    }
-  },
-  // Seconds timestamp
-  t: function (date, token, _localize, options) {
-    var originalDate = options._originalDate || date;
-    var timestamp = Math.floor(originalDate.getTime() / 1000);
-    return addLeadingZeros(timestamp, token.length);
-  },
-  // Milliseconds timestamp
-  T: function (date, token, _localize, options) {
-    var originalDate = options._originalDate || date;
-    var timestamp = originalDate.getTime();
-    return addLeadingZeros(timestamp, token.length);
-  }
-};
-
-function formatTimezoneShort(offset, dirtyDelimiter) {
-  var sign = offset > 0 ? '-' : '+';
-  var absOffset = Math.abs(offset);
-  var hours = Math.floor(absOffset / 60);
-  var minutes = absOffset % 60;
-
-  if (minutes === 0) {
-    return sign + String(hours);
-  }
-
-  var delimiter = dirtyDelimiter || '';
-  return sign + String(hours) + delimiter + addLeadingZeros(minutes, 2);
-}
-
-function formatTimezoneWithOptionalMinutes(offset, dirtyDelimiter) {
-  if (offset % 60 === 0) {
-    var sign = offset > 0 ? '-' : '+';
-    return sign + addLeadingZeros(Math.abs(offset) / 60, 2);
-  }
-
-  return formatTimezone(offset, dirtyDelimiter);
-}
-
-function formatTimezone(offset, dirtyDelimiter) {
-  var delimiter = dirtyDelimiter || '';
-  var sign = offset > 0 ? '-' : '+';
-  var absOffset = Math.abs(offset);
-  var hours = addLeadingZeros(Math.floor(absOffset / 60), 2);
-  var minutes = addLeadingZeros(absOffset % 60, 2);
-  return sign + hours + delimiter + minutes;
-}
-
-/* harmony default export */ const format_formatters = (formatters_formatters);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/format/longFormatters/index.js
-function dateLongFormatter(pattern, formatLong) {
-  switch (pattern) {
-    case 'P':
-      return formatLong.date({
-        width: 'short'
-      });
-
-    case 'PP':
-      return formatLong.date({
-        width: 'medium'
-      });
-
-    case 'PPP':
-      return formatLong.date({
-        width: 'long'
-      });
-
-    case 'PPPP':
-    default:
-      return formatLong.date({
-        width: 'full'
-      });
-  }
-}
-
-function timeLongFormatter(pattern, formatLong) {
-  switch (pattern) {
-    case 'p':
-      return formatLong.time({
-        width: 'short'
-      });
-
-    case 'pp':
-      return formatLong.time({
-        width: 'medium'
-      });
-
-    case 'ppp':
-      return formatLong.time({
-        width: 'long'
-      });
-
-    case 'pppp':
-    default:
-      return formatLong.time({
-        width: 'full'
-      });
-  }
-}
-
-function dateTimeLongFormatter(pattern, formatLong) {
-  var matchResult = pattern.match(/(P+)(p+)?/);
-  var datePattern = matchResult[1];
-  var timePattern = matchResult[2];
-
-  if (!timePattern) {
-    return dateLongFormatter(pattern, formatLong);
-  }
-
-  var dateTimeFormat;
-
-  switch (datePattern) {
-    case 'P':
-      dateTimeFormat = formatLong.dateTime({
-        width: 'short'
-      });
-      break;
-
-    case 'PP':
-      dateTimeFormat = formatLong.dateTime({
-        width: 'medium'
-      });
-      break;
-
-    case 'PPP':
-      dateTimeFormat = formatLong.dateTime({
-        width: 'long'
-      });
-      break;
-
-    case 'PPPP':
-    default:
-      dateTimeFormat = formatLong.dateTime({
-        width: 'full'
-      });
-      break;
-  }
-
-  return dateTimeFormat.replace('{{date}}', dateLongFormatter(datePattern, formatLong)).replace('{{time}}', timeLongFormatter(timePattern, formatLong));
-}
-
-var longFormatters = {
-  p: timeLongFormatter,
-  P: dateTimeLongFormatter
-};
-/* harmony default export */ const format_longFormatters = (longFormatters);
-// EXTERNAL MODULE: ./node_modules/date-fns/esm/_lib/getTimezoneOffsetInMilliseconds/index.js
-var getTimezoneOffsetInMilliseconds = __webpack_require__("./node_modules/date-fns/esm/_lib/getTimezoneOffsetInMilliseconds/index.js");
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/protectedTokens/index.js
-var protectedDayOfYearTokens = ['D', 'DD'];
-var protectedWeekYearTokens = ['YY', 'YYYY'];
-function isProtectedDayOfYearToken(token) {
-  return protectedDayOfYearTokens.indexOf(token) !== -1;
-}
-function isProtectedWeekYearToken(token) {
-  return protectedWeekYearTokens.indexOf(token) !== -1;
-}
-function throwProtectedError(token, format, input) {
-  if (token === 'YYYY') {
-    throw new RangeError("Use `yyyy` instead of `YYYY` (in `".concat(format, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
-  } else if (token === 'YY') {
-    throw new RangeError("Use `yy` instead of `YY` (in `".concat(format, "`) for formatting years to the input `").concat(input, "`; see: https://git.io/fxCyr"));
-  } else if (token === 'D') {
-    throw new RangeError("Use `d` instead of `D` (in `".concat(format, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
-  } else if (token === 'DD') {
-    throw new RangeError("Use `dd` instead of `DD` (in `".concat(format, "`) for formatting days of the month to the input `").concat(input, "`; see: https://git.io/fxCyr"));
-  }
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/format/index.js
-
-
-
-
-
-
-
-
-
- // This RegExp consists of three parts separated by `|`:
-// - [yYQqMLwIdDecihHKkms]o matches any available ordinal number token
-//   (one of the certain letters followed by `o`)
-// - (\w)\1* matches any sequences of the same letter
-// - '' matches two quote characters in a row
-// - '(''|[^'])+('|$) matches anything surrounded by two quote characters ('),
-//   except a single quote symbol, which ends the sequence.
-//   Two quote characters do not end the sequence.
-//   If there is no matching single quote
-//   then the sequence will continue until the end of the string.
-// - . matches any single character unmatched by previous parts of the RegExps
-
-var formattingTokensRegExp = /[yYQqMLwIdDecihHKkms]o|(\w)\1*|''|'(''|[^'])+('|$)|./g; // This RegExp catches symbols escaped by quotes, and also
-// sequences of symbols P, p, and the combinations like `PPPPPPPppppp`
-
-var longFormattingTokensRegExp = /P+p+|P+|p+|''|'(''|[^'])+('|$)|./g;
-var escapedStringRegExp = /^'([^]*?)'?$/;
-var doubleQuoteRegExp = /''/g;
-var unescapedLatinCharacterRegExp = /[a-zA-Z]/;
-/**
- * @name format
- * @category Common Helpers
- * @summary Format the date.
- *
- * @description
- * Return the formatted date string in the given format. The result may vary by locale.
- *
- * > ⚠️ Please note that the `format` tokens differ from Moment.js and other libraries.
- * > See: https://git.io/fxCyr
- *
- * The characters wrapped between two single quotes characters (') are escaped.
- * Two single quotes in a row, whether inside or outside a quoted sequence, represent a 'real' single quote.
- * (see the last example)
- *
- * Format of the string is based on Unicode Technical Standard #35:
- * https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table
- * with a few additions (see note 7 below the table).
- *
- * Accepted patterns:
- * | Unit                            | Pattern | Result examples                   | Notes |
- * |---------------------------------|---------|-----------------------------------|-------|
- * | Era                             | G..GGG  | AD, BC                            |       |
- * |                                 | GGGG    | Anno Domini, Before Christ        | 2     |
- * |                                 | GGGGG   | A, B                              |       |
- * | Calendar year                   | y       | 44, 1, 1900, 2017                 | 5     |
- * |                                 | yo      | 44th, 1st, 0th, 17th              | 5,7   |
- * |                                 | yy      | 44, 01, 00, 17                    | 5     |
- * |                                 | yyy     | 044, 001, 1900, 2017              | 5     |
- * |                                 | yyyy    | 0044, 0001, 1900, 2017            | 5     |
- * |                                 | yyyyy   | ...                               | 3,5   |
- * | Local week-numbering year       | Y       | 44, 1, 1900, 2017                 | 5     |
- * |                                 | Yo      | 44th, 1st, 1900th, 2017th         | 5,7   |
- * |                                 | YY      | 44, 01, 00, 17                    | 5,8   |
- * |                                 | YYY     | 044, 001, 1900, 2017              | 5     |
- * |                                 | YYYY    | 0044, 0001, 1900, 2017            | 5,8   |
- * |                                 | YYYYY   | ...                               | 3,5   |
- * | ISO week-numbering year         | R       | -43, 0, 1, 1900, 2017             | 5,7   |
- * |                                 | RR      | -43, 00, 01, 1900, 2017           | 5,7   |
- * |                                 | RRR     | -043, 000, 001, 1900, 2017        | 5,7   |
- * |                                 | RRRR    | -0043, 0000, 0001, 1900, 2017     | 5,7   |
- * |                                 | RRRRR   | ...                               | 3,5,7 |
- * | Extended year                   | u       | -43, 0, 1, 1900, 2017             | 5     |
- * |                                 | uu      | -43, 01, 1900, 2017               | 5     |
- * |                                 | uuu     | -043, 001, 1900, 2017             | 5     |
- * |                                 | uuuu    | -0043, 0001, 1900, 2017           | 5     |
- * |                                 | uuuuu   | ...                               | 3,5   |
- * | Quarter (formatting)            | Q       | 1, 2, 3, 4                        |       |
- * |                                 | Qo      | 1st, 2nd, 3rd, 4th                | 7     |
- * |                                 | QQ      | 01, 02, 03, 04                    |       |
- * |                                 | QQQ     | Q1, Q2, Q3, Q4                    |       |
- * |                                 | QQQQ    | 1st quarter, 2nd quarter, ...     | 2     |
- * |                                 | QQQQQ   | 1, 2, 3, 4                        | 4     |
- * | Quarter (stand-alone)           | q       | 1, 2, 3, 4                        |       |
- * |                                 | qo      | 1st, 2nd, 3rd, 4th                | 7     |
- * |                                 | qq      | 01, 02, 03, 04                    |       |
- * |                                 | qqq     | Q1, Q2, Q3, Q4                    |       |
- * |                                 | qqqq    | 1st quarter, 2nd quarter, ...     | 2     |
- * |                                 | qqqqq   | 1, 2, 3, 4                        | 4     |
- * | Month (formatting)              | M       | 1, 2, ..., 12                     |       |
- * |                                 | Mo      | 1st, 2nd, ..., 12th               | 7     |
- * |                                 | MM      | 01, 02, ..., 12                   |       |
- * |                                 | MMM     | Jan, Feb, ..., Dec                |       |
- * |                                 | MMMM    | January, February, ..., December  | 2     |
- * |                                 | MMMMM   | J, F, ..., D                      |       |
- * | Month (stand-alone)             | L       | 1, 2, ..., 12                     |       |
- * |                                 | Lo      | 1st, 2nd, ..., 12th               | 7     |
- * |                                 | LL      | 01, 02, ..., 12                   |       |
- * |                                 | LLL     | Jan, Feb, ..., Dec                |       |
- * |                                 | LLLL    | January, February, ..., December  | 2     |
- * |                                 | LLLLL   | J, F, ..., D                      |       |
- * | Local week of year              | w       | 1, 2, ..., 53                     |       |
- * |                                 | wo      | 1st, 2nd, ..., 53th               | 7     |
- * |                                 | ww      | 01, 02, ..., 53                   |       |
- * | ISO week of year                | I       | 1, 2, ..., 53                     | 7     |
- * |                                 | Io      | 1st, 2nd, ..., 53th               | 7     |
- * |                                 | II      | 01, 02, ..., 53                   | 7     |
- * | Day of month                    | d       | 1, 2, ..., 31                     |       |
- * |                                 | do      | 1st, 2nd, ..., 31st               | 7     |
- * |                                 | dd      | 01, 02, ..., 31                   |       |
- * | Day of year                     | D       | 1, 2, ..., 365, 366               | 9     |
- * |                                 | Do      | 1st, 2nd, ..., 365th, 366th       | 7     |
- * |                                 | DD      | 01, 02, ..., 365, 366             | 9     |
- * |                                 | DDD     | 001, 002, ..., 365, 366           |       |
- * |                                 | DDDD    | ...                               | 3     |
- * | Day of week (formatting)        | E..EEE  | Mon, Tue, Wed, ..., Sun           |       |
- * |                                 | EEEE    | Monday, Tuesday, ..., Sunday      | 2     |
- * |                                 | EEEEE   | M, T, W, T, F, S, S               |       |
- * |                                 | EEEEEE  | Mo, Tu, We, Th, Fr, Su, Sa        |       |
- * | ISO day of week (formatting)    | i       | 1, 2, 3, ..., 7                   | 7     |
- * |                                 | io      | 1st, 2nd, ..., 7th                | 7     |
- * |                                 | ii      | 01, 02, ..., 07                   | 7     |
- * |                                 | iii     | Mon, Tue, Wed, ..., Sun           | 7     |
- * |                                 | iiii    | Monday, Tuesday, ..., Sunday      | 2,7   |
- * |                                 | iiiii   | M, T, W, T, F, S, S               | 7     |
- * |                                 | iiiiii  | Mo, Tu, We, Th, Fr, Su, Sa        | 7     |
- * | Local day of week (formatting)  | e       | 2, 3, 4, ..., 1                   |       |
- * |                                 | eo      | 2nd, 3rd, ..., 1st                | 7     |
- * |                                 | ee      | 02, 03, ..., 01                   |       |
- * |                                 | eee     | Mon, Tue, Wed, ..., Sun           |       |
- * |                                 | eeee    | Monday, Tuesday, ..., Sunday      | 2     |
- * |                                 | eeeee   | M, T, W, T, F, S, S               |       |
- * |                                 | eeeeee  | Mo, Tu, We, Th, Fr, Su, Sa        |       |
- * | Local day of week (stand-alone) | c       | 2, 3, 4, ..., 1                   |       |
- * |                                 | co      | 2nd, 3rd, ..., 1st                | 7     |
- * |                                 | cc      | 02, 03, ..., 01                   |       |
- * |                                 | ccc     | Mon, Tue, Wed, ..., Sun           |       |
- * |                                 | cccc    | Monday, Tuesday, ..., Sunday      | 2     |
- * |                                 | ccccc   | M, T, W, T, F, S, S               |       |
- * |                                 | cccccc  | Mo, Tu, We, Th, Fr, Su, Sa        |       |
- * | AM, PM                          | a..aa   | AM, PM                            |       |
- * |                                 | aaa     | am, pm                            |       |
- * |                                 | aaaa    | a.m., p.m.                        | 2     |
- * |                                 | aaaaa   | a, p                              |       |
- * | AM, PM, noon, midnight          | b..bb   | AM, PM, noon, midnight            |       |
- * |                                 | bbb     | am, pm, noon, midnight            |       |
- * |                                 | bbbb    | a.m., p.m., noon, midnight        | 2     |
- * |                                 | bbbbb   | a, p, n, mi                       |       |
- * | Flexible day period             | B..BBB  | at night, in the morning, ...     |       |
- * |                                 | BBBB    | at night, in the morning, ...     | 2     |
- * |                                 | BBBBB   | at night, in the morning, ...     |       |
- * | Hour [1-12]                     | h       | 1, 2, ..., 11, 12                 |       |
- * |                                 | ho      | 1st, 2nd, ..., 11th, 12th         | 7     |
- * |                                 | hh      | 01, 02, ..., 11, 12               |       |
- * | Hour [0-23]                     | H       | 0, 1, 2, ..., 23                  |       |
- * |                                 | Ho      | 0th, 1st, 2nd, ..., 23rd          | 7     |
- * |                                 | HH      | 00, 01, 02, ..., 23               |       |
- * | Hour [0-11]                     | K       | 1, 2, ..., 11, 0                  |       |
- * |                                 | Ko      | 1st, 2nd, ..., 11th, 0th          | 7     |
- * |                                 | KK      | 01, 02, ..., 11, 00               |       |
- * | Hour [1-24]                     | k       | 24, 1, 2, ..., 23                 |       |
- * |                                 | ko      | 24th, 1st, 2nd, ..., 23rd         | 7     |
- * |                                 | kk      | 24, 01, 02, ..., 23               |       |
- * | Minute                          | m       | 0, 1, ..., 59                     |       |
- * |                                 | mo      | 0th, 1st, ..., 59th               | 7     |
- * |                                 | mm      | 00, 01, ..., 59                   |       |
- * | Second                          | s       | 0, 1, ..., 59                     |       |
- * |                                 | so      | 0th, 1st, ..., 59th               | 7     |
- * |                                 | ss      | 00, 01, ..., 59                   |       |
- * | Fraction of second              | S       | 0, 1, ..., 9                      |       |
- * |                                 | SS      | 00, 01, ..., 99                   |       |
- * |                                 | SSS     | 000, 001, ..., 999                |       |
- * |                                 | SSSS    | ...                               | 3     |
- * | Timezone (ISO-8601 w/ Z)        | X       | -08, +0530, Z                     |       |
- * |                                 | XX      | -0800, +0530, Z                   |       |
- * |                                 | XXX     | -08:00, +05:30, Z                 |       |
- * |                                 | XXXX    | -0800, +0530, Z, +123456          | 2     |
- * |                                 | XXXXX   | -08:00, +05:30, Z, +12:34:56      |       |
- * | Timezone (ISO-8601 w/o Z)       | x       | -08, +0530, +00                   |       |
- * |                                 | xx      | -0800, +0530, +0000               |       |
- * |                                 | xxx     | -08:00, +05:30, +00:00            | 2     |
- * |                                 | xxxx    | -0800, +0530, +0000, +123456      |       |
- * |                                 | xxxxx   | -08:00, +05:30, +00:00, +12:34:56 |       |
- * | Timezone (GMT)                  | O...OOO | GMT-8, GMT+5:30, GMT+0            |       |
- * |                                 | OOOO    | GMT-08:00, GMT+05:30, GMT+00:00   | 2     |
- * | Timezone (specific non-locat.)  | z...zzz | GMT-8, GMT+5:30, GMT+0            | 6     |
- * |                                 | zzzz    | GMT-08:00, GMT+05:30, GMT+00:00   | 2,6   |
- * | Seconds timestamp               | t       | 512969520                         | 7     |
- * |                                 | tt      | ...                               | 3,7   |
- * | Milliseconds timestamp          | T       | 512969520900                      | 7     |
- * |                                 | TT      | ...                               | 3,7   |
- * | Long localized date             | P       | 04/29/1453                        | 7     |
- * |                                 | PP      | Apr 29, 1453                      | 7     |
- * |                                 | PPP     | April 29th, 1453                  | 7     |
- * |                                 | PPPP    | Friday, April 29th, 1453          | 2,7   |
- * | Long localized time             | p       | 12:00 AM                          | 7     |
- * |                                 | pp      | 12:00:00 AM                       | 7     |
- * |                                 | ppp     | 12:00:00 AM GMT+2                 | 7     |
- * |                                 | pppp    | 12:00:00 AM GMT+02:00             | 2,7   |
- * | Combination of date and time    | Pp      | 04/29/1453, 12:00 AM              | 7     |
- * |                                 | PPpp    | Apr 29, 1453, 12:00:00 AM         | 7     |
- * |                                 | PPPppp  | April 29th, 1453 at ...           | 7     |
- * |                                 | PPPPpppp| Friday, April 29th, 1453 at ...   | 2,7   |
- * Notes:
- * 1. "Formatting" units (e.g. formatting quarter) in the default en-US locale
- *    are the same as "stand-alone" units, but are different in some languages.
- *    "Formatting" units are declined according to the rules of the language
- *    in the context of a date. "Stand-alone" units are always nominative singular:
- *
- *    `format(new Date(2017, 10, 6), 'do LLLL', {locale: cs}) //=> '6. listopad'`
- *
- *    `format(new Date(2017, 10, 6), 'do MMMM', {locale: cs}) //=> '6. listopadu'`
- *
- * 2. Any sequence of the identical letters is a pattern, unless it is escaped by
- *    the single quote characters (see below).
- *    If the sequence is longer than listed in table (e.g. `EEEEEEEEEEE`)
- *    the output will be the same as default pattern for this unit, usually
- *    the longest one (in case of ISO weekdays, `EEEE`). Default patterns for units
- *    are marked with "2" in the last column of the table.
- *
- *    `format(new Date(2017, 10, 6), 'MMM') //=> 'Nov'`
- *
- *    `format(new Date(2017, 10, 6), 'MMMM') //=> 'November'`
- *
- *    `format(new Date(2017, 10, 6), 'MMMMM') //=> 'N'`
- *
- *    `format(new Date(2017, 10, 6), 'MMMMMM') //=> 'November'`
- *
- *    `format(new Date(2017, 10, 6), 'MMMMMMM') //=> 'November'`
- *
- * 3. Some patterns could be unlimited length (such as `yyyyyyyy`).
- *    The output will be padded with zeros to match the length of the pattern.
- *
- *    `format(new Date(2017, 10, 6), 'yyyyyyyy') //=> '00002017'`
- *
- * 4. `QQQQQ` and `qqqqq` could be not strictly numerical in some locales.
- *    These tokens represent the shortest form of the quarter.
- *
- * 5. The main difference between `y` and `u` patterns are B.C. years:
- *
- *    | Year | `y` | `u` |
- *    |------|-----|-----|
- *    | AC 1 |   1 |   1 |
- *    | BC 1 |   1 |   0 |
- *    | BC 2 |   2 |  -1 |
- *
- *    Also `yy` always returns the last two digits of a year,
- *    while `uu` pads single digit years to 2 characters and returns other years unchanged:
- *
- *    | Year | `yy` | `uu` |
- *    |------|------|------|
- *    | 1    |   01 |   01 |
- *    | 14   |   14 |   14 |
- *    | 376  |   76 |  376 |
- *    | 1453 |   53 | 1453 |
- *
- *    The same difference is true for local and ISO week-numbering years (`Y` and `R`),
- *    except local week-numbering years are dependent on `options.weekStartsOn`
- *    and `options.firstWeekContainsDate` (compare [getISOWeekYear]{@link https://date-fns.org/docs/getISOWeekYear}
- *    and [getWeekYear]{@link https://date-fns.org/docs/getWeekYear}).
- *
- * 6. Specific non-location timezones are currently unavailable in `date-fns`,
- *    so right now these tokens fall back to GMT timezones.
- *
- * 7. These patterns are not in the Unicode Technical Standard #35:
- *    - `i`: ISO day of week
- *    - `I`: ISO week of year
- *    - `R`: ISO week-numbering year
- *    - `t`: seconds timestamp
- *    - `T`: milliseconds timestamp
- *    - `o`: ordinal number modifier
- *    - `P`: long localized date
- *    - `p`: long localized time
- *
- * 8. `YY` and `YYYY` tokens represent week-numbering years but they are often confused with years.
- *    You should enable `options.useAdditionalWeekYearTokens` to use them. See: https://git.io/fxCyr
- *
- * 9. `D` and `DD` tokens represent days of the year but they are ofthen confused with days of the month.
- *    You should enable `options.useAdditionalDayOfYearTokens` to use them. See: https://git.io/fxCyr
- *
- * ### v2.0.0 breaking changes:
- *
- * - [Changes that are common for the whole library](https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#Common-Changes).
- *
- * - The second argument is now required for the sake of explicitness.
- *
- *   ```javascript
- *   // Before v2.0.0
- *   format(new Date(2016, 0, 1))
- *
- *   // v2.0.0 onward
- *   format(new Date(2016, 0, 1), "yyyy-MM-dd'T'HH:mm:ss.SSSxxx")
- *   ```
- *
- * - New format string API for `format` function
- *   which is based on [Unicode Technical Standard #35](https://www.unicode.org/reports/tr35/tr35-dates.html#Date_Field_Symbol_Table).
- *   See [this post](https://blog.date-fns.org/post/unicode-tokens-in-date-fns-v2-sreatyki91jg) for more details.
- *
- * - Characters are now escaped using single quote symbols (`'`) instead of square brackets.
- *
- * @param {Date|Number} date - the original date
- * @param {String} format - the string of tokens
- * @param {Object} [options] - an object with options.
- * @param {Locale} [options.locale=defaultLocale] - the locale object. See [Locale]{@link https://date-fns.org/docs/Locale}
- * @param {0|1|2|3|4|5|6} [options.weekStartsOn=0] - the index of the first day of the week (0 - Sunday)
- * @param {Number} [options.firstWeekContainsDate=1] - the day of January, which is
- * @param {Boolean} [options.useAdditionalWeekYearTokens=false] - if true, allows usage of the week-numbering year tokens `YY` and `YYYY`;
- *   see: https://git.io/fxCyr
- * @param {Boolean} [options.useAdditionalDayOfYearTokens=false] - if true, allows usage of the day of year tokens `D` and `DD`;
- *   see: https://git.io/fxCyr
- * @returns {String} the formatted date string
- * @throws {TypeError} 2 arguments required
- * @throws {RangeError} `date` must not be Invalid Date
- * @throws {RangeError} `options.locale` must contain `localize` property
- * @throws {RangeError} `options.locale` must contain `formatLong` property
- * @throws {RangeError} `options.weekStartsOn` must be between 0 and 6
- * @throws {RangeError} `options.firstWeekContainsDate` must be between 1 and 7
- * @throws {RangeError} use `yyyy` instead of `YYYY` for formatting years using [format provided] to the input [input provided]; see: https://git.io/fxCyr
- * @throws {RangeError} use `yy` instead of `YY` for formatting years using [format provided] to the input [input provided]; see: https://git.io/fxCyr
- * @throws {RangeError} use `d` instead of `D` for formatting days of the month using [format provided] to the input [input provided]; see: https://git.io/fxCyr
- * @throws {RangeError} use `dd` instead of `DD` for formatting days of the month using [format provided] to the input [input provided]; see: https://git.io/fxCyr
- * @throws {RangeError} format string contains an unescaped latin alphabet character
- *
- * @example
- * // Represent 11 February 2014 in middle-endian format:
- * var result = format(new Date(2014, 1, 11), 'MM/dd/yyyy')
- * //=> '02/11/2014'
- *
- * @example
- * // Represent 2 July 2014 in Esperanto:
- * import { eoLocale } from 'date-fns/locale/eo'
- * var result = format(new Date(2014, 6, 2), "do 'de' MMMM yyyy", {
- *   locale: eoLocale
- * })
- * //=> '2-a de julio 2014'
- *
- * @example
- * // Escape string by single quote characters:
- * var result = format(new Date(2014, 6, 2, 15), "h 'o''clock'")
- * //=> "3 o'clock"
- */
-
-function format(dirtyDate, dirtyFormatStr, dirtyOptions) {
-  (0,requiredArgs.default)(2, arguments);
-  var formatStr = String(dirtyFormatStr);
-  var options = dirtyOptions || {};
-  var locale = options.locale || en_US.default;
-  var localeFirstWeekContainsDate = locale.options && locale.options.firstWeekContainsDate;
-  var defaultFirstWeekContainsDate = localeFirstWeekContainsDate == null ? 1 : toInteger(localeFirstWeekContainsDate);
-  var firstWeekContainsDate = options.firstWeekContainsDate == null ? defaultFirstWeekContainsDate : toInteger(options.firstWeekContainsDate); // Test if weekStartsOn is between 1 and 7 _and_ is not NaN
-
-  if (!(firstWeekContainsDate >= 1 && firstWeekContainsDate <= 7)) {
-    throw new RangeError('firstWeekContainsDate must be between 1 and 7 inclusively');
-  }
-
-  var localeWeekStartsOn = locale.options && locale.options.weekStartsOn;
-  var defaultWeekStartsOn = localeWeekStartsOn == null ? 0 : toInteger(localeWeekStartsOn);
-  var weekStartsOn = options.weekStartsOn == null ? defaultWeekStartsOn : toInteger(options.weekStartsOn); // Test if weekStartsOn is between 0 and 6 _and_ is not NaN
-
-  if (!(weekStartsOn >= 0 && weekStartsOn <= 6)) {
-    throw new RangeError('weekStartsOn must be between 0 and 6 inclusively');
-  }
-
-  if (!locale.localize) {
-    throw new RangeError('locale must contain localize property');
-  }
-
-  if (!locale.formatLong) {
-    throw new RangeError('locale must contain formatLong property');
-  }
-
-  var originalDate = (0,toDate.default)(dirtyDate);
-
-  if (!isValid(originalDate)) {
-    throw new RangeError('Invalid time value');
-  } // Convert the date in system timezone to the same date in UTC+00:00 timezone.
-  // This ensures that when UTC functions will be implemented, locales will be compatible with them.
-  // See an issue about UTC functions: https://github.com/date-fns/date-fns/issues/376
-
-
-  var timezoneOffset = (0,getTimezoneOffsetInMilliseconds.default)(originalDate);
-  var utcDate = subMilliseconds(originalDate, timezoneOffset);
-  var formatterOptions = {
-    firstWeekContainsDate: firstWeekContainsDate,
-    weekStartsOn: weekStartsOn,
-    locale: locale,
-    _originalDate: originalDate
-  };
-  var result = formatStr.match(longFormattingTokensRegExp).map(function (substring) {
-    var firstCharacter = substring[0];
-
-    if (firstCharacter === 'p' || firstCharacter === 'P') {
-      var longFormatter = format_longFormatters[firstCharacter];
-      return longFormatter(substring, locale.formatLong, formatterOptions);
-    }
-
-    return substring;
-  }).join('').match(formattingTokensRegExp).map(function (substring) {
-    // Replace two single quote characters with one single quote character
-    if (substring === "''") {
-      return "'";
-    }
-
-    var firstCharacter = substring[0];
-
-    if (firstCharacter === "'") {
-      return cleanEscapedString(substring);
-    }
-
-    var formatter = format_formatters[firstCharacter];
-
-    if (formatter) {
-      if (!options.useAdditionalWeekYearTokens && isProtectedWeekYearToken(substring)) {
-        throwProtectedError(substring, dirtyFormatStr, dirtyDate);
-      }
-
-      if (!options.useAdditionalDayOfYearTokens && isProtectedDayOfYearToken(substring)) {
-        throwProtectedError(substring, dirtyFormatStr, dirtyDate);
-      }
-
-      return formatter(utcDate, substring, locale.localize, formatterOptions);
-    }
-
-    if (firstCharacter.match(unescapedLatinCharacterRegExp)) {
-      throw new RangeError('Format string contains an unescaped latin alphabet character `' + firstCharacter + '`');
-    }
-
-    return substring;
-  }).join('');
-  return result;
-}
-
-function cleanEscapedString(input) {
-  return input.match(escapedStringRegExp)[1].replace(doubleQuoteRegExp, "'");
-}
+// EXTERNAL MODULE: ./node_modules/date-fns/_lib/cloneObject/index.js
+var cloneObject = __webpack_require__("./node_modules/date-fns/_lib/cloneObject/index.js");
+// EXTERNAL MODULE: ./node_modules/date-fns/_lib/toInteger/index.js
+var toInteger = __webpack_require__("./node_modules/date-fns/_lib/toInteger/index.js");
+// EXTERNAL MODULE: ./node_modules/date-fns/_lib/getTimezoneOffsetInMilliseconds/index.js
+var getTimezoneOffsetInMilliseconds = __webpack_require__("./node_modules/date-fns/_lib/getTimezoneOffsetInMilliseconds/index.js");
 ;// CONCATENATED MODULE: ./node_modules/date-fns-tz/esm/_lib/tzTokenizeDate/index.js
 /**
  * Returns the [year, month, day, hour, minute, seconds] tokens of the provided
@@ -7034,16 +5207,23 @@ var typeToPos = {
 }
 
 function partsOffset(dtf, date) {
-  var formatted = dtf.formatToParts(date)
-  var filled = []
-  for (var i = 0; i < formatted.length; i++) {
-    var pos = typeToPos[formatted[i].type]
+  try {
+    var formatted = dtf.formatToParts(date)
+    var filled = []
+    for (var i = 0; i < formatted.length; i++) {
+      var pos = typeToPos[formatted[i].type]
 
-    if (pos >= 0) {
-      filled[pos] = parseInt(formatted[i].value, 10)
+      if (pos >= 0) {
+        filled[pos] = parseInt(formatted[i].value, 10)
+      }
     }
+    return filled
+  } catch (error) {
+    if (error instanceof RangeError) {
+      return [NaN]
+    }
+    throw error
   }
-  return filled
 }
 
 function hackyOffset(dtf, date) {
@@ -7100,7 +5280,23 @@ function getDateTimeFormat(timeZone) {
   return dtfCache[timeZone]
 }
 
+;// CONCATENATED MODULE: ./node_modules/date-fns-tz/esm/_lib/newDateUTC/index.js
+/**
+ * Use instead of `new Date(Date.UTC(...))` to support years below 100 which doesn't work
+ * otherwise due to the nature of the
+ * [`Date` constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#interpretation_of_two-digit_years.
+ *
+ * For `Date.UTC(...)`, use `newDateUTC(...).getTime()`.
+ */
+function newDateUTC(fullYear, month, day, hour, minute, second, millisecond) {
+  var utcDate = new Date(0)
+  utcDate.setUTCFullYear(fullYear, month, day)
+  utcDate.setUTCHours(hour, minute, second, millisecond)
+  return utcDate
+}
+
 ;// CONCATENATED MODULE: ./node_modules/date-fns-tz/esm/_lib/tzParseTimezone/index.js
+
 
 
 var MILLISECONDS_IN_HOUR = 3600000
@@ -7109,15 +5305,19 @@ var MILLISECONDS_IN_MINUTE = 60000
 var patterns = {
   timezone: /([Z+-].*)$/,
   timezoneZ: /^(Z)$/,
-  timezoneHH: /^([+-])(\d{2})$/,
-  timezoneHHMM: /^([+-])(\d{2}):?(\d{2})$/,
-  timezoneIANA: /(UTC|(?:[a-zA-Z]+\/[a-zA-Z_-]+(?:\/[a-zA-Z_]+)?))$/,
+  timezoneHH: /^([+-]\d{2})$/,
+  timezoneHHMM: /^([+-]\d{2}):?(\d{2})$/,
 }
 
 // Parse various time zone offset formats to an offset in milliseconds
 function tzParseTimezone(timezoneString, date, isUtcDate) {
   var token
   var absoluteOffset
+
+  // Empty string
+  if (timezoneString === '') {
+    return 0
+  }
 
   // Z
   token = patterns.timezoneZ.exec(timezoneString)
@@ -7130,33 +5330,31 @@ function tzParseTimezone(timezoneString, date, isUtcDate) {
   // ±hh
   token = patterns.timezoneHH.exec(timezoneString)
   if (token) {
-    hours = parseInt(token[2], 10)
+    hours = parseInt(token[1], 10)
 
     if (!validateTimezone(hours)) {
       return NaN
     }
 
-    absoluteOffset = hours * MILLISECONDS_IN_HOUR
-    return token[1] === '+' ? -absoluteOffset : absoluteOffset
+    return -(hours * MILLISECONDS_IN_HOUR)
   }
 
   // ±hh:mm or ±hhmm
   token = patterns.timezoneHHMM.exec(timezoneString)
   if (token) {
-    hours = parseInt(token[2], 10)
-    var minutes = parseInt(token[3], 10)
+    hours = parseInt(token[1], 10)
+    var minutes = parseInt(token[2], 10)
 
     if (!validateTimezone(hours, minutes)) {
       return NaN
     }
 
-    absoluteOffset = hours * MILLISECONDS_IN_HOUR + minutes * MILLISECONDS_IN_MINUTE
-    return token[1] === '+' ? -absoluteOffset : absoluteOffset
+    absoluteOffset = Math.abs(hours) * MILLISECONDS_IN_HOUR + minutes * MILLISECONDS_IN_MINUTE
+    return hours > 0 ? -absoluteOffset : absoluteOffset
   }
 
   // IANA time zone
-  token = patterns.timezoneIANA.exec(timezoneString)
-  if (token) {
+  if (isValidTimezoneIANAString(timezoneString)) {
     date = new Date(date || Date.now())
     var utcDate = isUtcDate ? date : toUtcDate(date)
 
@@ -7167,27 +5365,34 @@ function tzParseTimezone(timezoneString, date, isUtcDate) {
     return -fixedOffset
   }
 
-  return 0
+  return NaN
 }
 
 function toUtcDate(date) {
-  return new Date(
-    Date.UTC(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      date.getHours(),
-      date.getMinutes(),
-      date.getSeconds(),
-      date.getMilliseconds()
-    )
+  return newDateUTC(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    date.getHours(),
+    date.getMinutes(),
+    date.getSeconds(),
+    date.getMilliseconds()
   )
 }
 
 function calcOffset(date, timezoneString) {
   var tokens = tzTokenizeDate(date, timezoneString)
 
-  var asUTC = Date.UTC(tokens[0], tokens[1] - 1, tokens[2], tokens[3] % 24, tokens[4], tokens[5])
+  // ms dropped because it's not provided by tzTokenizeDate
+  var asUTC = newDateUTC(
+    tokens[0],
+    tokens[1] - 1,
+    tokens[2],
+    tokens[3] % 24,
+    tokens[4],
+    tokens[5],
+    0
+  ).getTime()
 
   var asTS = date.getTime()
   var over = asTS % 1000
@@ -7204,7 +5409,7 @@ function fixOffset(date, offset, timezoneString) {
   // Test whether the zone matches the offset for this ts
   var o2 = calcOffset(new Date(utcGuess), timezoneString)
 
-  // If so, offset didn't change and we're done
+  // If so, offset didn't change, and we're done
   if (offset === o2) {
     return offset
   }
@@ -7218,19 +5423,34 @@ function fixOffset(date, offset, timezoneString) {
     return o2
   }
 
-  // If it's different, we're in a hole time. The offset has changed, but the we don't adjust the time
+  // If it's different, we're in a hole time. The offset has changed, but we don't adjust the time
   return Math.max(o2, o3)
 }
 
 function validateTimezone(hours, minutes) {
-  if (minutes != null && (minutes < 0 || minutes > 59)) {
-    return false
-  }
-
-  return true
+  return -23 <= hours && hours <= 23 && (minutes == null || (0 <= minutes && minutes <= 59))
 }
 
+var validIANATimezoneCache = {}
+function isValidTimezoneIANAString(timeZoneString) {
+  if (validIANATimezoneCache[timeZoneString]) return true
+  try {
+    new Intl.DateTimeFormat(undefined, { timeZone: timeZoneString })
+    validIANATimezoneCache[timeZoneString] = true
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+;// CONCATENATED MODULE: ./node_modules/date-fns-tz/esm/_lib/tzPattern/index.js
+/** Regex to identify the presence of a time zone specifier in a date string */
+var tzPattern = /(Z|[+-]\d{2}(?::?\d{2})?| UTC| [a-zA-Z]+\/[a-zA-Z_]+(?:\/[a-zA-Z_]+)?)$/
+
+/* harmony default export */ const _lib_tzPattern = (tzPattern);
+
 ;// CONCATENATED MODULE: ./node_modules/date-fns-tz/esm/toDate/index.js
+
 
 
 
@@ -7240,9 +5460,9 @@ var toDate_MILLISECONDS_IN_MINUTE = 60000
 var DEFAULT_ADDITIONAL_DIGITS = 2
 
 var toDate_patterns = {
-  dateTimeDelimeter: /[T ]/,
+  dateTimePattern: /^([0-9W+-]+)(T| )(.*)/,
+  datePattern: /^([0-9W+-]+)(.*)/,
   plainTime: /:/,
-  timeZoneDelimeter: /[Z ]/i,
 
   // year tokens
   YY: /^(\d{2})$/,
@@ -7269,8 +5489,8 @@ var toDate_patterns = {
   HHMM: /^(\d{2}):?(\d{2}([.,]\d*)?)$/,
   HHMMSS: /^(\d{2}):?(\d{2}):?(\d{2}([.,]\d*)?)$/,
 
-  // timezone tokens (to identify the presence of a tz)
-  timezone: /([Z+-].*| UTC|(?:[a-zA-Z]+\/[a-zA-Z_]+(?:\/[a-zA-Z_]+)?))$/,
+  // time zone tokens (to identify the presence of a tz)
+  timeZone: _lib_tzPattern,
 }
 
 /**
@@ -7314,7 +5534,7 @@ var toDate_patterns = {
  * var result = toDate('+02014101', {additionalDigits: 1})
  * //=> Fri Apr 11 2014 00:00:00
  */
-function toDate_toDate(argument, dirtyOptions) {
+function toDate(argument, dirtyOptions) {
   if (arguments.length < 1) {
     throw new TypeError('1 argument required, but only ' + arguments.length + ' present')
   }
@@ -7378,15 +5598,15 @@ function toDate_toDate(argument, dirtyOptions) {
       }
     }
 
-    if (dateStrings.timezone || options.timeZone) {
-      offset = tzParseTimezone(dateStrings.timezone || options.timeZone, new Date(timestamp + time))
+    if (dateStrings.timeZone || options.timeZone) {
+      offset = tzParseTimezone(dateStrings.timeZone || options.timeZone, new Date(timestamp + time))
       if (isNaN(offset)) {
         return new Date(NaN)
       }
     } else {
-      // get offset accurate to hour in timezones that change offset
-      offset = (0,getTimezoneOffsetInMilliseconds.default)(new Date(timestamp + time))
-      offset = (0,getTimezoneOffsetInMilliseconds.default)(new Date(timestamp + time + offset))
+      // get offset accurate to hour in time zones that change offset
+      offset = getTimezoneOffsetInMilliseconds(new Date(timestamp + time))
+      offset = getTimezoneOffsetInMilliseconds(new Date(timestamp + time + offset))
     }
 
     return new Date(timestamp + time + offset)
@@ -7397,27 +5617,28 @@ function toDate_toDate(argument, dirtyOptions) {
 
 function splitDateString(dateString) {
   var dateStrings = {}
-  var array = dateString.split(toDate_patterns.dateTimeDelimeter)
+  var parts = toDate_patterns.dateTimePattern.exec(dateString)
   var timeString
 
-  if (toDate_patterns.plainTime.test(array[0])) {
-    dateStrings.date = null
-    timeString = array[0]
-  } else {
-    dateStrings.date = array[0]
-    timeString = array[1]
-    dateStrings.timezone = array[2]
-    if (toDate_patterns.timeZoneDelimeter.test(dateStrings.date)) {
-      dateStrings.date = dateString.split(toDate_patterns.timeZoneDelimeter)[0]
-      timeString = dateString.substr(dateStrings.date.length, dateString.length)
+  if (!parts) {
+    parts = toDate_patterns.datePattern.exec(dateString)
+    if (parts) {
+      dateStrings.date = parts[1]
+      timeString = parts[2]
+    } else {
+      dateStrings.date = null
+      timeString = dateString
     }
+  } else {
+    dateStrings.date = parts[1]
+    timeString = parts[3]
   }
 
   if (timeString) {
-    var token = toDate_patterns.timezone.exec(timeString)
+    var token = toDate_patterns.timeZone.exec(timeString)
     if (token) {
       dateStrings.time = timeString.replace(token[1], '')
-      dateStrings.timezone = token[1]
+      dateStrings.timeZone = token[1].trim()
     } else {
       dateStrings.time = timeString
     }
@@ -7687,6 +5908,8 @@ function validateTime(hours, minutes, seconds) {
 
 
 
+
+
 /**
  * @name zonedTimeToUtc
  * @category Time Zone Helpers
@@ -7712,12 +5935,27 @@ function validateTime(hours, minutes, seconds) {
  * //=> 2014-06-25T17:00:00.000Z
  */
 function zonedTimeToUtc(date, timeZone, options) {
-  if (date instanceof Date) {
-    date = format(date, "yyyy-MM-dd'T'HH:mm:ss.SSS")
+  if (typeof date === 'string' && !date.match(_lib_tzPattern)) {
+    var extendedOptions = cloneObject(options)
+    extendedOptions.timeZone = timeZone
+    return toDate(date, extendedOptions)
   }
-  var extendedOptions = (0,cloneObject.default)(options)
-  extendedOptions.timeZone = timeZone
-  return toDate_toDate(date, extendedOptions)
+
+  var d = toDate(date, options)
+
+  var utc = newDateUTC(
+    d.getFullYear(),
+    d.getMonth(),
+    d.getDate(),
+    d.getHours(),
+    d.getMinutes(),
+    d.getSeconds(),
+    d.getMilliseconds()
+  ).getTime()
+
+  var offsetMilliseconds = tzParseTimezone(timeZone, new Date(utc))
+
+  return new Date(utc + offsetMilliseconds)
 }
 
 ;// CONCATENATED MODULE: ./src/matrix3/json/timezones.json
@@ -7896,7 +6134,7 @@ function printAaSabre() {
     url += encodeURIComponent(itinsegs.join(""));
     return url;
   };
-  var url = createUrl(userSettings.default.aaSabreEdition.toUpperCase());
+  var url = createUrl(userSettings["default"].aaSabreEdition.toUpperCase());
   if (!url) {
     return;
   }
@@ -8043,7 +6281,7 @@ function printAC() {
       edition +
       "&countryOfResidence=" +
       edition +
-      (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.itaLanguage == "de" || _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.language == "de"
+      (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].itaLanguage == "de" || _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language == "de"
         ? "&language=de"
         : "&language=en");
     // validate Passengers here: Max Paxcount = 7 (Infs not included) - >11 = Adult - InfSeat = Child
@@ -8089,7 +6327,7 @@ function printAC() {
     acUrl += (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_5__.getAmadeusUrl)(amadeusConfig);
     return acUrl;
   };
-  var acUrl = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.acEdition.toUpperCase());
+  var acUrl = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].acEdition.toUpperCase());
   if (!acUrl) {
     return;
   }
@@ -8129,16 +6367,16 @@ function addACPromoControls(url) {
   ).insertAdjacentHTML("beforeend", (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_6__.unsafeHTML)(script.outerHTML));
 
   var label = "Open";
-  if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__.default[_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.language] !== undefined) {
-    if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__.default[_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.language]["open"] !== undefined) {
-      label = _settings_translations__WEBPACK_IMPORTED_MODULE_2__.default[_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.language]["open"];
+  if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language] !== undefined) {
+    if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language]["open"] !== undefined) {
+      label = _settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language]["open"];
     }
   }
 
   var extra =
     '<input type="input" id="ac-promo-input" size="8" style="display:none;margin:0 5px;"></input>';
   extra +=
-    '<label style="font-size:' + Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.linkFontsize) + '%;">';
+    '<label style="font-size:' + Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].linkFontsize) + '%;">';
   extra +=
     '<a id="ac-promo-link" style="display:none" target="_blank" href="' +
     url +
@@ -8230,7 +6468,7 @@ function print() {
   const createUrl = function(edition) {
     const country = editions.find(e => e.value === edition).country;
     return (
-      `https://${edition}/ams/exchange?language=${_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.language}&country=${country}&target=` +
+      `https://${edition}/ams/exchange?language=${_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language}&country=${country}&target=` +
       encodeURIComponent(
         `/search/summary?deviationValue=5&connections=${segs
           .map(
@@ -8250,7 +6488,7 @@ function print() {
     );
   };
 
-  var url = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.afEdition2);
+  var url = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].afEdition2);
   if (!url) {
     return;
   }
@@ -8479,7 +6717,7 @@ function printAZ() {
     return azUrl;
   };
   // get edition
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.azEdition;
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].azEdition;
   var azUrl = createUrl(edition);
   if (!azUrl) {
     return;
@@ -8832,12 +7070,12 @@ function printBA() {
     }
     url +=
       "&p=EUR6666.66&e=SL&c=" +
-      cabins[_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Auto" ? mincabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()] +
+      cabins[_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Auto" ? mincabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()] +
       "&source=FareQuoteEmail&isEmailHBOFareQuote=false";
     return url;
   };
   // get edition
-  var url = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.baEdition, _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.baLanguage);
+  var url = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].baEdition, _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].baLanguage);
   if (!url) {
     return;
   }
@@ -8847,7 +7085,7 @@ function printBA() {
     .map(function(obj, i) {
       return (
         '<a href="' +
-        createUrl(obj.value, _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.baLanguage) +
+        createUrl(obj.value, _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].baLanguage) +
         '" target="_blank">' +
         obj.name +
         "</a>"
@@ -8990,7 +7228,7 @@ function printCZ() {
     return url;
   };
   // get edition
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.czEdition.split("-");
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].czEdition.split("-");
   if (edition.length != 2) {
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error:Invalid CZ-Edition");
     return;
@@ -9102,7 +7340,7 @@ function printDL() {
     return url;
   };
   // get edition
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.dlEdition.split("_");
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].dlEdition.split("_");
   if (edition.length != 2) {
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error:Invalid Delta-Edition");
     return;
@@ -9313,7 +7551,7 @@ function print() {
     return url;
   };
 
-  const url = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.ekEdition);
+  const url = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].ekEdition);
   if (!url) {
     return;
   }
@@ -9637,7 +7875,7 @@ function printIB() {
     return url;
   };
   // get edition
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.ibEdition.split("-");
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].ibEdition.split("-");
   var url = createUrl(edition, "USD");
   if (!url) {
     return;
@@ -9746,7 +7984,7 @@ function printKL() {
   };
 
   // get edition
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.klEdition.split("_");
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].klEdition.split("_");
   if (edition.length != 2) {
     (0,_utils__WEBPACK_IMPORTED_MODULE_4__.printNotification)("Error:Invalid KLM-Edition");
     return;
@@ -9874,7 +8112,7 @@ function printLA() {
       encodeURIComponent(JSON.stringify(parameters))
     );
   };
-  var url = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.laEdition);
+  var url = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].laEdition);
   if (!url) {
     return;
   }
@@ -10086,7 +8324,7 @@ function printLH() {
     return url;
   };
   // get edition
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.lhEdition.split("-");
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].lhEdition.split("-");
   if (edition.length != 2) {
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error:Invalid Lufthansa-Edition");
     return;
@@ -10215,11 +8453,11 @@ function printLX() {
       pax.children.length +
       "/infants-" +
       pax.infLap;
-    url += cabins[_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Auto" ? mincabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()];
+    url += cabins[_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Auto" ? mincabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()];
     return url;
   };
   // get edition
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.lxEdition.split("_");
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].lxEdition.split("_");
   if (edition.length != 2) {
     (0,_utils__WEBPACK_IMPORTED_MODULE_4__.printNotification)("Error:Invalid Swiss-Edition");
     return;
@@ -10303,8 +8541,8 @@ function printOA() {
     "&SITE=E00KE00K&SKIN=skin_oa&SO_GL=%3CSO_GL%3E%09%3CGLOBAL_LIST%3E%09%09%3CNAME%3ESL_TRAVELLER_TYPE_LIST%3C%2FNAME%3E%09%09%3CLIST_ELEMENT%3E%3CCODE%3EADT%3C%2FCODE%3E%3CLIST_VALUE%3EAdult%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EADT%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E%09%09%3CLIST_ELEMENT%3E%3CCODE%3EB15%3C%2FCODE%3E%3CLIST_VALUE%3EYoung+adult%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EB15%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E%09%09%3CLIST_ELEMENT%3E%3CCODE%3EC07%3C%2FCODE%3E%3CLIST_VALUE%3EYouth%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EC07%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E%09%09%3CLIST_ELEMENT%3E%3CCODE%3EC03%3C%2FCODE%3E%3CLIST_VALUE%3EChild%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EC03%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E%09%09%3CLIST_ELEMENT%3E%3CCODE%3EINF%3C%2FCODE%3E%3CLIST_VALUE%3EInfant%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EINF%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E++++++++%3CLIST_ELEMENT%3E%3CCODE%3EUNN%3C%2FCODE%3E%3CLIST_VALUE%3EUMNR%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EUNN%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E%09%3C%2FGLOBAL_LIST%3E%3C%2FSO_GL%3E&SO_SITE_ETKT_Q_OFFICE_ID=ATHA308OA&SO_SITE_OFFICE_ID=ATHA308OA&SO_SITE_POINT_OF_SALE=ATH&SO_SITE_POINT_OF_TICKETING=ATH&SO_SITE_PREBOOK_DURATION=I180&SO_SITE_QUEUE_OFFICE_ID=ATHA308OA&SO_SITE_SP_QUEUE_OFFICE_ID=ATHA308OA";
   url +=
     "&LANGUAGE=" +
-    (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language == "oa" || _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language == "de"
-      ? _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language.toUpperCase()
+    (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language == "oa" || _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language == "de"
+      ? _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language.toUpperCase()
       : "GB");
   url +=
     "&WDS_ADD_BOOK_NOW_BUTTON_EMAF=TRUE&WDS_ADVERTISING_PANEL_CONF_ACTIVATED=true&WDS_AFFILIATE_STATUS=C&WDS_AMOP_DISPLAY_PRIORITY=PAYPAL:SOFORT:KLARNA:EPS:IDEAL:BANCONTACT:ENTERCASH:ALIPAY:CUP&WDS_AMOP_FEE=PAYPAL:0;KLARNA:0;SOFORT:0;ENTERCASH:0;EPS:0;IDEAL:0;BANCONTACT:0;ALIPAY:0;CUP:0;&WDS_AMOP_FEE_APPLY=PER_TRANSACTION&WDS_AMOP_FEE_CALCULATION=PER&WDS_AMOP_LIST_ACTIVATED=PAYPAL;KLARNA;SOFORT;ENTERCASH;EPS;IDEAL;BANCONTACT;ALIPAY;CUP&WDS_AMOP_LIST_DEACTIVATED=&WDS_AMOP_TIME_LIMIT=PAYPAL:48;KLARNA:0;SOFORT:0;ENTERCASH:0;EPS:0;IDEAL:0;BANCONTACT:0;ALIPAY:24;CUP:24;&WDS_ANCILLARY_IN_MILES_ENABLED=TRUE&WDS_ASSISTANCE_REQUEST_ACTIVATED=TRUE&WDS_ATCOM_TIMEOUT=2000&WDS_AVAIL_PRICE_DISPLAY_TYPE=PER_ADT_WITH_TAX_NO_FEE&WDS_BAG_PLACEHOLDER_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_BAG_POLICY_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_BOOKING_LISTENER_URL=https://en.aegeanair.com/BookingListener.axd&WDS_BOUND_INDEX_EXPANDED=1&WDS_BUSINESS_MEAL_FARE_FAMILIES=BUSINESS:BUSINESTES:BUSINESSI&WDS_BUSINESS_MEAL_FREQUENT_FLYER_LEVELS=GOLD:SILVER&WDS_BUSINESS_MEAL_SUPPORTED=true&WDS_BUSINESS_ON_BOARD_DISPLAY_IN_LOGIN_PANEL=TRUE&WDS_BUSINESS_ON_BOARD_ENABLED=TRUE&WDS_BUSINESS_ON_BOARD_PAX_TYPE=ADT&WDS_CABIN_CLASS_DISPLAY=TRUE&WDS_CALENDAR_TO_UPSELL_FLEXIBLE_ACTIVATED=3&WDS_CALLCENTER_EMAIL=res1@aegeanair.com&WDS_CAR_ENABLED=FALSE&WDS_CAR_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_CC_FEE_CARD_TYPE=VI:0;CA:0;MA:0;AX:0;DC:0;TP:;&WDS_CC_FEE_NO_CARD=0&WDS_CC_FEE_ZERO_DISPLAYED=FALSE&WDS_CC_LIST=VI:CA:MA:AX:DC:TP&WDS_CFF_TOUSE=CFF01FEB14&WDS_CHANNEL=B2C&WDS_CLEAR_CONTENT_URL=https://en.aegeanair.com/PlainContent.axd&WDS_DEVICE_NAME=DESKTOP_UNKNOWN&WDS_DEVICE_OS=Windows_10&WDS_DEVICE_VIEWPORT=L&WDS_DISPLAY_EMAIL_IN_BROWSER_URL=https://en.aegeanair.com/ConfirmationEmail.axd&WDS_DISPLAY_FBA_AND_REFUNDABILITY_PER_BOUND_IN_SB=TRUE&WDS_DISPLAY_GREEK_RURAL_ID=FALSE&WDS_DISPLAY_RECEIPT=SHOW&WDS_DISPLAY_REGULATION_CONDITIONS_COUNTRY=FR&WDS_DISPLAY_REGULATION_CONDITIONS_LANG=FR&WDS_DONATION_PANEL_ACTIVATED=FALSE&WDS_DONATION_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_EMAF_BOOK_NOW_URL=https://en.aegeanair.com/PostHandler.axd&WDS_ENABLE_PARKING=FALSE&WDS_ENABLE_TOKEN=true&WDS_ENABLE_TOKEN_FOR_CAR=false&WDS_ENABLE_TOKEN_FOR_HOTEL=false&WDS_EPTS=unknown_call&WDS_EXTERNAL_CSS_URL=https://en.aegeanair.com/css/1A/responsive.css?v=10&WDS_EXTRAS_DEFAULT_PANEL_ORDER=BAGGAGE;MEALS;SPEQ;PETS;FASTTRACK;INSURANCE;PARKING;DONATION&WDS_FARE_COMPARISON_URL=https://en.aegeanair.com/FareFamilyComparison.axd&WDS_FARE_CONDITIONS_URL=https://en.aegeanair.com/ffc.axd&WDS_FASTTRACK_ELIGIBLE_AIRPORTS=LCA;ATH&WDS_FASTTRACK_ENABLED=TRUE&WDS_FASTTRACK_HANDLER_URL=https://en.aegeanair.com/FastTrackHandler.axd&WDS_FREQUENT_FLYER_PROGRAMS_OA_FLIGHTS=A3;AC;UA;MS;TK;NH;LH;SQ&WDS_GDPR_DISPLAY_PROMOS_CONFIRMATION_NO_CONSENT=FALSE&WDS_GDPR_HANDLER_URL=https://en.aegeanair.com/api/v1/members/checkgdpremailstatus&WDS_GO_TO_FINALIZE_URL=https://en.aegeanair.com/FinalizeRedirect.axd&WDS_GO_TO_MY_BOOKING_URL=https://en.aegeanair.com/MyBooking.axd&WDS_GO_TO_SEAT_SELECTION_URL=https://en.aegeanair.com/SeatRedirect.axd&WDS_HANDLE_SOS_AS_RM_FEE=TRUE&WDS_HOTEL_ENABLED=FALSE&WDS_HOTEL_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_HOTEL_POPUP_CONF_ACTIVATED=TRUE&WDS_HOTEL_POPUP_CONF_DELAY=10000&WDS_HOTEL_RECOMMENDATION_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_INSURANCE_ACTIVATED=TRUE&WDS_INSURANCE_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_INSURANCE_PRESELECT=NONE&WDS_LATE_LOGIN_ENABLED=TRUE&WDS_LATE_LOGIN_URL=https://en.aegeanair.com/api/v1/members/loyaltyauth&WDS_MEAL_FORBIDDEN_PAX_TYPE=INF&WDS_MEAL_HANDLER_URL=https://en.aegeanair.com/MealHandler.axd&WDS_MEAL_LIST_PROPOSED=BBML:BLML:CHML:DBML:FPML:GFML:KSML:LCML:LFML:NLML:LSML:MOML:HNML:SFML:VOML:VLML:AVML:VJML:VGML:RVML&WDS_MILES_EARNED_HANDLER_URL=https://en.aegeanair.com/AwardedMiles.axd&WDS_NEW_PROMOTION_TYPE=NONE&WDS_NEW_PROMOTION_WEBSERVICES_ENVIRONMENT=PRODUCTION&WDS_OBFEE_FROM_NEWPOLICY_ACTIVATED=TRUE&WDS_OLYMPIC_TRACKING=true&WDS_ONLY_DIRECT_REQUESTED=FALSE&WDS_PARKING_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_PETS_ENABLED=TRUE&WDS_PHONE_PRESELECT_COUNTRY_CODE=US&WDS_PLUSGRADE_ENABLED=false&WDS_PLUSGRADE_HANDLER_URL=https://en.aegeanair.com/PlusgradeHandler.axd&WDS_PROMO_SLOT_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_PROMOCODE_ROUTE_AUTHORIZED=FALSE&WDS_PROMOTION_RBD_LIST=P&WDS_REBOOKING_HIGHSEASON_DATE=&WDS_RESKIN=TRUE&WDS_SB_HOTEL_TIMEOUT=15000&WDS_SEAT_BANNER_URL=https://en.aegeanair.com/SeatBanner.axd&WDS_SEATMAP_ENABLED=TRUE&WDS_SMS_OPTION=SHOW&WDS_SMS_PROVIDER_EMAIL=aegean_bc@mpassltd.eu&WDS_SMS_SENDER_EMAIL=defineOA@amadeus.com&WDS_SPECIAL_MEAL_LIST=BBML:BLML:CHML:DBML:FPML:GFML:KSML:LCML:LFML:NLML:LSML:MOML:HNML:SFML:VOML:VLML:AVML:VJML:VGML:RVML&WDS_SPECIAL_MEAL_SUPPORTED=TRUE&WDS_SPEQ_ENABLED=TRUE&WDS_TAX_BREAKDOWN_REGULATION_ALLOW_LANG=FR&WDS_TEALEAF_ENABLED=TRUE&WDS_TTT_ENABLED=TRUE&WDS_TTT_PROMO_FARES_REG_EXP=^PR([0-9])+$&WDS_TTT_SELECTION_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_UMNR_ENTRY_OVERRIDE=WDS_HOTEL_ENABLED:FALSE;WDS_CAR_ENABLED:FALSE;WDS_TTT_ENABLED:false;WDS_FASTTRACK_ENABLED:false;WDS_ANCILLARY_IN_MILES:false;WDS_ENABLE_PARKING:false;WDS_ASSISTANCE_REQUEST_ACTIVATED:false;WDS_LATE_LOGIN_ENABLED:false;WDS_BUSINESS_ON_BOARD_ENABLED:false&WDS_URL_FACADE_ERROR=https://www.olympicair.com/en/Travel/Reservations/Tickets&WDS_URL_FACADE_NEWSEARCH=https://www.olympicair.com/en/Travel/Reservations/Tickets&WDS_URL_WAITING_CONTENT=https://en.aegeanair.com/WaitingPage.axd&WDS_USE_A3_SOS_INSURANCE_PANEL=TRUE&WDS_USEFUL_LINKS_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_VOUCHER_BANNER_ACTIVATED=TRUE&WDS_VOUCHER_BANNER_URL=https://en.aegeanair.com/PromoSlots.axd";
@@ -10416,7 +8654,7 @@ function print() {
     return url;
   };
 
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.osEdition;
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].osEdition;
   if (edition.length != 2) {
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error:Invalid Austrian-Edition");
     return;
@@ -10721,7 +8959,7 @@ function printQF() {
     // Add class(es) of service:
     urlBase +=
       "&travelClass=" +
-      travelClass[_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Auto" ? mincabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()];
+      travelClass[_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Auto" ? mincabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()];
     // Add passenger info:
     urlBase +=
       "&numberOfAdults=" +
@@ -10736,7 +8974,7 @@ function printQF() {
     return urlBase + url;
   };
   // get edition
-  var url = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.qfEdition, _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.qfCurrency);
+  var url = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].qfEdition, _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].qfCurrency);
   if (!url) {
     return;
   }
@@ -10747,7 +8985,7 @@ function printQF() {
     .map(function(obj, i) {
       return (
         '<a href="' +
-        createUrl(obj.value, _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.qfCurrency) +
+        createUrl(obj.value, _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].qfCurrency) +
         '" target="_blank">' +
         obj.name +
         "</a>"
@@ -10808,7 +9046,7 @@ function print() {
 
   const tripType = _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.length > 1 ? "M" : "O";
 
-  let url = `https://booking.qatarairways.com/nsp/views/showBooking.action?widget=MLC&selLang=${_settings_appSettings__WEBPACK_IMPORTED_MODULE_2__.default.itaLanguage}&tripType=${tripType}&bookingClass=${cabin}&adults=${pax.adults}&children=${pax.children.length}&infants=${pax.infLap}&isMetaSearch=true&`;
+  let url = `https://booking.qatarairways.com/nsp/views/showBooking.action?widget=MLC&selLang=${_settings_appSettings__WEBPACK_IMPORTED_MODULE_2__["default"].itaLanguage}&tripType=${tripType}&bookingClass=${cabin}&adults=${pax.adults}&children=${pax.children.length}&infants=${pax.infLap}&isMetaSearch=true&`;
   url += _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.map((itin, i) => {
       let qs = `fromStation=${itin.orig}&toStation=${itin.dest}&departing=${
         itin.dep.year
@@ -10879,8 +9117,8 @@ function printTK() {
     "&PORT_TSC=FALSE&SO_SITE_ALLOW_SERVICE_FEE=0&SO_SITE_SERVICE_FEE_MODE=AIR&SITE=BBAHBBAH";
   url +=
     "&LANGUAGE=" +
-    (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language == "tk" || _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language == "de"
-      ? _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language.toUpperCase()
+    (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language == "tk" || _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language == "de"
+      ? _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language.toUpperCase()
       : "GB");
   url += "&EMBEDDED_TRANSACTION=AirComplexAvailability&TRIPFLOW=YES";
   url +=
@@ -10990,9 +9228,9 @@ function printVS() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "register": () => (/* binding */ register),
 /* harmony export */   "allCarriers": () => (/* binding */ allCarriers),
 /* harmony export */   "anyCarriers": () => (/* binding */ anyCarriers),
+/* harmony export */   "register": () => (/* binding */ register),
 /* harmony export */   "validatePax": () => (/* binding */ validatePax)
 /* harmony export */ });
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
@@ -11019,7 +9257,7 @@ function register(type, factory) {
 function allCarriers() {
   const args = Array.from(arguments);
   return (
-    _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.showAllAirlines ||
+    _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].showAllAirlines ||
     _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.carriers.every(cxr => args.some(arg => cxr === arg))
   );
 }
@@ -11027,7 +9265,7 @@ function allCarriers() {
 function anyCarriers() {
   const args = Array.from(arguments);
   return (
-    _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.showAllAirlines ||
+    _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].showAllAirlines ||
     _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.carriers.some(cxr => args.some(arg => cxr === arg))
   );
 }
@@ -11036,19 +9274,19 @@ function validatePax(config) {
   //{maxPaxcount:7, countInf:false, childAsAdult:12, sepInfSeat:false, childMinAge:2}
   var tmpChildren = new Array();
   // push cur children
-  for (var i = 0; i < _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__.default.cAges.length; i++) {
-    tmpChildren.push(_settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__.default.cAges[i]);
+  for (var i = 0; i < _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].cAges.length; i++) {
+    tmpChildren.push(_settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].cAges[i]);
   }
   var ret = {
-    adults: _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__.default.adults,
+    adults: _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].adults,
     children: new Array(),
-    infLap: _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__.default.infantsLap,
+    infLap: _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].infantsLap,
     infSeat: 0
   };
   if (config.sepInfSeat === true) {
-    ret.infSeat = _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__.default.infantsSeat;
+    ret.infSeat = _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].infantsSeat;
   } else {
-    for (var i = 0; i < _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__.default.infantsSeat; i++) {
+    for (var i = 0; i < _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].infantsSeat; i++) {
       tmpChildren.push(config.childMinAge);
     }
   }
@@ -11419,7 +9657,7 @@ function print(method) {
     url,
     title: "Kayak",
     desc:
-      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.language == "de"
+      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language == "de"
         ? `Benutze ${segs.length} Segment(e)`
         : `Based on ${segs.length} segment(s)`,
     extra
@@ -11568,7 +9806,7 @@ function print(method) {
     url,
     title: "Momondo",
     desc:
-      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.language == "de"
+      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language == "de"
         ? `Benutze ${segs.length} Segment(e)`
         : `Based on ${segs.length} segment(s)`,
     extra
@@ -11687,7 +9925,7 @@ function print(method) {
     url,
     title: "Skyscanner",
     desc:
-      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.language == "de"
+      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language == "de"
         ? `Benutze ${segs.length} Segment(e)`
         : `Based on ${segs.length} segment(s)`,
     extra
@@ -11844,7 +10082,7 @@ function print(method) {
     url,
     title: "Tripadvisor",
     desc:
-      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.language == "de"
+      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language == "de"
         ? `Benutze ${segs.length} Segment(e)`
         : `Based on ${segs.length} segment(s)`,
     extra
@@ -11911,7 +10149,7 @@ function printCheapOair() {
         seg +
         "=" +
         cabins[
-          _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Auto"
+          _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Auto"
             ? _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].cabin
             : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()
         ];
@@ -12032,9 +10270,9 @@ function print() {
     const cur = _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.cur || "USD";
     let url = `https://${host}/api?PointOfSaleCountry=&UserCurrency=${cur}&DisplayedPrice=${
       _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.price
-    }&DisplayedPriceCurrency=${cur}&UserLanguage=${_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language ||
+    }&DisplayedPriceCurrency=${cur}&UserLanguage=${_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language ||
       "en"}&TripType=${(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getTripType)("OneWay", "RoundTrip", "MultiCity")}`;
-    url += "&UserLanguage=" + _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language || 0;
+    url += "&UserLanguage=" + _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language || 0;
     url += "&Adult=" + pax.adults;
     url += "&Child=" + pax.children.length;
     url += "&InfantLap=" + pax.infLap;
@@ -12389,7 +10627,8 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const editions = [
+const expedia = [
+  { name: "expedia.com", host: "www.expedia.com" },
   { name: "euro.expedia.net", host: "euro.expedia.net" },
   { name: "expedia.at", host: "www.expedia.at" },
   { name: "expedia.be", host: "www.expedia.be" },
@@ -12402,7 +10641,6 @@ const editions = [
   { name: "expedia.co.nz", host: "www.expedia.co.nz" },
   { name: "expedia.co.th", host: "www.expedia.co.th" },
   { name: "expedia.co.uk", host: "www.expedia.co.uk" },
-  { name: "expedia.com", host: "www.expedia.com" },
   { name: "expedia.com.au", host: "www.expedia.com.au" },
   { name: "expedia.com.br", host: "www.expedia.com.br" },
   { name: "expedia.com.hk", host: "www.expedia.com.hk" },
@@ -12423,14 +10661,31 @@ const editions = [
   { name: "expedia.se", host: "www.expedia.se" }
 ];
 
-const editions2 = [
-  { name: "cheaptickets.com", host: "www.cheaptickets.com" },
-  { name: "ebookers.ch", host: "www.ebookers.ch" },
+const cheaptickets = [
+  { name: "cheaptickets.com", host: "www.cheaptickets.com" }
+];
+
+const ebookers = [
   { name: "ebookers.com", host: "www.ebookers.com" },
+  { name: "ebookers.ch", host: "www.ebookers.ch" },
   { name: "ebookers.de", host: "www.ebookers.de" },
   { name: "ebookers.fi", host: "www.ebookers.fi" },
   { name: "ebookers.fr", host: "www.ebookers.fr" },
-  { name: "ebookers.ie", host: "www.ebookers.ie" },
+  { name: "ebookers.ie", host: "www.ebookers.ie" }
+];
+
+const hotwire = [{ name: "hotwire.com", host: "vacation.hotwire.com" }];
+
+const mrjet = [{ name: "mrjet.se", host: "www.mrjet.se" }];
+
+const orbitz = [{ name: "orbitz.com", host: "www.orbitz.com" }];
+
+const travelocity = [
+  { name: "travelocity.com", host: "www.travelocity.com" },
+  { name: "travelocity.ca", host: "www.travelocity.ca" }
+];
+
+const others = [
   { name: "hotels.com", host: "travel.hotels.com" },
   { name: "hotels.com (ca)", host: "travel.ca.hotels.com" },
   { name: "hotels.com (fr)", host: "travel.fr.hotels.com" },
@@ -12438,19 +10693,14 @@ const editions2 = [
   { name: "hotels.com (no)", host: "travel.no.hotels.com" },
   { name: "hotels.com (se)", host: "travel.se.hotels.com" },
   { name: "hotels.com (uk)", host: "travel.uk.hotels.com" },
-  { name: "hotwire.com", host: "vacation.hotwire.com" },
   { name: "lastminute.co.nz", host: "www.lastminute.co.nz" },
   { name: "lastminute.com.au", host: "www.lastminute.com.au" },
-  { name: "mrjet.se", host: "www.mrjet.se" },
-  { name: "orbitz.com", host: "www.orbitz.com" },
-  { name: "travelocity.ca", host: "www.travelocity.ca" },
-  { name: "travelocity.com", host: "www.travelocity.com" },
   { name: "wotif.co.nz", host: "www.wotif.co.nz" },
   { name: "wotif.com", host: "www.wotif.com" }
 ];
 
-function printExpedia() {
-  var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
+function printExpedia(title, editions) {
+  const pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
     maxPaxcount: 9,
     countInf: true,
     childAsAdult: 18,
@@ -12493,7 +10743,7 @@ function printExpedia() {
           ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.day).slice(-2) +
           "-" +
           expediaClasses[
-            _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Auto" ? minCabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()
+            _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Auto" ? minCabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()
           ] +
           "-" +
           _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].orig +
@@ -12520,155 +10770,45 @@ function printExpedia() {
     baseUrl +=
       "&cabinClass=" +
       expediaClasses[
-        _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Auto" ? minCabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()
+        _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Auto" ? minCabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()
       ];
     // Add passenger info to URL:
     baseUrl += "&adults=" + pax.adults;
     return baseUrl + segUrl;
   };
-  var ExpediaUrl = ExpediaCreateUrl("expedia.com");
-  var container =
-    ' <span class="pt-hover-container">[+]<span class="pt-hover-menu-flex"><div style="margin-right: 1rem;">';
-  container += editions
-    .map(function(obj, i) {
-      return (
-        '<a href="' +
-        ExpediaCreateUrl(obj.host) +
-        '" target="_blank">' +
-        obj.name +
-        "</a>"
-      );
-    })
-    .join("<br/>");
-  container += "</div><div>";
-  container += editions2
-    .map(function(obj, i) {
-      return (
-        '<a href="' +
-        ExpediaCreateUrl(obj.host) +
-        '" target="_blank">' +
-        obj.name +
-        "</a>"
-      );
-    })
-    .join("<br/>");
-  container += "</div></span></span>";
+  let container = "";
+  if (editions && editions.length > 1) {
+    container +=
+      ' <span class="pt-hover-container">[+]<span class="pt-hover-menu-flex"><div style="margin-right: 1rem;">';
+    container += editions
+      .slice(1)
+      .map(function(obj, i) {
+        return (
+          '<a href="' +
+          ExpediaCreateUrl(obj.host) +
+          '" target="_blank">' +
+          obj.name +
+          "</a>"
+        );
+      })
+      .join("<br/>");
+    container += "</div></span></span>";
+  }
 
   return {
-    url: ExpediaUrl,
-    title: "Expedia",
+    url: ExpediaCreateUrl(editions[0].host),
+    title,
     extra: container
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", printExpedia);
-
-
-/***/ }),
-
-/***/ "./src/matrix3/links/otas/flightnetwork.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-
-
-
-
-const editions = [
-  { name: "English", url: "" },
-  { name: "Español", url: "es" },
-  { name: "Português", url: "pt" },
-  { name: "Deutsch", url: "de" },
-  { name: "Italiano", url: "it" },
-  { name: "Dansk", url: "da" },
-  { name: "Svenska", url: "sv" },
-  { name: "Norsk", url: "no" },
-  { name: "Nederlands", url: "nl" },
-  { name: "Finnish", url: "fi" },
-  { name: "Polish", url: "pl" },
-  { name: "Turkish", url: "tk" }
-];
-
-function printFN() {
-  var pax = (0,___WEBPACK_IMPORTED_MODULE_0__.validatePax)({
-    maxPaxcount: 9,
-    countInf: false,
-    childAsAdult: 12,
-    sepInfSeat: false,
-    childMinAge: 2
-  });
-  if (!pax) {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_2__.printNotification)("Error: Failed to validate Passengers in printFN");
-    return;
-  }
-
-  const createUrl = function(edition) {
-    const tty = _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.length === 2 ? 1 : 0;
-    let search = `cref=fnbwmint&tty=${tty}&curr=${_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.cur ||
-      "USD"}&nativecurr=${_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.cur || "USD"}&cls=0&adt=${
-      pax.adults
-    }&chd=${pax.children.length}&inf=${
-      pax.infLap
-    }&tot=0.00&tax=0.00&chdtot=0.00&chdtax=0.00&inftot=0.00&inftax=0.00&`;
-
-    let segCount = 0;
-    search += _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.map((leg, i) => {
-        const key = _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.length === 2 && i === 1 ? "ib" : "ob";
-        const legNum = _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.length > 2 ? 0 : i;
-        return leg.seg
-          .map((seg, j) => {
-            const segNum = _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.length > 2 ? segCount++ : j;
-            return `${key}${legNum + 1}${segNum ? segNum : ""}=${seg.carrier}${
-              seg.fnr
-            }${seg.bookingclass}!${formatDate(seg.dep)}!${seg.orig}${
-              seg.dest
-            }!${formatDate(seg.arr)}`;
-          })
-          .join("&");
-      })
-      .join("&");
-
-    return `https://www.flightnetwork.com/${edition.url}${
-      edition.url ? "/" : ""
-    }flights/showflight?enc=${btoa(search)}`;
-  };
-
-  var url = createUrl(editions[0]);
-  if (!url) return;
-
-  let extra =
-    ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
-  extra += editions
-    .map(function(obj, i) {
-      return (
-        '<a href="' + createUrl(obj) + '" target="_blank">' + obj.name + "</a>"
-      );
-    })
-    .join("<br/>");
-  extra += "</span></span>";
-
-  return {
-    url,
-    title: "FlightNetwork",
-    extra
-  };
-}
-
-function formatDate(date) {
-  return (
-    "" +
-    date.year +
-    (0,_utils__WEBPACK_IMPORTED_MODULE_2__.to2digits)(date.month) +
-    (0,_utils__WEBPACK_IMPORTED_MODULE_2__.to2digits)(date.day) +
-    date.time24.replace(":", "")
-  );
-}
-
-(0,___WEBPACK_IMPORTED_MODULE_0__.register)("otas", printFN);
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => printExpedia("Expedia", expedia.concat(others)));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => printExpedia("CheapTickets", cheaptickets));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => printExpedia("Ebookers", ebookers));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => printExpedia("Hotwire", hotwire));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => printExpedia("MrJet.se", mrjet));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => printExpedia("Orbitz", orbitz));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => printExpedia("Travelocity", travelocity));
 
 
 /***/ }),
@@ -13087,7 +11227,6 @@ const travix = [
     pos: "PA",
     cur: "USD"
   },
-  { name: "Vayama USA", value: "www.vayama.com", pos: "US", cur: "USD" },
   {
     name: "Flugladen Austria",
     value: "www.flugladen.at",
@@ -13264,9 +11403,9 @@ function print(displayName, editions, startValue) {
   var createUrl = function(host, pos, cur) {
     let url = `https://${host}/checkout/googleflights?PointOfSaleCountry=${pos}&UserCurrency=${cur}&DisplayedPrice=${
       _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.price
-    }&DisplayedPriceCurrency=${cur}&UserLanguage=${_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language ||
+    }&DisplayedPriceCurrency=${cur}&UserLanguage=${_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language ||
       "en"}&TripType=${(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getTripType)("OneWay", "RoundTrip", "MultiCity")}`;
-    url += "&UserLanguage=" + _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language || 0;
+    url += "&UserLanguage=" + _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language || 0;
     url += "&Adult=" + pax.adults;
     url += "&Child=" + pax.children.length;
     url += "&InfantLap=" + pax.infLap;
@@ -13321,7 +11460,7 @@ function print(displayName, editions, startValue) {
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => print("Vayama", travix, "www.vayama.com"));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => print("Vayama", travix, "www.vayama.ie"));
 (0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => print("BudgetAir", budgetairs, "www.budgetair.nl"));
 
 
@@ -13436,7 +11575,6 @@ var map = {
 	"./otas/edreams.js": "./src/matrix3/links/otas/edreams.js",
 	"./otas/etraveli.js": "./src/matrix3/links/otas/etraveli.js",
 	"./otas/expedia.js": "./src/matrix3/links/otas/expedia.js",
-	"./otas/flightnetwork.js": "./src/matrix3/links/otas/flightnetwork.js",
 	"./otas/hop2.js": "./src/matrix3/links/otas/hop2.js",
 	"./otas/lucky2go.js": "./src/matrix3/links/otas/lucky2go.js",
 	"./otas/priceline.js": "./src/matrix3/links/otas/priceline.js",
@@ -13472,9 +11610,9 @@ webpackContext.id = "./src/matrix3/links sync recursive .[jt]s$";
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "getAmadeusUrl": () => (/* binding */ getAmadeusUrl),
 /* harmony export */   "getAmadeusPax": () => (/* binding */ getAmadeusPax),
-/* harmony export */   "getAmadeusTriptype": () => (/* binding */ getAmadeusTriptype)
+/* harmony export */   "getAmadeusTriptype": () => (/* binding */ getAmadeusTriptype),
+/* harmony export */   "getAmadeusUrl": () => (/* binding */ getAmadeusUrl)
 /* harmony export */ });
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
@@ -13649,7 +11787,7 @@ function getAmadeusUrl(config) {
   url += "&E_DATE_" + curleg + "=" + lastarrtime; // push arr time
   url +=
     "&CABIN=" +
-    cabins[_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Auto" ? maxcabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()] +
+    cabins[_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Auto" ? maxcabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()] +
     ""; // push cabin
   return url;
 }
@@ -13780,11 +11918,11 @@ const de = {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "registeredSettings": () => (/* binding */ registeredSettings),
-/* harmony export */   "registerSetting": () => (/* binding */ registerSetting),
-/* harmony export */   "saveUserSettings": () => (/* binding */ saveUserSettings),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   "loadUserSettings": () => (/* binding */ loadUserSettings),
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */   "registerSetting": () => (/* binding */ registerSetting),
+/* harmony export */   "registeredSettings": () => (/* binding */ registeredSettings),
+/* harmony export */   "saveUserSettings": () => (/* binding */ saveUserSettings)
 /* harmony export */ });
 /* harmony import */ var _appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 
@@ -13833,14 +11971,14 @@ function registerSetting(name, id, values, defaultValue) {
 }
 
 async function saveUserSettings(settings = defaultSettings) {
-  if (_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.isUserscript)
+  if (_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].isUserscript)
     await GM.setValue("mptUserSettings", JSON.stringify(settings));
   else localStorage.setItem("mptUserSettings", JSON.stringify(settings));
 }
 
 async function loadUserSettings() {
   let gmSavedUserSettings;
-  if (_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.isUserscript)
+  if (_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].isUserscript)
     gmSavedUserSettings = await GM.getValue("mptUserSettings");
   else gmSavedUserSettings = localStorage.getItem("mptUserSettings");
 
@@ -13863,20 +12001,20 @@ async function loadUserSettings() {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "clearNotification": () => (/* binding */ clearNotification),
+/* harmony export */   "dayDiff": () => (/* binding */ dayDiff),
+/* harmony export */   "exRE": () => (/* binding */ exRE),
 /* harmony export */   "findtarget": () => (/* binding */ findtarget),
 /* harmony export */   "findtargets": () => (/* binding */ findtargets),
 /* harmony export */   "hasClass": () => (/* binding */ hasClass),
-/* harmony export */   "toggleVis": () => (/* binding */ toggleVis),
-/* harmony export */   "clearNotification": () => (/* binding */ clearNotification),
-/* harmony export */   "printNotification": () => (/* binding */ printNotification),
-/* harmony export */   "exRE": () => (/* binding */ exRE),
-/* harmony export */   "to2digits": () => (/* binding */ to2digits),
-/* harmony export */   "to4digits": () => (/* binding */ to4digits),
-/* harmony export */   "to4digitTime": () => (/* binding */ to4digitTime),
-/* harmony export */   "monthnumberToName": () => (/* binding */ monthnumberToName),
 /* harmony export */   "monthnameToNumber": () => (/* binding */ monthnameToNumber),
+/* harmony export */   "monthnumberToName": () => (/* binding */ monthnumberToName),
+/* harmony export */   "printNotification": () => (/* binding */ printNotification),
+/* harmony export */   "to2digits": () => (/* binding */ to2digits),
+/* harmony export */   "to4digitTime": () => (/* binding */ to4digitTime),
+/* harmony export */   "to4digits": () => (/* binding */ to4digits),
 /* harmony export */   "toDate": () => (/* binding */ toDate),
-/* harmony export */   "dayDiff": () => (/* binding */ dayDiff)
+/* harmony export */   "toggleVis": () => (/* binding */ toggleVis)
 /* harmony export */ });
 /* unused harmony exports padChars, uuidv4 */
 function findtarget(className, nth) {
