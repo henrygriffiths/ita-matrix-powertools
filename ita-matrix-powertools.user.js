@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.1
+// @version 0.55.2
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -2925,9 +2925,10 @@ function findItinTarget(leg, seg, tcell) {
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "registerLink": () => (/* binding */ registerLink),
-/* harmony export */   "printLinksContainer": () => (/* binding */ printLinksContainer)
+/* harmony export */   "printLinksContainer": () => (/* binding */ printLinksContainer),
+/* harmony export */   "getSidebarContainer": () => (/* binding */ getSidebarContainer)
 /* harmony export */ });
-/* unused harmony exports printImage, getSidebarContainer */
+/* unused harmony export printImage */
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/itaSettings.ts");
 /* harmony import */ var _settings_translations__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/translations.js");
@@ -3564,7 +3565,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.1",
+    version: "0.55.2",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -3652,21 +3653,44 @@ function getForcedCabin() {
 /* harmony export */ });
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/utils.js");
 
-let _getAngularContext;
-const getAngularContext = (o) => {
-    if (!_getAngularContext) {
+let _bookingDetails = undefined;
+(function _waitHijack() {
+    setTimeout(() => {
         const _window = unsafeWindow || window;
         for (const key of Object.keys(_window)) {
             if (typeof _window[key] !== "function")
                 continue;
-            if (_window[key].toString().includes("__ngContext__;")) {
-                _getAngularContext = _window[key];
-                break;
+            if (_window[key].toString().includes("Copy itinerary as JSON")) {
+                const oldFunc = _window[key];
+                // hijack render function
+                _window[key] = function () {
+                    var _a;
+                    oldFunc.apply(this, Array.prototype.slice.call(arguments));
+                    const funcContents = oldFunc.toString();
+                    // get itin variable names
+                    const contextMatches = funcContents.match(/var (\w+)=(\w+)\(\);/); // var c = Ud();
+                    const cVar = contextMatches && contextMatches[1];
+                    const Ud = contextMatches && contextMatches[2];
+                    const bookingDetailsMatches = funcContents.match(/(\w+).bookingDetails/); // return Wd(xla(e, d.bookingDetails))
+                    const bookingDetailsVar = bookingDetailsMatches && bookingDetailsMatches[1];
+                    const itinMatches = funcContents.match(new RegExp(`var ${bookingDetailsVar}=(\\w+)\\(${cVar}\\)\\.(\\w+)`)); // var d = Vd(c).Rd
+                    const Vd = itinMatches && itinMatches[1];
+                    const Rd = itinMatches && itinMatches[2];
+                    // re-build itin call
+                    const c = Ud && _window[Ud] && _window[Ud]();
+                    _bookingDetails =
+                        (Vd &&
+                            c &&
+                            Rd &&
+                            _window[Vd] && ((_a = _window[Vd](c)[Rd]) === null || _a === void 0 ? void 0 : _a.bookingDetails)) ||
+                            _bookingDetails;
+                };
+                return;
             }
         }
-    }
-    return _getAngularContext && _getAngularContext(o);
-};
+        _waitHijack();
+    }, 200);
+})();
 // ITA Matrix CSS class definitions:
 const itaSettings = [
     {
@@ -3675,13 +3699,7 @@ const itaSettings = [
             maindiv: "mat-app-background"
         },
         resultpage: {
-            getBookingDetails: () => {
-                var _a;
-                const card = getAllAngularRootElements &&
-                    getAllAngularRootElements()[0].getElementsByTagName("mat-card-content")[3];
-                const ngContext = card && getAngularContext(card);
-                return (_a = ngContext === null || ngContext === void 0 ? void 0 : ngContext.find(ctx => !!(ctx === null || ctx === void 0 ? void 0 : ctx.bookingDetails))) === null || _a === void 0 ? void 0 : _a.bookingDetails;
-            },
+            getBookingDetails: () => _bookingDetails,
             mcDiv: "info-container",
             mcHeader: "info-title"
         }
@@ -4491,7 +4509,10 @@ function trimStr(x) {
 
 
 
+// EXTERNAL MODULE: ./src/matrix3/print/links.ts
+var links = __webpack_require__("./src/matrix3/print/links.ts");
 ;// CONCATENATED MODULE: ./src/matrix5/parse/itin.ts
+
 
 
 const itin_currentItin = {};
@@ -4559,11 +4580,12 @@ function readItinerary5() {
 function waitForBookingDetails() {
     return new Promise(resolve => {
         (function _wait() {
-            setTimeout(() => {
+            setTimeout(async () => {
                 var _a;
-                const bookingDetails = (_a = itaSettings.default.resultpage) === null || _a === void 0 ? void 0 : _a.getBookingDetails();
-                if (!!(bookingDetails === null || bookingDetails === void 0 ? void 0 : bookingDetails.itinerary))
+                const bookingDetails = await ((_a = itaSettings.default.resultpage) === null || _a === void 0 ? void 0 : _a.getBookingDetails());
+                if (!!(bookingDetails === null || bookingDetails === void 0 ? void 0 : bookingDetails.itinerary) && (0,links.getSidebarContainer)())
                     resolve(undefined);
+                // TODO: clean up getSidebarContainer(), currently calling to ensure UI has loaded
                 else
                     _wait();
             }, 200);

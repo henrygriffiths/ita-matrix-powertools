@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.55.2] - 2022-06-20
+
+Edited by IAkH
+
+- fixed preliminary Matrix 5 support itinerary detection
+
 ## [0.55.1] - 2022-04-08
 
 Edited by IAkH
