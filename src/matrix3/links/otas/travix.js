@@ -84,7 +84,6 @@ const travix = [
     pos: "PA",
     cur: "USD"
   },
-  { name: "Vayama USA", value: "www.vayama.com", pos: "US", cur: "USD" },
   {
     name: "Flugladen Austria",
     value: "www.flugladen.at",
@@ -318,5 +317,5 @@ function print(displayName, editions, startValue) {
   };
 }
 
-register("otas", () => print("Vayama", travix, "www.vayama.com"));
+register("otas", () => print("Vayama", travix, "www.vayama.ie"));
 register("otas", () => print("BudgetAir", budgetairs, "www.budgetair.nl"));
