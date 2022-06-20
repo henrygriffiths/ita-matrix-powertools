@@ -1,10 +1,14 @@
-import { unsafeScript } from "../../unsafe-policy";
 import { findtarget } from "../utils";
 
 let _bookingDetails: any = undefined;
 (function _waitHijack() {
   setTimeout(() => {
-    const _window = unsafeWindow || window;
+    let _window;
+    try {
+      _window = unsafeWindow || window;
+    } catch {
+      _window = window;
+    }
     for (const key of Object.keys(_window)) {
       if (typeof _window[key] !== "function") continue;
       if (_window[key].toString().includes("Copy itinerary as JSON")) {
