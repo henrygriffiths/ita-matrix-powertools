@@ -1,19 +1,53 @@
+import { unsafeScript } from "../../unsafe-policy";
 import { findtarget } from "../utils";
 
-let _getAngularContext: (o: any) => any;
-const getAngularContext = (o: any) => {
-  if (!_getAngularContext) {
+let _bookingDetails: any = undefined;
+(function _waitHijack() {
+  setTimeout(() => {
     const _window = unsafeWindow || window;
     for (const key of Object.keys(_window)) {
       if (typeof _window[key] !== "function") continue;
-      if (_window[key].toString().includes("__ngContext__;")) {
-        _getAngularContext = _window[key];
-        break;
+      if (_window[key].toString().includes("Copy itinerary as JSON")) {
+        const oldFunc = _window[key];
+        // hijack render function
+        _window[key] = function() {
+          oldFunc.apply(this, Array.prototype.slice.call(arguments));
+
+          const funcContents = oldFunc.toString();
+
+          // get itin variable names
+          const contextMatches = funcContents.match(/var (\w+)=(\w+)\(\);/); // var c = Ud();
+          const cVar = contextMatches && (contextMatches[1] as string);
+          const Ud = contextMatches && (contextMatches[2] as string);
+
+          const bookingDetailsMatches = funcContents.match(
+            /(\w+).bookingDetails/
+          ); // return Wd(xla(e, d.bookingDetails))
+          const bookingDetailsVar =
+            bookingDetailsMatches && (bookingDetailsMatches[1] as string);
+
+          const itinMatches = funcContents.match(
+            new RegExp(`var ${bookingDetailsVar}=(\\w+)\\(${cVar}\\)\\.(\\w+)`)
+          ); // var d = Vd(c).Rd
+          const Vd = itinMatches && (itinMatches[1] as string);
+          const Rd = itinMatches && (itinMatches[2] as string);
+
+          // re-build itin call
+          const c = Ud && _window[Ud] && _window[Ud]();
+          _bookingDetails =
+            (Vd &&
+              c &&
+              Rd &&
+              _window[Vd] &&
+              _window[Vd](c)[Rd]?.bookingDetails) ||
+            _bookingDetails;
+        };
+        return;
       }
     }
-  }
-  return _getAngularContext && _getAngularContext(o);
-};
+    _waitHijack();
+  }, 200);
+})();
 
 // ITA Matrix CSS class definitions:
 const itaSettings = [
@@ -23,15 +57,7 @@ const itaSettings = [
       maindiv: "mat-app-background"
     },
     resultpage: {
-      getBookingDetails: () => {
-        const card =
-          getAllAngularRootElements &&
-          getAllAngularRootElements()[0].getElementsByTagName(
-            "mat-card-content"
-          )[3];
-        const ngContext = card && getAngularContext(card);
-        return ngContext?.find(ctx => !!ctx?.bookingDetails)?.bookingDetails;
-      },
+      getBookingDetails: () => _bookingDetails,
       mcDiv: "info-container",
       mcHeader: "info-title"
     }

@@ -3,6 +3,7 @@ import {
   readItinerary as readItinerary3,
   currentItin as currentItin3
 } from "../../matrix3/parse/itin";
+import { getSidebarContainer } from "../../matrix3/print/links";
 
 const currentItin: typeof currentItin3 = {};
 
@@ -87,9 +88,11 @@ function readItinerary5(): typeof currentItin3 {
 export function waitForBookingDetails() {
   return new Promise<undefined>(resolve => {
     (function _wait() {
-      setTimeout(() => {
-        const bookingDetails = classSettings.resultpage?.getBookingDetails();
-        if (!!bookingDetails?.itinerary) resolve(undefined);
+      setTimeout(async () => {
+        const bookingDetails = await classSettings.resultpage?.getBookingDetails();
+        if (!!bookingDetails?.itinerary && getSidebarContainer())
+          resolve(undefined);
+        // TODO: clean up getSidebarContainer(), currently calling to ensure UI has loaded
         else _wait();
       }, 200);
     })();
