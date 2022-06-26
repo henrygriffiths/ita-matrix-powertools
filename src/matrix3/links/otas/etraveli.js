@@ -1,8 +1,9 @@
-import { monthnumberToName } from "../../utils";
+import { monthnumberToName, toTitleCase } from "../../utils";
 import { register } from "..";
-import { currentItin, isMulticity } from "../../../matrix5/parse/itin";
+import { currentItin } from "../../../matrix5/parse/itin";
 
 const editions = [
+  { name: "Gotogate", host: "www.gotogate.com" },
   { name: "Seat24.se", host: "www.seat24.se" },
   { name: "Seat24.de", host: "www.seat24.de" },
   { name: "Seat24.dk", host: "www.seat24.dk" },
@@ -51,49 +52,43 @@ const editions = [
   { name: "Supersaver.ru", host: "www.supersaver.ru" }
 ];
 
+const convertDate = (date, withYear, titleMonth) =>
+  ("0" + date.day).slice(-2) +
+  (titleMonth
+    ? toTitleCase(monthnumberToName(date.month))
+    : monthnumberToName(date.month)) +
+  (withYear ? date.year.toString().slice(-2) : "");
+
+export const createUrl = host => {
+  let ggUrl = "http://" + host + "/air/";
+  ggUrl += currentItin.itin
+    .map(itin => `${itin.orig}${itin.dest}${convertDate(itin.dep, false)}`)
+    .join(",");
+  ggUrl += "/" + currentItin.numPax;
+  ggUrl +=
+    "?selectionKey=" +
+    currentItin.itin
+      .map(itin =>
+        itin.seg
+          .map(
+            seg =>
+              seg.carrier +
+              seg.fnr +
+              "-" +
+              convertDate(seg.dep, true, true) +
+              "-" +
+              seg.bookingclass
+          )
+          .join("_")
+      )
+      .join("_");
+
+  return ggUrl;
+};
+
 function printEtraveli() {
-  if (isMulticity()) return; // no multi segments
-
-  var convertDate = function(date, withYear) {
-    return (
-      ("0" + date.day).slice(-2) +
-      monthnumberToName(date.month) +
-      (withYear ? date.year.toString().slice(-2) : "")
-    );
-  };
-  var createUrl = function(host) {
-    var ggUrl = "http://" + host + "/air/";
-    ggUrl +=
-      currentItin.itin[0].orig +
-      currentItin.itin[0].dest +
-      convertDate(currentItin.itin[0].dep, false);
-    if (currentItin.itin.length > 1)
-      ggUrl += convertDate(currentItin.itin[1].dep, false);
-    ggUrl += "/" + currentItin.numPax;
-    ggUrl +=
-      "?selectionKey=" +
-      currentItin.itin
-        .map(function(itin) {
-          return itin.seg
-            .map(function(seg) {
-              return (
-                seg.carrier +
-                seg.fnr +
-                "-" +
-                convertDate(seg.dep, true) +
-                "-" +
-                seg.bookingclass
-              );
-            })
-            .join("_");
-        })
-        .join("_");
-
-    return ggUrl;
-  };
-  // picked seat24 as main one, but could be any of them
-  var ggUrl = createUrl("www.seat24.de");
-  var extra =
+  const ggUrl = createUrl(editions[0].host);
+  let extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
     .map(function(obj, i) {
@@ -110,7 +105,7 @@ function printEtraveli() {
 
   return {
     url: ggUrl,
-    title: "Seat24.de",
+    title: editions[0].name,
     extra
   };
 }
