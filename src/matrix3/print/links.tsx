@@ -1,9 +1,10 @@
+import React from "dom-chef";
 import mptUserSettings from "../settings/userSettings";
 import classSettings from "../settings/itaSettings";
 import translations from "../settings/translations";
 
 import { findtargets, findtarget } from "../utils";
-import { unsafeHTML, unsafeScript, unsafeScriptURL } from "../../unsafe-policy";
+import { unsafeHTML, unsafeScriptURL } from "../../unsafe-policy";
 
 /** @type {{ [key: string]: (() => { url: string, title: string, img?: string, desc?: string, extra?: string, target?: string })[]}} */
 const links = {};
@@ -34,7 +35,7 @@ export function printLinksContainer() {
   // empty outputcontainer
   const div = getSidebarContainer();
   if (!div) return;
-  div.innerHTML = unsafeHTML("");
+  div.innerHTML = "";
 
   //  S&D powertool items
   const elems = findtargets("powertoolsitem");
@@ -80,38 +81,45 @@ function bindLinkClicks() {
 
 // Inline Stuff
 function printUrlInline(link) {
-  const item = `<li class="powertoolsitem">${printLink(link)}</li>`;
+  const item = <li class="powertoolsitem">{printLink(link)}</li>;
   const container = getSidebarContainer();
-  container && container.insertAdjacentHTML("beforeend", unsafeHTML(item));
+  container && container.appendChild(item);
 }
 
 export function printImage(link) {
   const container = getSidebarContainer();
-  const item =
-    (link.url
-      ? '<a href="' + link.url + '" target="_blank" class="powertoolsitem">'
-      : "") +
-    '<img src="' +
-    link.img +
-    '" style="margin-top:10px;"' +
-    (!link.url ? ' class="powertoolsitem"' : "") +
-    "/>" +
-    (link.url ? "</a>" : "");
+
+  let item = (
+    <img
+      src={link.img}
+      style={{ marginTop: "10px" }}
+      class={!link.url ? "powertoolsitem" : ""}
+    />
+  );
+  if (link.url) {
+    item = (
+      <a href={link.url} target="_blank" class="powertoolsitem">
+        {item}
+      </a>
+    );
+  }
+
   if (mptUserSettings.enableIMGautoload == 1) {
-    container && container.insertAdjacentHTML("beforeend", unsafeHTML(item));
+    container && container.appendChild(item);
   } else {
     const id = Math.random().toString();
     container &&
-      container.insertAdjacentHTML(
-        "beforeend",
-        unsafeHTML(
-          `<div id="${id}" class="powertoolsitem powertoolsimage"><span>${link.title}</span></div>`
-        )
+      container.appendChild(
+        <div
+          id={id}
+          class="powertoolsitem powertoolsimage"
+          onClick={() => {
+            this.outerHTML = item;
+          }}
+        >
+          <span>{link.title}</span>
+        </div>
       );
-
-    document.getElementById(id).addEventListener("click", function() {
-      this.outerHTML = item;
-    });
   }
 }
 
@@ -129,27 +137,24 @@ function createUrlContainerInline() {
   if (!target) return;
 
   if (classSettings.matrixVersion == 5) {
-    const matCard = document.createElement("mat-card");
-    matCard.classList.add(
-      "mat-card",
-      "mat-focus-indicator",
-      "mat-elevation-z8",
-      "powertoolslinkinlinecontainer"
-    );
-    matCard.innerHTML = unsafeHTML(
-      `<h2 class="${classSettings.resultpage.mcHeader}">Powertools</h2><ul id="powertoolslinkcontainer" style="padding-left: 20px;"></ul>`
+    const matCard = (
+      <mat-card class="mat-card mat-focus-indicator mat-elevation-z8 powertoolslinkinlinecontainer">
+        <h2 class={classSettings.resultpage.mcHeader}>Powertools</h2>
+        <ul id="powertoolslinkcontainer" style={{ paddingLeft: "20px" }}></ul>
+      </mat-card>
     );
     target.prepend(matCard);
   } else {
-    const newdiv = document.createElement("div");
-    newdiv.classList.add(classSettings.resultpage.mcDiv);
-    newdiv.classList.add(`powertoolslinkinlinecontainer`);
-    newdiv.innerHTML = unsafeHTML(
-      '<div class="' +
-        classSettings.resultpage.mcHeader +
-        '">Powertools</div><ul id="powertoolslinkcontainer" class="' +
-        classSettings.resultpage.mcLinkList +
-        '"></ul>'
+    const newdiv = (
+      <div
+        class={`${classSettings.resultpage.mcDiv} powertoolslinkinlinecontainer`}
+      >
+        <div class={classSettings.resultpage.mcHeader}>Powertools</div>
+        <ul
+          id="powertoolslinkcontainer"
+          class={classSettings.resultpage.mcLinkList}
+        ></ul>
+      </div>
     );
     target.parentElement.appendChild(newdiv);
   }
@@ -158,51 +163,62 @@ function createUrlContainerInline() {
 
 // Printing Stuff
 function printUrl(link) {
-  const item = `<div class="powertoolsitem" style="margin:5px 0px 10px 0px">${printLink(
-    link
-  )}</div>`;
+  const item = (
+    <div class="powertoolsitem" style={{ margin: "5px 0px 10px 0px" }}>
+      {printLink(link)}
+    </div>
+  );
   const container = getSidebarContainer();
-  container && container.insertAdjacentHTML("beforeend", unsafeHTML(item));
+  container && container.appendChild(item);
 }
 
 function printLink(link) {
-  let html = `<div><label style="font-size:${Number(
-    mptUserSettings.linkFontsize
-  )}%;">
-    <a href="${link.url}" target=${link.target || "_blank"}>${(translations[
-    mptUserSettings.language
-  ] &&
-    translations[mptUserSettings.language]["use"]) ||
-    "Use "} ${link.title}</a>
-  </label>`;
-  if (link.extra) html += link.extra;
-  if (link.desc)
-    html += `<br/><label style="font-size:${Number(
-      mptUserSettings.linkFontsize
-    ) - 15}%">${link.desc}</label>`;
-  html += "</div";
-  return html;
+  const extra = document.createElement("div");
+  link.extra && extra.insertAdjacentHTML("beforeend", unsafeHTML(link.extra));
+  return (
+    <div>
+      <label style={{ fontSize: `${Number(mptUserSettings.linkFontsize)}%` }}>
+        <a href={link.url} target={link.target || "_blank"}>
+          {(translations[mptUserSettings.language] &&
+            translations[mptUserSettings.language]["use"]) ||
+            "Use "}{" "}
+          {link.title}
+        </a>
+      </label>
+      {extra?.childNodes && Array.from(extra.childNodes)}
+      {link.desc && (
+        <>
+          <br />
+          <label
+            style={{
+              fontSize: `${Number(mptUserSettings.linkFontsize) - 15}%`
+            }}
+          >
+            {link.desc}
+          </label>
+        </>
+      )}
+    </div>
+  );
 }
 
-function createUrlContainer() {
+function createUrlContainer(): HTMLElement {
   const target = findtarget(classSettings.resultpage.milagecontainer, 1);
   if (!target) return;
 
-  const newdiv = document.createElement("div");
-  newdiv.setAttribute("id", "powertoolslinkcontainer");
-  newdiv.setAttribute("style", "margin:15px 0px 0px 10px");
+  const newdiv = (
+    <div
+      id="powertoolslinkcontainer"
+      style={{ margin: "15px 0px 0px 10px" }}
+    ></div>
+  );
   return target.appendChild(newdiv);
 }
 
 function printSeperator() {
   const container = getSidebarContainer();
   container &&
-    container.insertAdjacentHTML(
-      "beforeend",
-      unsafeHTML(
-        mptUserSettings.enableInlineMode
-          ? '<hr class="powertoolsitem"/>'
-          : "<hr/>"
-      )
+    container.appendChild(
+      mptUserSettings.enableInlineMode ? <hr class="powertoolsitem" /> : <hr />
     );
 }
