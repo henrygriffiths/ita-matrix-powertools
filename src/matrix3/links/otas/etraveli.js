@@ -1,6 +1,10 @@
 import { monthnumberToName, toTitleCase } from "../../utils";
 import { register } from "..";
-import { currentItin } from "../../../matrix5/parse/itin";
+import {
+  currentItin,
+  isOneway,
+  isRoundtrip
+} from "../../../matrix5/parse/itin";
 
 const editions = [
   { name: "Gotogate", host: "www.gotogate.com" },
@@ -60,10 +64,23 @@ const convertDate = (date, withYear, titleMonth) =>
   (withYear ? date.year.toString().slice(-2) : "");
 
 export const createUrl = host => {
-  let ggUrl = "http://" + host + "/air/";
-  ggUrl += currentItin.itin
-    .map(itin => `${itin.orig}${itin.dest}${convertDate(itin.dep, false)}`)
-    .join(",");
+  let ggUrl = "https://" + host + "/air/";
+  if (isOneway()) {
+    ggUrl += `${currentItin.itin[0].orig}${
+      currentItin.itin[0].dest
+    }${convertDate(currentItin.itin[0].dep, false)}`;
+  } else if (isRoundtrip()) {
+    ggUrl += `${currentItin.itin[0].orig}${
+      currentItin.itin[0].dest
+    }${convertDate(currentItin.itin[0].dep, false)}${convertDate(
+      currentItin.itin[1].dep,
+      false
+    )}`;
+  } else {
+    ggUrl += currentItin.itin
+      .map(itin => `${itin.orig}${itin.dest}${convertDate(itin.dep, false)}`)
+      .join(",");
+  }
   ggUrl += "/" + currentItin.numPax;
   ggUrl +=
     "?selectionKey=" +
