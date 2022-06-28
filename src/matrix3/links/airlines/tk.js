@@ -1,21 +1,14 @@
-import mptUserSettings from "../../settings/userSettings";
-import { printNotification } from "../../utils";
+import { printNotification, to2digits } from "../../utils";
 import { validatePax, register, anyCarriers } from "..";
-import {
-  getAmadeusUrl,
-  getAmadeusTriptype,
-  getAmadeusPax
-} from "../../print/amadeus";
+import { currentItin, getCurrentSegs } from "../../../matrix5/parse/itin";
 
+const cabins = ["ECONOMY", "ECONOMY", "BUSINESS", "FIRST"];
 function printTK() {
   if (!anyCarriers("TK")) {
     return;
   }
 
-  var url =
-    "https://book.eu2.amadeus.com/plnext/turkishairlines/Override.action?";
-  var paxConfig = { allowinf: 1, youthage: 0 };
-  var pax = validatePax({
+  const pax = validatePax({
     maxPaxcount: 9,
     countInf: false,
     childAsAdult: 12,
@@ -26,31 +19,33 @@ function printTK() {
     printNotification("Error: Failed to validate Passengers in printTK");
     return;
   }
-  var amadeusConfig = {
-    sepcabin: 0,
-    detailed: 0,
-    allowpremium: 1,
-    inctimes: 1
-  };
-  var tmpPax = getAmadeusPax(pax, paxConfig);
-  url += "TRIP_TYPE=" + getAmadeusTriptype();
-  url += tmpPax.url;
-  url += getAmadeusUrl(amadeusConfig);
-  url +=
-    "&PORT_TSC=FALSE&SO_SITE_ALLOW_SERVICE_FEE=0&SO_SITE_SERVICE_FEE_MODE=AIR&SITE=BBAHBBAH";
-  url +=
-    "&LANGUAGE=" +
-    (mptUserSettings.language == "tk" || mptUserSettings.language == "de"
-      ? mptUserSettings.language.toUpperCase()
-      : "GB");
-  url += "&EMBEDDED_TRANSACTION=AirComplexAvailability&TRIPFLOW=YES";
-  url +=
-    "SO_LANG_TRIPFLOW_ENTRY_ADDRE=online.turkishairlines.com%2Finternet-booking%2Famadeus.tk&ARRANGE_BY=N&DIRECT_NON_STOP=false&REFRESH=0&SO_SITE_TAX_BREAKDOWN_DISP=TRUE&SO_LANG_DISABLE_X_XSS_PROTEC=TRUE&SO_SITE_REDIRECT_MODE=AUTOMATIC&SO_LANG_URL_AIR_NFS_SRCH=http%3A%2F%2Fonline.turkishairlines.com%2Finternet-booking%2Fstart.tk";
+
+  let url = `https://www.turkishairlines.com/en-us/flights/booking/availability-multicity?D=1`;
+  url += `&dom=0`;
+  url += `&prc=${currentItin.price}`;
+  url += `&cur=${currentItin.cur || "USD"}`;
+  url += `&lp=PROM`;
+  url += `&pax=A:${pax.adults},C:${pax.children.length},I:${pax.infLap}`;
+  url += `&cc=${cabins[Math.max(...getCurrentSegs().map(seg => seg.cabin))]}`;
+  currentItin.itin.forEach((itin, i) => {
+    url += `&so${i}=${itin.seg.length}`;
+    url += `&b${i + 1}=org:${itin.orig}/dst:${itin.dest}/fb:${itin.seg
+      .map(seg => seg.farebase)
+      .join(",")}/orgd:${formatDate(itin.dep)}/fn:${itin.seg
+      .map(seg => seg.carrier + seg.fnr)
+      .join(",")}`;
+  });
 
   return {
     url,
     title: "Turkish"
   };
+}
+
+function formatDate(time) {
+  return `${to2digits(time.day)}${to2digits(
+    time.month
+  )}${time.year.toString().slice(-2)}`;
 }
 
 register("airlines", printTK);
