@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.55.4] - 2022-06-30
+
+Edited by IAkH
+
+- fixed Turkish Airlines link
+- added GotoGate and FlightHub links
+
 ## [0.55.3] - 2022-06-20
 
 Edited by IAkH
