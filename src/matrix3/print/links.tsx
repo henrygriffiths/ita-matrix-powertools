@@ -35,7 +35,7 @@ export function printLinksContainer() {
   // empty outputcontainer
   const div = getSidebarContainer();
   if (!div) return;
-  div.innerHTML = "";
+  div.innerHTML = unsafeHTML("");
 
   //  S&D powertool items
   const elems = findtargets("powertoolsitem");
