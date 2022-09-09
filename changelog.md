@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.55.6] - 2022-09-09
+
+Edited by dja852
+
+- fixed Amadeus URL generator to use 24-hour time as this was causing itin display issues on Air Canada
+
 ## [0.55.5] - 2022-08-28
 
 Edited by IAkH

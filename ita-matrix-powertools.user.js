@@ -13579,7 +13579,7 @@ function getAmadeusUrl(config) {
           ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.day).slice(-2) +
           (config.inctimes == 1
             ? (
-                "0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.time.replace(":", "")
+                "0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.time24.replace(":", "")
               ).slice(-4)
             : "0000");
         url +=
@@ -13593,7 +13593,7 @@ function getAmadeusUrl(config) {
         ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].arr.day).slice(-2) +
         (config.inctimes == 1
           ? (
-              "0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].arr.time.replace(":", "")
+              "0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].arr.time24.replace(":", "")
             ).slice(-4)
           : "0000");
       if (config.detailed === 1) {
