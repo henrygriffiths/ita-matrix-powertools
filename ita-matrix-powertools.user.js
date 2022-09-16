@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.5
+// @version 0.55.6
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -3570,7 +3570,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.5",
+    version: "0.55.6",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -13579,7 +13579,7 @@ function getAmadeusUrl(config) {
           ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.day).slice(-2) +
           (config.inctimes == 1
             ? (
-                "0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.time.replace(":", "")
+                "0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.time24.replace(":", "")
               ).slice(-4)
             : "0000");
         url +=
@@ -13593,7 +13593,7 @@ function getAmadeusUrl(config) {
         ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].arr.day).slice(-2) +
         (config.inctimes == 1
           ? (
-              "0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].arr.time.replace(":", "")
+              "0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].arr.time24.replace(":", "")
             ).slice(-4)
           : "0000");
       if (config.detailed === 1) {
