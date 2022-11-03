@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.55.7] - 2022-11-03
+
+Edited by IAkH
+
+- removed Google Flights (broken)
+- replaced affiliate link script
+
 ## [0.55.6] - 2022-09-09
 
 Edited by dja852

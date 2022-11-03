@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.6
+// @version 0.55.7
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -2956,9 +2956,6 @@ function findItinTarget(leg, seg, tcell) {
 /** @type {{ [key: string]: (() => { url: string, title: string, img?: string, desc?: string, extra?: string, target?: string })[]}} */
 const links = {};
 __webpack_require__("./src/matrix3/links/index.js");
-const skimlinks = document.createElement("script");
-const src = `https://s.skimresources.com/js/${!!location.hostname.match(/^old/i) ? "122783X1686784" : "122783X1611548"}.skimlinks.js`;
-skimlinks.setAttribute("src", (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_4__.unsafeScriptURL)(src));
 /**
  * Registers a link
  * @param {() => { url: string, title: string, img?: string, desc?: string, extra?: string, target?: string }} factory
@@ -3008,14 +3005,6 @@ function printLinksContainer() {
             i != groups.length - 1 &&
             printSeperator();
     });
-    /*** attach JS events after building link container  ***/
-    bindLinkClicks();
-}
-function bindLinkClicks() {
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.enableAffiliates == 1) {
-        skimlinks.parentNode && skimlinks.parentNode.removeChild(skimlinks);
-        document.body.appendChild(skimlinks);
-    }
 }
 // Inline Stuff
 function printUrlInline(link) {
@@ -3076,7 +3065,16 @@ function printLink(link) {
     link.extra && extra.insertAdjacentHTML("beforeend", (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_4__.unsafeHTML)(link.extra));
     return (dom_chef__WEBPACK_IMPORTED_MODULE_0__.default.createElement("div", null,
         dom_chef__WEBPACK_IMPORTED_MODULE_0__.default.createElement("label", { style: { fontSize: `${Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.linkFontsize)}%` } },
-            dom_chef__WEBPACK_IMPORTED_MODULE_0__.default.createElement("a", { href: link.url, target: link.target || "_blank" },
+            dom_chef__WEBPACK_IMPORTED_MODULE_0__.default.createElement("a", { href: link.url, target: link.target || "_blank", onClick: e => {
+                    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.enableAffiliates == 1) {
+                        e.preventDefault();
+                        window.open(`https://go.skimresources.com/?id=${!!location.hostname.match(/^old/i)
+                            ? "122783X1686784"
+                            : "122783X1611548"}&url=${encodeURIComponent(e.target.href)}&sref=${encodeURIComponent(window.location.href)}`, e.target.target);
+                        return false;
+                    }
+                    return true;
+                } },
                 (_settings_translations__WEBPACK_IMPORTED_MODULE_3__.default[_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.language] &&
                     _settings_translations__WEBPACK_IMPORTED_MODULE_3__.default[_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.language]["use"]) ||
                     "Use ",
@@ -3570,7 +3568,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.6",
+    version: "0.55.7",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -4667,9 +4665,9 @@ function isMulticity() {
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "unsafeHTML": () => (/* binding */ unsafeHTML),
-/* harmony export */   "unsafeScriptURL": () => (/* binding */ unsafeScriptURL),
 /* harmony export */   "unsafeScript": () => (/* binding */ unsafeScript)
 /* harmony export */ });
+/* unused harmony export unsafeScriptURL */
 let unsafePolicy = null;
 if (window.trustedTypes && window.trustedTypes.createPolicy) {
     unsafePolicy = window.trustedTypes.createPolicy("unsafePolicy", {
@@ -11090,70 +11088,6 @@ function validatePax(config) {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/meta/googleFlights.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-
-
-
-
-
-const cabins = ["", "p", "b", "f"];
-
-function print() {
-  var pax = (0,___WEBPACK_IMPORTED_MODULE_0__.validatePax)({
-    maxPaxcount: 9,
-    countInf: false,
-    childAsAdult: 12,
-    sepInfSeat: true,
-    childMinAge: 2
-  });
-  if (!pax) {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)(
-      "Error: Failed to validate Passengers in printGoogleFlights"
-    );
-    return;
-  }
-
-  const cabin =
-    cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_2__.getCabin)(Math.min(...(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.getCurrentSegs)().map(seg => seg.cabin)))];
-
-  const url =
-    "https://www.google.com/flights/#flt=" +
-    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.map(
-        itin =>
-          `${itin.orig}.${itin.dest}.${itin.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(
-            itin.dep.month
-          )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(itin.dep.day)}.${itin.seg
-            .map(
-              (seg, j) => `${seg.orig}${seg.dest}${j}${seg.carrier}${seg.fnr}`
-            )
-            .join("~")}`
-      )
-      .join("*") +
-    `;c:${_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.cur || "USD"};px:${pax.adults},${pax.children.length},${
-      pax.infLap
-    },${pax.infSeat};sc:${cabin};tt:${
-      _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.length === 1 ? "o" : "m"
-    }`;
-
-  return {
-    url,
-    title: "Google Flights"
-  };
-}
-
-(0,___WEBPACK_IMPORTED_MODULE_0__.register)("meta", print);
-
-
-/***/ }),
-
 /***/ "./src/matrix3/links/meta/jetcost.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -13455,8 +13389,6 @@ var map = {
 	"./airlines/tk.js": "./src/matrix3/links/airlines/tk.js",
 	"./airlines/vs.js": "./src/matrix3/links/airlines/vs.js",
 	"./index.js": "./src/matrix3/links/index.js",
-	"./meta/googleFlights": "./src/matrix3/links/meta/googleFlights.js",
-	"./meta/googleFlights.js": "./src/matrix3/links/meta/googleFlights.js",
 	"./meta/jetcost.js": "./src/matrix3/links/meta/jetcost.js",
 	"./meta/kayak.js": "./src/matrix3/links/meta/kayak.js",
 	"./meta/momondo.js": "./src/matrix3/links/meta/momondo.js",
