@@ -4,18 +4,12 @@ import classSettings from "../settings/itaSettings";
 import translations from "../settings/translations";
 
 import { findtargets, findtarget } from "../utils";
-import { unsafeHTML, unsafeScriptURL } from "../../unsafe-policy";
+import { unsafeHTML } from "../../unsafe-policy";
 
 /** @type {{ [key: string]: (() => { url: string, title: string, img?: string, desc?: string, extra?: string, target?: string })[]}} */
 const links = {};
 
 require("../links");
-
-const skimlinks = document.createElement("script");
-const src = `https://s.skimresources.com/js/${
-  !!location.hostname.match(/^old/i) ? "122783X1686784" : "122783X1611548"
-}.skimlinks.js`;
-skimlinks.setAttribute("src", unsafeScriptURL(src));
 
 /**
  * Registers a link
@@ -67,16 +61,6 @@ export function printLinksContainer() {
       i != groups.length - 1 &&
       printSeperator();
   });
-
-  /*** attach JS events after building link container  ***/
-  bindLinkClicks();
-}
-
-function bindLinkClicks() {
-  if (mptUserSettings.enableAffiliates == 1) {
-    skimlinks.parentNode && skimlinks.parentNode.removeChild(skimlinks);
-    document.body.appendChild(skimlinks);
-  }
 }
 
 // Inline Stuff
@@ -178,7 +162,27 @@ function printLink(link) {
   return (
     <div>
       <label style={{ fontSize: `${Number(mptUserSettings.linkFontsize)}%` }}>
-        <a href={link.url} target={link.target || "_blank"}>
+        <a
+          href={link.url}
+          target={link.target || "_blank"}
+          onClick={e => {
+            if (mptUserSettings.enableAffiliates == 1) {
+              e.preventDefault();
+              window.open(
+                `https://go.skimresources.com/?id=${
+                  !!location.hostname.match(/^old/i)
+                    ? "122783X1686784"
+                    : "122783X1611548"
+                }&url=${encodeURIComponent(
+                  e.target.href
+                )}&sref=${encodeURIComponent(window.location.href)}`,
+                e.target.target
+              );
+              return false;
+            }
+            return true;
+          }}
+        >
           {(translations[mptUserSettings.language] &&
             translations[mptUserSettings.language]["use"]) ||
             "Use "}{" "}
