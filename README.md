@@ -48,7 +48,7 @@ See the FAQ of your script manager how to install the script.
 
 Get the ["Add ITA Matrix Powertools" Shortcut](https://routinehub.co/shortcut/13483/)
 
-Instructions much be run each time
+Instructions must be run each time
 
 - Open ITA Matrix in Safari on your iPhone or iPad
 - Tap on the **Share button** in the bottom navigation
