@@ -44,7 +44,18 @@ See the FAQ of your script manager how to install the script.
 - Through [OpenUserJS](https://openuserjs.org/scripts/adamhwang/ITA_Matrix_Powertools)
 - Through [GitHub](https://github.com/adamhwang/ita-matrix-powertools/raw/master/ita-matrix-powertools.user.js): you should be asked whether you want to install it - make sure your script manager is running.
 
-**Method 3: Console/Debug mode**
+**Method 3: iOS Safari Shortcut**
+
+Get the ["Add ITA Matrix Powertools" Shortcut](https://routinehub.co/shortcut/13483/)
+
+Instructions much be run each time
+
+- Open ITA Matrix in Safari on your iPhone or iPad
+- Tap on the **Share button** in the bottom navigation
+- Scroll down through all the actions
+- Select **Add ITA Matrix Powertools**
+
+**Method 4: Console/Debug mode**
 
 You need to access the command line of your browser to execute the script. You can use either the regular version or the minified version. Just copy and paste the entire text.
 
