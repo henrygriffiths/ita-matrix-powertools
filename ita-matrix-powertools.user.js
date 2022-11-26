@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.7
+// @version 0.55.8
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -3136,7 +3136,7 @@ function createUsersettings(target) {
     settingscontainer.innerHTML = (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_6__.unsafeHTML)('<div style="display:inline-block;float:left;cursor:pointer;" id="passengerVisToggler">Passengers (<label id="mtpPaxCount">1a</label>)</div><div id="mptStartparse" class="invis" style="margin-left:20px;display:none;cursor:pointer">Editor-Mode:Parse!</div><div id="mtpNotification" style="margin-left:50px;display:inline-block;"></div><div style="display:inline-block;float:right;"><div id="settingsVisToggler" style="display:inline-block;cursor:pointer;">Settings</div> (v' +
         _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.version +
         (_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__.default.matrixVersion == 5 ? " **Matrix 5 BETA**" : "") +
-        ') <div id="mptCabintoggler" style="display:inline-block;">(Cabin: <span id="mptcabin"><label style="width:30px;text-align:center;cursor:pointer;display:inline-block">Auto</label></span>)</div></div><div id="mptSettings" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div id="mptPassengers" class="invis" style="display:none;border-top: 1px dotted grey;"></div>');
+        ') <div id="mptCabintoggler" style="display:inline-block;">(Cabin: <span id="mptcabin"><label style="width:30px;text-align:center;cursor:pointer;display:inline-block">Auto</label></span>)</div></div><div id="mptSettings" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div id="mptPassengers" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div style="clear:both;"></div>');
     target.parentElement.insertBefore(settingscontainer, target);
     document.getElementById("settingsVisToggler").onclick = function () {
         (0,_utils__WEBPACK_IMPORTED_MODULE_7__.toggleVis)(document.getElementById("mptSettings"));
@@ -3568,7 +3568,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.7",
+    version: "0.55.8",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,

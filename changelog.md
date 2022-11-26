@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.55.8] - 2022-11-26
+
+Edited by IAkH
+
+- fixed mobile layout in Matrix 5
+
 ## [0.55.7] - 2022-11-03
 
 Edited by IAkH
