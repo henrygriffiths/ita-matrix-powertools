@@ -242,9 +242,9 @@ const budgetairs = [
   }
 ];
 
-const cabins = ["Economy", "PremiumEconomy", "Business", "First"];
+const defaultCabins = ["Economy", "PremiumEconomy", "Business", "First"];
 
-function print(displayName, editions, startValue) {
+export function buildQueryString(cur, pos = "", lang = null, cabins = null) {
   var pax = validatePax({
     maxPaxcount: 9,
     countInf: true,
@@ -257,41 +257,49 @@ function print(displayName, editions, startValue) {
     return;
   }
 
-  var createUrl = function(host, pos, cur) {
-    let url = `https://${host}/checkout/googleflights?PointOfSaleCountry=${pos}&UserCurrency=${cur}&DisplayedPrice=${
-      currentItin.price
-    }&DisplayedPriceCurrency=${cur}&UserLanguage=${mptUserSettings.language ||
-      "en"}&TripType=${getTripType("OneWay", "RoundTrip", "MultiCity")}`;
-    url += "&UserLanguage=" + mptUserSettings.language || "en";
-    url += "&Adult=" + pax.adults;
-    url += "&Child=" + pax.children.length;
-    url += "&InfantLap=" + pax.infLap;
+  lang = lang || mptUserSettings.language || "en";
+  cabins = cabins || defaultCabins;
 
-    let j = 0;
-    currentItin.itin.forEach((itin, i) => {
-      const slices = [];
+  let url = `PointOfSaleCountry=${pos}&UserCurrency=${cur}&DisplayedPrice=${
+    currentItin.price
+  }&DisplayedPriceCurrency=${cur}&UserLanguage=${lang}&TripType=${getTripType(
+    "OneWay",
+    "RoundTrip",
+    "MultiCity"
+  )}`;
+  url += "&Adult=" + pax.adults;
+  url += "&Child=" + pax.children.length;
+  url += "&InfantLap=" + pax.infLap;
 
-      itin.seg.forEach(seg => {
-        j++;
-        slices.push(j);
+  let j = 0;
+  currentItin.itin.forEach((itin, i) => {
+    const slices = [];
 
-        url += `&Cabin${j}=` + cabins[getCabin(seg.cabin)];
-        url += `&Carrier${j}=` + seg.carrier;
-        url += `&Origin${j}=` + seg.orig;
-        url += `&Destination${j}=` + seg.dest;
-        url += `&BookingCode${j}=` + seg.bookingclass;
-        url += `&FlightNumber${j}=` + seg.fnr;
-        url += `&DepartureDate${j}=${seg.dep.year}-${to2digits(
-          seg.dep.month
-        )}-${to2digits(seg.dep.day)}`;
-        url += `&FareBasis${j}=` + seg.farebase;
-      });
+    itin.seg.forEach(seg => {
+      j++;
+      slices.push(j);
 
-      url += `&Slice${i + 1}=` + slices.join(",");
+      url += `&Cabin${j}=` + cabins[getCabin(seg.cabin)];
+      url += `&Carrier${j}=` + seg.carrier;
+      url += `&Origin${j}=` + seg.orig;
+      url += `&Destination${j}=` + seg.dest;
+      url += `&BookingCode${j}=` + seg.bookingclass;
+      url += `&FlightNumber${j}=` + seg.fnr;
+      url += `&DepartureDate${j}=${seg.dep.year}-${to2digits(
+        seg.dep.month
+      )}-${to2digits(seg.dep.day)}`;
+      url += `&FareBasis${j}=` + seg.farebase;
     });
 
-    return url;
-  };
+    url += `&Slice${i + 1}=` + slices.join(",");
+  });
+
+  return url;
+}
+
+function print(displayName, editions, startValue) {
+  var createUrl = (host, cur, pos) =>
+    `https://${host}/checkout/googleflights?${buildQueryString(cur, pos)}`;
 
   var startEdition = editions.find(e => e.value === startValue);
   var url = createUrl(startEdition.value, startEdition.pos, startEdition.cur);
@@ -301,7 +309,7 @@ function print(displayName, editions, startValue) {
     .map(function(obj, i) {
       return (
         '<a href="' +
-        createUrl(obj.value, obj.pos, obj.cur) +
+        createUrl(obj.value, obj.cur, obj.pos) +
         '" target="_blank">' +
         obj.name +
         "</a>"

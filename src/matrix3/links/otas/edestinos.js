@@ -1,8 +1,6 @@
-import mptUserSettings from "../../settings/userSettings";
-import { printNotification, to2digits } from "../../utils";
-import { register, validatePax } from "..";
-import { currentItin, getTripType } from "../../../matrix5/parse/itin";
-import { getCabin } from "../../settings/appSettings";
+import { register } from "..";
+import { currentItin } from "../../../matrix5/parse/itin";
+import { buildQueryString } from "./travix";
 
 const editions = [
   { name: "Brazil", value: "www2.secure.edestinos.com.br" },
@@ -57,57 +55,9 @@ const editions = [
   { name: "eDestinos.com", value: "www2.secure.edestinos.com" }
 ];
 
-const cabins = ["Economy", "PremiumEconomy", "Business", "First"];
-
 function print() {
-  var pax = validatePax({
-    maxPaxcount: 9,
-    countInf: true,
-    childAsAdult: 12,
-    sepInfSeat: false,
-    childMinAge: 2
-  });
-  if (!pax) {
-    printNotification("Error: Failed to validate Passengers in edestinos");
-    return;
-  }
-
-  var createUrl = function(host) {
-    const cur = currentItin.cur || "USD";
-    let url = `https://${host}/api?PointOfSaleCountry=&UserCurrency=${cur}&DisplayedPrice=${
-      currentItin.price
-    }&DisplayedPriceCurrency=${cur}&UserLanguage=${mptUserSettings.language ||
-      "en"}&TripType=${getTripType("OneWay", "RoundTrip", "MultiCity")}`;
-    url += "&UserLanguage=" + mptUserSettings.language || "en";
-    url += "&Adult=" + pax.adults;
-    url += "&Child=" + pax.children.length;
-    url += "&InfantLap=" + pax.infLap;
-
-    let j = 0;
-    currentItin.itin.forEach((itin, i) => {
-      const slices = [];
-
-      itin.seg.forEach(seg => {
-        j++;
-        slices.push(j);
-
-        url += `&Cabin${j}=` + cabins[getCabin(seg.cabin)];
-        url += `&Carrier${j}=` + seg.carrier;
-        url += `&Origin${j}=` + seg.orig;
-        url += `&Destination${j}=` + seg.dest;
-        url += `&BookingCode${j}=` + seg.bookingclass;
-        url += `&FlightNumber${j}=` + seg.fnr;
-        url += `&DepartureDate${j}=${seg.dep.year}-${to2digits(
-          seg.dep.month
-        )}-${to2digits(seg.dep.day)}`;
-        url += `&FareBasis${j}=` + seg.farebase;
-      });
-
-      url += `&Slice${i + 1}=` + slices.join(",");
-    });
-
-    return url;
-  };
+  var createUrl = host =>
+    `https://${host}/api?${buildQueryString(currentItin.cur || "USD")}`;
 
   var url = createUrl("www2.secure.edestinos.com.br");
   var extra =
