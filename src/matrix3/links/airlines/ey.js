@@ -41,10 +41,15 @@ function printEY() {
         url += `&ms[${segnum}].departure=${seg.dep.year}-${to2digits(
           seg.dep.month
         )}-${to2digits(seg.dep.day)}T${to4digitTime(seg.dep.time24)}`;
+        url += `&ms[${segnum}].flight=${seg.fnr}`;
+        url += `&ms[${segnum}].fbcode=${seg.farebase}`;
         url += `&ms[${segnum}].arrival=${seg.arr.year}-${to2digits(
           seg.arr.month
         )}-${to2digits(seg.arr.day)}T${to4digitTime(seg.arr.time24)}`;
+        url += `&ms[${segnum}].mktAirline=${seg.carrier}`;
         url += `&ms[${segnum}].leg=${legnum}`;
+        url += `&ms[${segnum}].bkgClass=${seg.bookingclass}`;
+        url += `&ms[${segnum}].appendBrandID=false`;
         url += `&ms[${segnum}].cbnClass=${cabins[getCabin(seg.cabin)]}`;
 
         segnum++;
