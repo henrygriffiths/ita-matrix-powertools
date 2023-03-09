@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.55.9] - 2023-03-08
+
+Edited by IAkH
+
+- added JustFly and OneTravel
+- small update to EY
+
 ## [0.55.8] - 2022-11-26
 
 Edited by IAkH

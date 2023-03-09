@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.8
+// @version 0.55.9
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -3568,7 +3568,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.8",
+    version: "0.55.9",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -9414,10 +9414,15 @@ function printEY() {
         url += `&ms[${segnum}].departure=${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(
           seg.dep.month
         )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(seg.dep.day)}T${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to4digitTime)(seg.dep.time24)}`;
+        url += `&ms[${segnum}].flight=${seg.fnr}`;
+        url += `&ms[${segnum}].fbcode=${seg.farebase}`;
         url += `&ms[${segnum}].arrival=${seg.arr.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(
           seg.arr.month
         )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(seg.arr.day)}T${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to4digitTime)(seg.arr.time24)}`;
+        url += `&ms[${segnum}].mktAirline=${seg.carrier}`;
         url += `&ms[${segnum}].leg=${legnum}`;
+        url += `&ms[${segnum}].bkgClass=${seg.bookingclass}`;
+        url += `&ms[${segnum}].appendBrandID=false`;
         url += `&ms[${segnum}].cbnClass=${cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_2__.getCabin)(seg.cabin)]}`;
 
         segnum++;
@@ -9449,10 +9454,8 @@ function printEY() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-
+/* harmony import */ var _otas_travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
 
 
 
@@ -9570,81 +9573,16 @@ function printIB() {
     return;
   }
 
-  var createUrl = function(edition, currency) {
-    // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
-    var cabins = ["Economy", "Economy", "Business", "First"];
-    var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
-      maxPaxcount: 9,
-      countInf: false,
-      childAsAdult: 12,
-      sepInfSeat: false,
-      childMinAge: 2
-    });
-    if (!pax) {
-      (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in printIB");
-      return;
-    }
-    var url =
-      "http://www.iberia.com/web/partnerLink.do?Adult=" +
-      pax.adults +
-      "&Child=" +
-      pax.children.length +
-      "&Infant=0&InfantLap=" +
-      pax.infLap +
-      "&PointOfSaleCountry=" +
-      edition[1] +
-      "&UserCurrency=" +
-      currency +
-      "&UserLanguage=" +
-      edition[0] +
-      "&TripType=" +
-      (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getTripType)("OneWay", "RoundTrip", "MultiCity");
+  // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
+  var cabins = ["Economy", "Economy", "Business", "First"];
+  var createUrl = (edition, currency) =>
+    `http://www.iberia.com/web/partnerLink.do?${(0,_otas_travix__WEBPACK_IMPORTED_MODULE_2__.buildQueryString)(
+      currency,
+      edition[1],
+      edition[0],
+      cabins
+    )}`;
 
-    var seg = 0;
-    var slice = 1;
-    var slicestr = "";
-    //Build multi-city search based on legs
-    for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.length; i++) {
-      // walks each leg
-      for (var j = 0; j < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg.length; j++) {
-        seg++;
-        //walks each segment of leg
-        var k = 0;
-        // lets have a look if we need to skip segments - Flightnumber has to be the same and it must be just a layover
-        while (j + k < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg.length - 1) {
-          if (
-            _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k].fnr !=
-              _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k + 1].fnr ||
-            _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k].layoverduration >= 1440
-          )
-            break;
-          k++;
-        }
-        url += "&Origin" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].orig;
-        url += "&Destination" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k].dest;
-        url += "&Carrier" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].carrier;
-        url +=
-          "&DepartureDate" +
-          seg +
-          "=" +
-          _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.year +
-          "-" +
-          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.month).slice(-2) +
-          "-" +
-          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.day).slice(-2);
-        url += "&FlightNumber" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].fnr;
-        url +=
-          "&BookingCode" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].bookingclass;
-        url += "&Cabin" + seg + "=" + cabins[_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].cabin];
-        slicestr += (slicestr === "" ? "" : "%2C") + seg;
-        j += k;
-      }
-      url += "&Slice" + slice + "=" + slicestr;
-      slice++;
-      slicestr = "";
-    }
-    return url;
-  };
   // get edition
   var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.ibEdition.split("-");
   var url = createUrl(edition, "USD");
@@ -10468,10 +10406,8 @@ function print() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-
+/* harmony import */ var _otas_travix__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
 
 
 
@@ -10480,81 +10416,16 @@ function printPS() {
     return;
   }
 
-  var createUrl = function(edition, currency) {
-    // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
-    var cabins = ["Economy", "Economy", "Business", "First"];
-    var pax = (0,___WEBPACK_IMPORTED_MODULE_0__.validatePax)({
-      maxPaxcount: 9,
-      countInf: false,
-      childAsAdult: 12,
-      sepInfSeat: false,
-      childMinAge: 2
-    });
-    if (!pax) {
-      (0,_utils__WEBPACK_IMPORTED_MODULE_2__.printNotification)("Error: Failed to validate Passengers in printPS");
-      return false;
-    }
-    var url =
-      "https://bookapi.flyuia.com/flights/metaSearchQuery?Adult=" +
-      pax.adults +
-      "&Child=" +
-      pax.children.length +
-      "&Infant=" +
-      pax.infLap +
-      "&PointOfSaleCountry=" +
-      edition[1] +
-      "&UserCurrency=" +
-      currency +
-      "&UserLanguage=" +
-      edition[0] +
-      "&TripType=" +
-      (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.getTripType)("OneWay", "RoundTrip", "MultiCity");
+  // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
+  var cabins = ["Economy", "Economy", "Business", "First"];
+  var createUrl = (edition, currency) =>
+    `http://www.iberia.com/web/partnerLink.do?${(0,_otas_travix__WEBPACK_IMPORTED_MODULE_1__.buildQueryString)(
+      currency,
+      edition[1],
+      edition[0],
+      cabins
+    )}`;
 
-    var seg = 0;
-    var slice = 1;
-    var slicestr = "";
-    //Build multi-city search based on legs
-    for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.length; i++) {
-      // walks each leg
-      for (var j = 0; j < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg.length; j++) {
-        seg++;
-        //walks each segment of leg
-        var k = 0;
-        // lets have a look if we need to skip segments - Flightnumber has to be the same and it must be just a layover
-        while (j + k < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg.length - 1) {
-          if (
-            _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].fnr !=
-              _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k + 1].fnr ||
-            _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].layoverduration >= 1440
-          )
-            break;
-          k++;
-        }
-        url += "&Origin" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].orig;
-        url += "&Destination" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].dest;
-        url += "&Carrier" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].carrier;
-        url +=
-          "&DepartureDate" +
-          seg +
-          "=" +
-          _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.year +
-          "-" +
-          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.month).slice(-2) +
-          "-" +
-          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.day).slice(-2);
-        url += "&FlightNumber" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].fnr;
-        url +=
-          "&BookingCode" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].bookingclass;
-        url += "&Cabin" + seg + "=" + cabins[_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].cabin];
-        slicestr += (slicestr === "" ? "" : "%2C") + seg;
-        j += k;
-      }
-      url += "&Slice" + slice + "=" + slicestr;
-      slice++;
-      slicestr = "";
-    }
-    return url;
-  };
   var url = createUrl(["EN", "US"], "USD");
   if (!url) {
     return;
@@ -11892,13 +11763,9 @@ function printCheapOair() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-
-
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
 
 
 
@@ -11956,57 +11823,9 @@ const editions = [
   { name: "eDestinos.com", value: "www2.secure.edestinos.com" }
 ];
 
-const cabins = ["Economy", "PremiumEconomy", "Business", "First"];
-
 function print() {
-  var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
-    maxPaxcount: 9,
-    countInf: true,
-    childAsAdult: 12,
-    sepInfSeat: false,
-    childMinAge: 2
-  });
-  if (!pax) {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_4__.printNotification)("Error: Failed to validate Passengers in edestinos");
-    return;
-  }
-
-  var createUrl = function(host) {
-    const cur = _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.cur || "USD";
-    let url = `https://${host}/api?PointOfSaleCountry=&UserCurrency=${cur}&DisplayedPrice=${
-      _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.price
-    }&DisplayedPriceCurrency=${cur}&UserLanguage=${_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language ||
-      "en"}&TripType=${(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getTripType)("OneWay", "RoundTrip", "MultiCity")}`;
-    url += "&UserLanguage=" + _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language || 0;
-    url += "&Adult=" + pax.adults;
-    url += "&Child=" + pax.children.length;
-    url += "&InfantLap=" + pax.infLap;
-
-    let j = 0;
-    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.forEach((itin, i) => {
-      const slices = [];
-
-      itin.seg.forEach(seg => {
-        j++;
-        slices.push(j);
-
-        url += `&Cabin${j}=` + cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_3__.getCabin)(seg.cabin)];
-        url += `&Carrier${j}=` + seg.carrier;
-        url += `&Origin${j}=` + seg.orig;
-        url += `&Destination${j}=` + seg.dest;
-        url += `&BookingCode${j}=` + seg.bookingclass;
-        url += `&FlightNumber${j}=` + seg.fnr;
-        url += `&DepartureDate${j}=${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(
-          seg.dep.month
-        )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(seg.dep.day)}`;
-        url += `&FareBasis${j}=` + seg.farebase;
-      });
-
-      url += `&Slice${i + 1}=` + slices.join(",");
-    });
-
-    return url;
-  };
+  var createUrl = host =>
+    `https://${host}/api?${(0,_travix__WEBPACK_IMPORTED_MODULE_2__.buildQueryString)(_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.cur || "USD")}`;
 
   var url = createUrl("www2.secure.edestinos.com.br");
   var extra =
@@ -12031,7 +11850,7 @@ function print() {
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", print);
+(0,___WEBPACK_IMPORTED_MODULE_0__.register)("otas", print);
 
 
 /***/ }),
@@ -12533,95 +12352,24 @@ function printExpedia(title, editions) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
 
 
 
 
 function print() {
-  var createUrl = function(edition) {
-    // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
-    var cabins = ["Economy", "Economy", "Business", "First"];
-    var pax = (0,___WEBPACK_IMPORTED_MODULE_0__.validatePax)({
-      maxPaxcount: 9,
-      countInf: false,
-      childAsAdult: 12,
-      sepInfSeat: false,
-      childMinAge: 2
-    });
-    if (!pax) {
-      (0,_utils__WEBPACK_IMPORTED_MODULE_2__.printNotification)(
-        "Error: Failed to validate Passengers in printLucky2go"
-      );
-      return;
-    }
-    let url =
-      "https://www.flighthub.com/checkout/gdeeplink?Adult=" +
-      pax.adults +
-      "&Child=" +
-      pax.children.length +
-      "&Infant=0&InfantLap=" +
-      pax.infLap +
-      "&PointOfSaleCountry=" +
-      edition.country +
-      "&UserCurrency=" +
-      (_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.cur || "USD") +
-      "&DisplayedPrice=" +
-      _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.price +
-      "&DisplayedPriceCurrency=" +
-      (_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.cur || "USD") +
-      "&UserLanguage=" +
-      edition.lang +
-      "&TripType=" +
-      (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.getTripType)("OneWay", "RoundTrip", "MultiCity");
+  // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
+  var cabins = ["Economy", "Economy", "Business", "First"];
+  var createUrl = edition =>
+    `https://www.flighthub.com/checkout/gdeeplink?${(0,_travix__WEBPACK_IMPORTED_MODULE_2__.buildQueryString)(
+      _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.cur || "USD",
+      edition.country,
+      edition.lang,
+      cabins
+    )}`;
 
-    let seg = 0;
-    let slice = 1;
-    let slicestr = "";
-    //Build multi-city search based on legs
-    for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.length; i++) {
-      // walks each leg
-      for (var j = 0; j < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg.length; j++) {
-        seg++;
-        //walks each segment of leg
-        var k = 0;
-        // lets have a look if we need to skip segments - Flightnumber has to be the same and it must be just a layover
-        while (j + k < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg.length - 1) {
-          if (
-            _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].fnr !=
-              _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k + 1].fnr ||
-            _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].layoverduration >= 1440
-          )
-            break;
-          k++;
-        }
-        url += "&Origin" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].orig;
-        url += "&Destination" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j + k].dest;
-        url += "&Carrier" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].carrier;
-        url +=
-          "&DepartureDate" +
-          seg +
-          "=" +
-          _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.year +
-          "-" +
-          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.month).slice(-2) +
-          "-" +
-          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.day).slice(-2);
-        url += "&FlightNumber" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].fnr;
-        url +=
-          "&BookingCode" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].bookingclass;
-        url += "&Cabin" + seg + "=" + cabins[_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].cabin];
-        slicestr += (slicestr === "" ? "" : "%2C") + seg;
-        j += k;
-      }
-      url += "&Slice" + slice + "=" + slicestr;
-      slice++;
-      slicestr = "";
-    }
-    return url;
-  };
   // get edition
   const url = createUrl({ lang: "en", country: "US" });
   if (!url) {
@@ -12725,16 +12473,54 @@ function print() {
 
 /***/ }),
 
+/***/ "./src/matrix3/links/otas/justfly.js":
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
+
+
+
+
+function print() {
+  // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
+  var cabins = ["Economy", "Economy", "Business", "First"];
+  var createUrl = edition =>
+    `https://www.justfly.com/checkout/gdeeplink?${(0,_travix__WEBPACK_IMPORTED_MODULE_2__.buildQueryString)(
+      _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.cur || "USD",
+      edition.country,
+      edition.lang,
+      cabins
+    )}`;
+
+  // get edition
+  const url = createUrl({ lang: "en", country: "US" });
+  if (!url) {
+    return;
+  }
+
+  return {
+    url,
+    title: "Justfly"
+  };
+}
+
+(0,___WEBPACK_IMPORTED_MODULE_0__.register)("otas", print);
+
+
+/***/ }),
+
 /***/ "./src/matrix3/links/otas/lucky2go.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
 
 
 
@@ -12758,87 +12544,15 @@ const editions = [
 ];
 
 function printLucky2go() {
-  var createUrl = function(edition) {
-    // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
-    var cabins = ["Economy", "Economy", "Business", "First"];
-    var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
-      maxPaxcount: 9,
-      countInf: false,
-      childAsAdult: 12,
-      sepInfSeat: false,
-      childMinAge: 2
-    });
-    if (!pax) {
-      (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)(
-        "Error: Failed to validate Passengers in printLucky2go"
-      );
-      return;
-    }
-    var url =
-      "https://secure.lucky2go.com/flights/options/?Adult=" +
-      pax.adults +
-      "&Child=" +
-      pax.children.length +
-      "&Infant=0&InfantLap=" +
-      pax.infLap +
-      "&PointOfSaleCountry=" +
-      edition.country +
-      "&UserCurrency=" +
-      (_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.cur || "USD") +
-      "&DisplayedPrice=" +
-      _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.price +
-      "&DisplayedPriceCurrency=" +
-      (_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.cur || "USD") +
-      "&UserLanguage=" +
-      edition.lang +
-      "&TripType=" +
-      (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getTripType)("OneWay", "RoundTrip", "MultiCity");
+  var cabins = ["Economy", "Economy", "Business", "First"];
+  var createUrl = edition =>
+    `https://secure.lucky2go.com/flights/options/?${(0,_travix__WEBPACK_IMPORTED_MODULE_2__.buildQueryString)(
+      _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.cur || "USD",
+      edition.country,
+      edition.lang,
+      cabins
+    )}`;
 
-    var seg = 0;
-    var slice = 1;
-    var slicestr = "";
-    //Build multi-city search based on legs
-    for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.length; i++) {
-      // walks each leg
-      for (var j = 0; j < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg.length; j++) {
-        seg++;
-        //walks each segment of leg
-        var k = 0;
-        // lets have a look if we need to skip segments - Flightnumber has to be the same and it must be just a layover
-        while (j + k < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg.length - 1) {
-          if (
-            _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k].fnr !=
-              _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k + 1].fnr ||
-            _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k].layoverduration >= 1440
-          )
-            break;
-          k++;
-        }
-        url += "&Origin" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].orig;
-        url += "&Destination" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k].dest;
-        url += "&Carrier" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].carrier;
-        url +=
-          "&DepartureDate" +
-          seg +
-          "=" +
-          _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.year +
-          "-" +
-          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.month).slice(-2) +
-          "-" +
-          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.day).slice(-2);
-        url += "&FlightNumber" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].fnr;
-        url +=
-          "&BookingCode" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].bookingclass;
-        url += "&Cabin" + seg + "=" + cabins[_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].cabin];
-        slicestr += (slicestr === "" ? "" : "%2C") + seg;
-        j += k;
-      }
-      url += "&Slice" + slice + "=" + slicestr;
-      slice++;
-      slicestr = "";
-    }
-    return url;
-  };
   // get edition
   var url = createUrl({ lang: "en", country: "US" });
   if (!url) {
@@ -12863,7 +12577,94 @@ function printLucky2go() {
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", printLucky2go);
+(0,___WEBPACK_IMPORTED_MODULE_0__.register)("otas", printLucky2go);
+
+
+/***/ }),
+
+/***/ "./src/matrix3/links/otas/onetravel.js":
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+
+
+
+
+
+function print() {
+  // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
+  var cabins = ["Economy", "PremiumEconomy", "Business", "First"];
+  var coaUrl = "http://www.onetravel.com/default.aspx?tabid=3582&ulang=en";
+  var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
+    maxPaxcount: 9,
+    countInf: true,
+    childAsAdult: 12,
+    sepInfSeat: true,
+    childMinAge: 2
+  });
+  if (!pax) {
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in print");
+    return;
+  }
+  coaUrl +=
+    "&ad=" +
+    pax.adults +
+    "&ch=" +
+    pax.children.length +
+    "&sr=0&is=" +
+    pax.infSeat +
+    "&il=" +
+    pax.infLap;
+  coaUrl += "&pos=US";
+  coaUrl += "&dispr=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.price;
+  var seg = 0;
+  var slices = {};
+  for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.length; i++) {
+    slices[i] = "";
+    for (var j = 0; j < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg.length; j++) {
+      seg++;
+      if (slices[i]) slices[i] += ",";
+      slices[i] += seg;
+
+      coaUrl +=
+        "&cbn" +
+        seg +
+        "=" +
+        cabins[
+          _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Auto"
+            ? _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].cabin
+            : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()
+        ];
+      coaUrl += "&carr" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].carrier;
+      coaUrl +=
+        "&dd" +
+        seg +
+        "=" +
+        _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.year +
+        ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.month).slice(-2) +
+        ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.day).slice(-2);
+      coaUrl += "&og" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].orig;
+      coaUrl += "&dt" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dest;
+      coaUrl += "&fbc" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].bookingclass;
+      coaUrl += "&fnum" + seg + "=" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].fnr;
+    }
+    coaUrl += "&Slice" + (i + 1) + "=" + slices[i];
+  }
+
+  coaUrl += "&tt=" + (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getTripType)("OneWay", "RoundTrip", "MultiCity");
+
+  return {
+    url: coaUrl,
+    title: "OneTravel"
+  };
+}
+
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", print);
 
 
 /***/ }),
@@ -12962,6 +12763,9 @@ function printPriceline() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "buildQueryString": () => (/* binding */ buildQueryString)
+/* harmony export */ });
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
@@ -13211,9 +13015,9 @@ const budgetairs = [
   }
 ];
 
-const cabins = ["Economy", "PremiumEconomy", "Business", "First"];
+const defaultCabins = ["Economy", "PremiumEconomy", "Business", "First"];
 
-function print(displayName, editions, startValue) {
+function buildQueryString(cur, pos = "", lang = null, cabins = null) {
   var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
     maxPaxcount: 9,
     countInf: true,
@@ -13226,41 +13030,49 @@ function print(displayName, editions, startValue) {
     return;
   }
 
-  var createUrl = function(host, pos, cur) {
-    let url = `https://${host}/checkout/googleflights?PointOfSaleCountry=${pos}&UserCurrency=${cur}&DisplayedPrice=${
-      _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.price
-    }&DisplayedPriceCurrency=${cur}&UserLanguage=${_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language ||
-      "en"}&TripType=${(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getTripType)("OneWay", "RoundTrip", "MultiCity")}`;
-    url += "&UserLanguage=" + _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language || 0;
-    url += "&Adult=" + pax.adults;
-    url += "&Child=" + pax.children.length;
-    url += "&InfantLap=" + pax.infLap;
+  lang = lang || _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.language || "en";
+  cabins = cabins || defaultCabins;
 
-    let j = 0;
-    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.forEach((itin, i) => {
-      const slices = [];
+  let url = `PointOfSaleCountry=${pos}&UserCurrency=${cur}&DisplayedPrice=${
+    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.price
+  }&DisplayedPriceCurrency=${cur}&UserLanguage=${lang}&TripType=${(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getTripType)(
+    "OneWay",
+    "RoundTrip",
+    "MultiCity"
+  )}`;
+  url += "&Adult=" + pax.adults;
+  url += "&Child=" + pax.children.length;
+  url += "&InfantLap=" + pax.infLap;
 
-      itin.seg.forEach(seg => {
-        j++;
-        slices.push(j);
+  let j = 0;
+  _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.forEach((itin, i) => {
+    const slices = [];
 
-        url += `&Cabin${j}=` + cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_3__.getCabin)(seg.cabin)];
-        url += `&Carrier${j}=` + seg.carrier;
-        url += `&Origin${j}=` + seg.orig;
-        url += `&Destination${j}=` + seg.dest;
-        url += `&BookingCode${j}=` + seg.bookingclass;
-        url += `&FlightNumber${j}=` + seg.fnr;
-        url += `&DepartureDate${j}=${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(
-          seg.dep.month
-        )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(seg.dep.day)}`;
-        url += `&FareBasis${j}=` + seg.farebase;
-      });
+    itin.seg.forEach(seg => {
+      j++;
+      slices.push(j);
 
-      url += `&Slice${i + 1}=` + slices.join(",");
+      url += `&Cabin${j}=` + cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_3__.getCabin)(seg.cabin)];
+      url += `&Carrier${j}=` + seg.carrier;
+      url += `&Origin${j}=` + seg.orig;
+      url += `&Destination${j}=` + seg.dest;
+      url += `&BookingCode${j}=` + seg.bookingclass;
+      url += `&FlightNumber${j}=` + seg.fnr;
+      url += `&DepartureDate${j}=${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(
+        seg.dep.month
+      )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(seg.dep.day)}`;
+      url += `&FareBasis${j}=` + seg.farebase;
     });
 
-    return url;
-  };
+    url += `&Slice${i + 1}=` + slices.join(",");
+  });
+
+  return url;
+}
+
+function print(displayName, editions, startValue) {
+  var createUrl = (host, cur, pos) =>
+    `https://${host}/checkout/googleflights?${buildQueryString(cur, pos)}`;
 
   var startEdition = editions.find(e => e.value === startValue);
   var url = createUrl(startEdition.value, startEdition.pos, startEdition.cur);
@@ -13270,7 +13082,7 @@ function print(displayName, editions, startValue) {
     .map(function(obj, i) {
       return (
         '<a href="' +
-        createUrl(obj.value, obj.pos, obj.cur) +
+        createUrl(obj.value, obj.cur, obj.pos) +
         '" target="_blank">' +
         obj.name +
         "</a>"
@@ -13401,7 +13213,9 @@ var map = {
 	"./otas/expedia.js": "./src/matrix3/links/otas/expedia.js",
 	"./otas/flighthub.js": "./src/matrix3/links/otas/flighthub.js",
 	"./otas/hop2.js": "./src/matrix3/links/otas/hop2.js",
+	"./otas/justfly.js": "./src/matrix3/links/otas/justfly.js",
 	"./otas/lucky2go.js": "./src/matrix3/links/otas/lucky2go.js",
+	"./otas/onetravel.js": "./src/matrix3/links/otas/onetravel.js",
 	"./otas/priceline.js": "./src/matrix3/links/otas/priceline.js",
 	"./otas/travix.js": "./src/matrix3/links/otas/travix.js",
 	"./other/gcm.js": "./src/matrix3/links/other/gcm.js",
