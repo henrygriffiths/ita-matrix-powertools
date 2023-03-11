@@ -195,8 +195,8 @@ export function createUsersettings(target) {
     toggleVis(document.getElementById("mptSettings"));
   };
   document.getElementById("mptStartparse").onclick = function() {
-    setTimeout(function() {
-      render();
+    setTimeout(async function() {
+      await render();
     }, 50);
   };
 

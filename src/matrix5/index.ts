@@ -2,7 +2,7 @@ import { printLinksContainer } from "../matrix3/print/links";
 import { createUsersettings } from "../matrix3/print/settings";
 import classSettings from "../matrix3/settings/itaSettings";
 import { unsafeHTML } from "../unsafe-policy";
-import { readItinerary, waitForBookingDetails } from "./parse/itin";
+import { readItinerary } from "./parse/itin";
 
 (async () => {
   const appRoot = document.querySelector("app-root");
@@ -55,8 +55,7 @@ function pageChanged() {
       steps[steps.length - 1].attributes["aria-selected"].value === "true"
     ) {
       // if we are on the last step (Itinerary)
-      await waitForBookingDetails();
-      readItinerary();
+      await readItinerary();
       printLinksContainer();
     }
   }, 200);

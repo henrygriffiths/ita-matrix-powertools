@@ -3,13 +3,13 @@ import {
   readItinerary as readItinerary3,
   currentItin as currentItin3
 } from "../../matrix3/parse/itin";
-import { getSidebarContainer } from "../../matrix3/print/links";
 
+const doNothing = new Promise<void>(() => {});
 const currentItin: typeof currentItin3 = {};
 
-export function readItinerary() {
+export async function readItinerary() {
   if (classSettings.matrixVersion == 5) {
-    Object.assign(currentItin, readItinerary5());
+    Object.assign(currentItin, await readItinerary5());
   } else {
     readItinerary3();
     Object.assign(currentItin, currentItin3);
@@ -17,8 +17,8 @@ export function readItinerary() {
   console.log("parsed itinerary: ", currentItin);
 }
 
-function readItinerary5(): typeof currentItin3 {
-  const bookingDetails = classSettings.resultpage.getBookingDetails();
+async function readItinerary5(): Promise<typeof currentItin3> {
+  const bookingDetails = await getBookingDetails();
 
   return {
     itin: bookingDetails.itinerary.slices.map(itin => {
@@ -85,15 +85,30 @@ function readItinerary5(): typeof currentItin3 {
   };
 }
 
-export function waitForBookingDetails() {
-  return new Promise<undefined>(resolve => {
+function getBookingDetails() {
+  return new Promise<any>((resolve, reject) => {
     (function _wait() {
       setTimeout(async () => {
-        const bookingDetails = await classSettings.resultpage?.getBookingDetails();
-        if (!!bookingDetails?.itinerary && getSidebarContainer())
-          resolve(undefined);
-        // TODO: clean up getSidebarContainer(), currently calling to ensure UI has loaded
-        else _wait();
+        const copyAsJsonButton: HTMLElement = document.querySelector(
+          classSettings.resultpage.copyAsJsonButton
+        );
+        if (!copyAsJsonButton) {
+          return _wait();
+        }
+
+        const clipboard =
+          window?.navigator?.clipboard ?? unsafeWindow?.navigator?.clipboard;
+        if (!clipboard) {
+          return reject("Could not access the clipboard");
+        }
+
+        const _writeText = clipboard.writeText;
+        clipboard.writeText = (data: string) => {
+          clipboard.writeText = _writeText;
+          resolve(JSON.parse(data));
+          return doNothing;
+        };
+        copyAsJsonButton.click();
       }, 200);
     })();
   });

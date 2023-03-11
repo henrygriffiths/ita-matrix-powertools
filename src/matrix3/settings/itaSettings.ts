@@ -1,58 +1,5 @@
 import { findtarget } from "../utils";
 
-let _bookingDetails: any = undefined;
-(function _waitHijack() {
-  setTimeout(() => {
-    let _window;
-    try {
-      _window = unsafeWindow || window;
-    } catch {
-      _window = window;
-    }
-    for (const key of Object.keys(_window)) {
-      if (typeof _window[key] !== "function") continue;
-      if (_window[key].toString().includes("Copy itinerary as JSON")) {
-        const oldFunc = _window[key];
-        // hijack render function
-        _window[key] = function() {
-          oldFunc.apply(this, Array.prototype.slice.call(arguments));
-
-          const funcContents = oldFunc.toString();
-
-          // get itin variable names
-          const contextMatches = funcContents.match(/var (\w+)=(\w+)\(\);/); // var c = Ud();
-          const cVar = contextMatches && (contextMatches[1] as string);
-          const Ud = contextMatches && (contextMatches[2] as string);
-
-          const bookingDetailsMatches = funcContents.match(
-            /(\w+).bookingDetails/
-          ); // return Wd(xla(e, d.bookingDetails))
-          const bookingDetailsVar =
-            bookingDetailsMatches && (bookingDetailsMatches[1] as string);
-
-          const itinMatches = funcContents.match(
-            new RegExp(`var ${bookingDetailsVar}=(\\w+)\\(${cVar}\\)\\.(\\w+)`)
-          ); // var d = Vd(c).Rd
-          const Vd = itinMatches && (itinMatches[1] as string);
-          const Rd = itinMatches && (itinMatches[2] as string);
-
-          // re-build itin call
-          const c = Ud && _window[Ud] && _window[Ud]();
-          _bookingDetails =
-            (Vd &&
-              c &&
-              Rd &&
-              _window[Vd] &&
-              _window[Vd](c)[Rd]?.bookingDetails) ||
-            _bookingDetails;
-        };
-        return;
-      }
-    }
-    _waitHijack();
-  }, 200);
-})();
-
 // ITA Matrix CSS class definitions:
 const itaSettings = [
   {
@@ -61,9 +8,9 @@ const itaSettings = [
       maindiv: "mat-app-background"
     },
     resultpage: {
-      getBookingDetails: () => _bookingDetails,
       mcDiv: "info-container",
-      mcHeader: "info-title"
+      mcHeader: "info-title",
+      copyAsJsonButton: "button:nth-child(4) > span.mat-button-wrapper"
     }
   },
   {

@@ -146,8 +146,9 @@ function resultPage() {
     }
   }
 
-  readItinerary();
-  render();
+  readItinerary().then(() => {
+    render();
+  });
 }
 
 function injectCss() {

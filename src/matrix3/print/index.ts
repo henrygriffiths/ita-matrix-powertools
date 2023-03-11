@@ -15,7 +15,7 @@ import {
 } from "../utils";
 import { printLinksContainer } from "./links";
 
-export function render() {
+export async function render() {
   // Editor mode?
   if (
     mptUserSettings.enableEditormode == 1 &&
@@ -27,7 +27,7 @@ export function render() {
   } else if (findtargets("editoritem").length > 0) {
     toggleVis(document.getElementById("mptStartparse"));
     removeEditor();
-    readItinerary();
+    await readItinerary();
   }
 
   bindPageLayout();
