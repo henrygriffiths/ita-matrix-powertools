@@ -57,7 +57,11 @@ const itaSettings = [
   }
 ];
 
-const classSettings = itaSettings[0];
+const classSettings = itaSettings.filter(setting =>
+  window.location.host === "oldmatrix.itasoftware.com"
+    ? setting.matrixVersion === 3
+    : true
+)[0];
 
 export function findTargetSetVersion(classSelector, nth) {
   for (let setting of itaSettings) {
