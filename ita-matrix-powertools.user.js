@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.9
+// @version 0.55.10
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -2380,7 +2380,7 @@ function getSearchUrl(key, search) {
 
 
 
-function render() {
+async function render() {
     // Editor mode?
     if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableEditormode == 1 &&
         (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtargets)("editoritem").length === 0) {
@@ -2391,7 +2391,7 @@ function render() {
     else if ((0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtargets)("editoritem").length > 0) {
         (0,_utils__WEBPACK_IMPORTED_MODULE_5__.toggleVis)(document.getElementById("mptStartparse"));
         removeEditor();
-        (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.readItinerary)();
+        await (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.readItinerary)();
     }
     bindPageLayout();
     if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.enableFarerules == 1)
@@ -2937,10 +2937,9 @@ function findItinTarget(leg, seg, tcell) {
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "registerLink": () => (/* binding */ registerLink),
-/* harmony export */   "printLinksContainer": () => (/* binding */ printLinksContainer),
-/* harmony export */   "getSidebarContainer": () => (/* binding */ getSidebarContainer)
+/* harmony export */   "printLinksContainer": () => (/* binding */ printLinksContainer)
 /* harmony export */ });
-/* unused harmony export printImage */
+/* unused harmony exports printImage, getSidebarContainer */
 /* harmony import */ var dom_chef__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./node_modules/dom-chef/index.js");
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/itaSettings.ts");
@@ -3302,8 +3301,8 @@ function createUsersettings(target) {
         (0,_utils__WEBPACK_IMPORTED_MODULE_7__.toggleVis)(document.getElementById("mptSettings"));
     };
     document.getElementById("mptStartparse").onclick = function () {
-        setTimeout(function () {
-            (0,___WEBPACK_IMPORTED_MODULE_4__.render)();
+        setTimeout(async function () {
+            await (0,___WEBPACK_IMPORTED_MODULE_4__.render)();
         }, 50);
     };
     Object.keys(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings).forEach(setting => {
@@ -3568,7 +3567,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.9",
+    version: "0.55.10",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -3656,50 +3655,6 @@ function getForcedCabin() {
 /* harmony export */ });
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/utils.js");
 
-let _bookingDetails = undefined;
-(function _waitHijack() {
-    setTimeout(() => {
-        let _window;
-        try {
-            _window = unsafeWindow || window;
-        }
-        catch (_a) {
-            _window = window;
-        }
-        for (const key of Object.keys(_window)) {
-            if (typeof _window[key] !== "function")
-                continue;
-            if (_window[key].toString().includes("Copy itinerary as JSON")) {
-                const oldFunc = _window[key];
-                // hijack render function
-                _window[key] = function () {
-                    var _a;
-                    oldFunc.apply(this, Array.prototype.slice.call(arguments));
-                    const funcContents = oldFunc.toString();
-                    // get itin variable names
-                    const contextMatches = funcContents.match(/var (\w+)=(\w+)\(\);/); // var c = Ud();
-                    const cVar = contextMatches && contextMatches[1];
-                    const Ud = contextMatches && contextMatches[2];
-                    const bookingDetailsMatches = funcContents.match(/(\w+).bookingDetails/); // return Wd(xla(e, d.bookingDetails))
-                    const bookingDetailsVar = bookingDetailsMatches && bookingDetailsMatches[1];
-                    const itinMatches = funcContents.match(new RegExp(`var ${bookingDetailsVar}=(\\w+)\\(${cVar}\\)\\.(\\w+)`)); // var d = Vd(c).Rd
-                    const Vd = itinMatches && itinMatches[1];
-                    const Rd = itinMatches && itinMatches[2];
-                    // re-build itin call
-                    const c = Ud && _window[Ud] && _window[Ud]();
-                    _bookingDetails =
-                        (Vd &&
-                            c &&
-                            Rd &&
-                            _window[Vd] && ((_a = _window[Vd](c)[Rd]) === null || _a === void 0 ? void 0 : _a.bookingDetails)) ||
-                            _bookingDetails;
-                };
-                return;
-            }
-        }
-        _waitHijack();
-    }, 200);
-})();
 // ITA Matrix CSS class definitions:
 const itaSettings = [
     {
@@ -3708,9 +3663,9 @@ const itaSettings = [
             maindiv: "mat-app-background"
         },
         resultpage: {
-            getBookingDetails: () => _bookingDetails,
             mcDiv: "info-container",
-            mcHeader: "info-title"
+            mcHeader: "info-title",
+            copyAsJsonButton: "button:nth-child(4) > span.mat-button-wrapper"
         }
     },
     {
@@ -3756,7 +3711,9 @@ const itaSettings = [
         }
     }
 ];
-const classSettings = itaSettings[0];
+const classSettings = itaSettings.filter(setting => window.location.host === "oldmatrix.itasoftware.com"
+    ? setting.matrixVersion === 3
+    : true)[0];
 function findTargetSetVersion(classSelector, nth) {
     for (let setting of itaSettings) {
         const className = classSelector(setting);
@@ -4138,8 +4095,7 @@ function pageChanged() {
         if (steps.length > 0 &&
             steps[steps.length - 1].attributes["aria-selected"].value === "true") {
             // if we are on the last step (Itinerary)
-            await (0,_parse_itin__WEBPACK_IMPORTED_MODULE_4__.waitForBookingDetails)();
-            (0,_parse_itin__WEBPACK_IMPORTED_MODULE_4__.readItinerary)();
+            await (0,_parse_itin__WEBPACK_IMPORTED_MODULE_4__.readItinerary)();
             (0,_matrix3_print_links__WEBPACK_IMPORTED_MODULE_0__.printLinksContainer)();
         }
     }, 200);
@@ -4174,8 +4130,7 @@ __webpack_require__.d(__webpack_exports__, {
   "isMulticity": () => (/* binding */ isMulticity),
   "isOneway": () => (/* binding */ isOneway),
   "isRoundtrip": () => (/* binding */ isRoundtrip),
-  "readItinerary": () => (/* binding */ itin_readItinerary),
-  "waitForBookingDetails": () => (/* binding */ waitForBookingDetails)
+  "readItinerary": () => (/* binding */ itin_readItinerary)
 });
 
 // EXTERNAL MODULE: ./src/matrix3/settings/itaSettings.ts
@@ -4518,16 +4473,14 @@ function trimStr(x) {
 
 
 
-// EXTERNAL MODULE: ./src/matrix3/print/links.tsx
-var links = __webpack_require__("./src/matrix3/print/links.tsx");
 ;// CONCATENATED MODULE: ./src/matrix5/parse/itin.ts
 
 
-
+const doNothing = new Promise(() => { });
 const itin_currentItin = {};
-function itin_readItinerary() {
+async function itin_readItinerary() {
     if (itaSettings.default.matrixVersion == 5) {
-        Object.assign(itin_currentItin, readItinerary5());
+        Object.assign(itin_currentItin, await readItinerary5());
     }
     else {
         readItinerary();
@@ -4535,8 +4488,8 @@ function itin_readItinerary() {
     }
     console.log("parsed itinerary: ", itin_currentItin);
 }
-function readItinerary5() {
-    const bookingDetails = itaSettings.default.resultpage.getBookingDetails();
+async function readItinerary5() {
+    const bookingDetails = await getBookingDetails();
     return {
         itin: bookingDetails.itinerary.slices.map(itin => {
             const fareMap = bookingDetails.tickets
@@ -4586,17 +4539,26 @@ function readItinerary5() {
         dist: bookingDetails.itinerary.distance.value
     };
 }
-function waitForBookingDetails() {
-    return new Promise(resolve => {
+function getBookingDetails() {
+    return new Promise((resolve, reject) => {
         (function _wait() {
             setTimeout(async () => {
-                var _a;
-                const bookingDetails = await ((_a = itaSettings.default.resultpage) === null || _a === void 0 ? void 0 : _a.getBookingDetails());
-                if (!!(bookingDetails === null || bookingDetails === void 0 ? void 0 : bookingDetails.itinerary) && (0,links.getSidebarContainer)())
-                    resolve(undefined);
-                // TODO: clean up getSidebarContainer(), currently calling to ensure UI has loaded
-                else
-                    _wait();
+                var _a, _b, _c;
+                const copyAsJsonButton = document.querySelector(itaSettings.default.resultpage.copyAsJsonButton);
+                if (!copyAsJsonButton) {
+                    return _wait();
+                }
+                const clipboard = (_b = (_a = window === null || window === void 0 ? void 0 : window.navigator) === null || _a === void 0 ? void 0 : _a.clipboard) !== null && _b !== void 0 ? _b : (_c = unsafeWindow === null || unsafeWindow === void 0 ? void 0 : unsafeWindow.navigator) === null || _c === void 0 ? void 0 : _c.clipboard;
+                if (!clipboard) {
+                    return reject("Could not access the clipboard");
+                }
+                const _writeText = clipboard.writeText;
+                clipboard.writeText = (data) => {
+                    clipboard.writeText = _writeText;
+                    resolve(JSON.parse(data));
+                    return doNothing;
+                };
+                copyAsJsonButton.click();
             }, 200);
         })();
     });
@@ -4917,8 +4879,9 @@ function resultPage() {
     }
   }
 
-  (0,parse_itin.readItinerary)();
-  (0,print.render)();
+  (0,parse_itin.readItinerary)().then(() => {
+    (0,print.render)();
+  });
 }
 
 function injectCss() {

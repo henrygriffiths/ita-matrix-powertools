@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.55.10] - 2023-03-11
+
+Edited by IAkH
+
+- fixed preliminary Matrix 5 support (only links and link settings work)
+
 ## [0.55.9] - 2023-03-08
 
 Edited by IAkH
