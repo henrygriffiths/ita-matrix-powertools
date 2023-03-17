@@ -10,7 +10,7 @@ const itaSettings = [
     resultpage: {
       mcDiv: "info-container",
       mcHeader: "info-title",
-      copyAsJsonButton: "button:nth-child(4) > span.mat-button-wrapper"
+      copyAsJsonButton: "button.share-button:nth-child(4)"
     }
   },
   {
