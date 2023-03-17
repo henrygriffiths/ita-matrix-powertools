@@ -120,12 +120,11 @@ const lhEditions = [
 ];
 
 function printLH() {
-  if (!anyCarriers("LH", "OS")) {
+  if (!anyCarriers("LH", "LX", "OS", "SN")) {
     return;
   }
 
   var createUrl = function(edition) {
-    var style = 0; // 0 is direct booking - 1 is pre selected
     var paxConfig = { allowinf: 1, youthage: 0 };
     var pax = validatePax({
       maxPaxcount: 9,
@@ -144,13 +143,8 @@ function printLH() {
       allowpremium: 1,
       inctimes: 0
     };
-    if (style == 0) {
-      var url =
-        "https://book.lufthansa.com/lh/dyn/air-lh/revenue/availThenFare?";
-      url += "WDS_MSE_PRICE_CURRENCY=EUR&WDS_MSE_TOTAL_PRICE=1.00&";
-    } else {
-      var url = "https://book.lufthansa.com/lh/dyn/air-lh/revenue/viewFlights?";
-    }
+    var url = "https://book.lufthansa.com/lh/dyn/air-lh/revenue/availThenFare?";
+    url += "WDS_MSE_PRICE_CURRENCY=EUR&WDS_MSE_TOTAL_PRICE=1.00&";
     url +=
       "PORTAL=LH&COUNTRY_SITE=" +
       edition[0].toUpperCase() +
@@ -158,7 +152,7 @@ function printLH() {
       edition[0].toUpperCase() +
       "&LANGUAGE=" +
       edition[1].toUpperCase() +
-      "&SECURE=TRUE&SITE=LUFTLUFT&SO_SITE_LH_FRONTEND_URL=www.lufthansa.com&WDS_WR_CHANNEL=LHCOM";
+      "&SECURE=TRUE&SITE=LUFTLUFT";
     var tmpPax = getAmadeusPax(pax, paxConfig);
     url += tmpPax.url;
     url += "&NB_ADT=" + tmpPax.adults;

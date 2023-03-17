@@ -7,7 +7,7 @@ import {
   getAmadeusPax
 } from "../../print/amadeus";
 
-const osEditions = [
+const snEditions = [
   { value: "AL-gb", name: "Albania / English" },
   { value: "DZ-fr", name: "Algeria / Français" },
   { value: "AO-gb", name: "Angola / English" },
@@ -144,16 +144,16 @@ function print() {
       inctimes: 0
     };
     var url =
-      "https://bookflights.austrian.com/lh/dyn/air-lh/revenue/availThenFare?";
+      "https://book.brusselsairlines.com/lh/dyn/air-lh/revenue/availThenFare?";
     url += "WDS_MSE_PRICE_CURRENCY=EUR&WDS_MSE_TOTAL_PRICE=1.00&";
     url +=
-      "PORTAL=OS&COUNTRY_SITE=" +
+      "PORTAL=SN&COUNTRY_SITE=" +
       edition[0].toUpperCase() +
       "&POS=" +
       edition[0].toUpperCase() +
       "&LANGUAGE=" +
       edition[1].toUpperCase() +
-      "&SECURE=TRUE&SITE=LUFTAUST";
+      "&SECURE=TRUE&SITE=LUFTBRUS";
     var tmpPax = getAmadeusPax(pax, paxConfig);
     url += tmpPax.url;
     url += "&NB_ADT=" + tmpPax.adults;
@@ -165,9 +165,9 @@ function print() {
     return url;
   };
   // get edition
-  var edition = mptUserSettings.osEdition2.split("-");
+  var edition = mptUserSettings.lxEdition.split("-");
   if (edition.length != 2) {
-    printNotification("Error:Invalid Austrian-Edition");
+    printNotification("Error:Invalid Brussels-Edition");
     return;
   }
   var url = createUrl(edition);
@@ -176,7 +176,7 @@ function print() {
   }
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
-  extra += osEditions
+  extra += snEditions
     .map(function(obj, i) {
       return (
         '<a href="' +
@@ -191,10 +191,10 @@ function print() {
 
   return {
     url,
-    title: "Austrian",
+    title: "Brussels Airlines",
     extra
   };
 }
 
 register("airlines", print);
-registerSetting("Austrian", "osEdition2", osEditions, "US-gb");
+registerSetting("Brussels Airlines", "snEdition", snEditions, "US-gb");
