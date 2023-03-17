@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.10
+// @version 0.55.11
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -3567,7 +3567,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.10",
+    version: "0.55.11",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -3665,7 +3665,7 @@ const itaSettings = [
         resultpage: {
             mcDiv: "info-container",
             mcHeader: "info-title",
-            copyAsJsonButton: "button:nth-child(4) > span.mat-button-wrapper"
+            copyAsJsonButton: "button.share-button:nth-child(4)"
         }
     },
     {
@@ -9946,12 +9946,11 @@ const lhEditions = [
 ];
 
 function printLH() {
-  if (!(0,___WEBPACK_IMPORTED_MODULE_1__.anyCarriers)("LH", "OS")) {
+  if (!(0,___WEBPACK_IMPORTED_MODULE_1__.anyCarriers)("LH", "LX", "OS", "SN")) {
     return;
   }
 
   var createUrl = function(edition) {
-    var style = 0; // 0 is direct booking - 1 is pre selected
     var paxConfig = { allowinf: 1, youthage: 0 };
     var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
       maxPaxcount: 9,
@@ -9970,13 +9969,8 @@ function printLH() {
       allowpremium: 1,
       inctimes: 0
     };
-    if (style == 0) {
-      var url =
-        "https://book.lufthansa.com/lh/dyn/air-lh/revenue/availThenFare?";
-      url += "WDS_MSE_PRICE_CURRENCY=EUR&WDS_MSE_TOTAL_PRICE=1.00&";
-    } else {
-      var url = "https://book.lufthansa.com/lh/dyn/air-lh/revenue/viewFlights?";
-    }
+    var url = "https://book.lufthansa.com/lh/dyn/air-lh/revenue/availThenFare?";
+    url += "WDS_MSE_PRICE_CURRENCY=EUR&WDS_MSE_TOTAL_PRICE=1.00&";
     url +=
       "PORTAL=LH&COUNTRY_SITE=" +
       edition[0].toUpperCase() +
@@ -9984,7 +9978,7 @@ function printLH() {
       edition[0].toUpperCase() +
       "&LANGUAGE=" +
       edition[1].toUpperCase() +
-      "&SECURE=TRUE&SITE=LUFTLUFT&SO_SITE_LH_FRONTEND_URL=www.lufthansa.com&WDS_WR_CHANNEL=LHCOM";
+      "&SECURE=TRUE&SITE=LUFTLUFT";
     var tmpPax = (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusPax)(pax, paxConfig);
     url += tmpPax.url;
     url += "&NB_ADT=" + tmpPax.adults;
@@ -10038,38 +10032,135 @@ function printLH() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.js");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
 
 
 
 
 
 const lxEditions = [
-  { value: "de_de", name: "Germany" },
-  { value: "us_en", name: "US" }
+  { value: "AL-gb", name: "Albania / English" },
+  { value: "DZ-fr", name: "Algeria / Français" },
+  { value: "AO-gb", name: "Angola / English" },
+  { value: "AR-es", name: "Argentina / Español" },
+  { value: "AM-gb", name: "Armenia / English" },
+  { value: "AU-gb", name: "Australia / English" },
+  { value: "AT-de", name: "Austria / Deutsch" },
+  { value: "AT-gb", name: "Austria / English" },
+  { value: "AZ-gb", name: "Azerbaijan / English" },
+  { value: "BH-gb", name: "Bahrain / English" },
+  { value: "BY-gb", name: "Belarus / English" },
+  { value: "BE-gb", name: "Belgium / English" },
+  { value: "BA-gb", name: "Bosnia/Hercegovina / English" },
+  { value: "BR-pt", name: "Brazil / Português" },
+  { value: "BG-gb", name: "Bulgaria / English" },
+  { value: "CA-gb", name: "Canada / English" },
+  { value: "CA-fr", name: "Canada / Français" },
+  { value: "CL-es", name: "Chile / Español" },
+  { value: "CN-gb", name: "China / English" },
+  { value: "CO-es", name: "Colombia / Español" },
+  { value: "HR-gb", name: "Croatia / English" },
+  { value: "CY-gb", name: "Cyprus / English" },
+  { value: "CZ-gb", name: "Czech Republic / English" },
+  { value: "DK-gb", name: "Denmark / English" },
+  { value: "EG-gb", name: "Egypt / English" },
+  { value: "GQ-gb", name: "Equatorial Guinea / English" },
+  { value: "ER-gb", name: "Eritrea / English" },
+  { value: "EE-gb", name: "Estonia / English" },
+  { value: "ET-gb", name: "Ethiopia / English" },
+  { value: "FI-gb", name: "Finland / English" },
+  { value: "FR-gb", name: "France / English" },
+  { value: "FR-fr", name: "France / Français" },
+  { value: "GA-gb", name: "Gabon / English" },
+  { value: "GE-gb", name: "Georgia / English" },
+  { value: "DE-de", name: "Germany / Deutsch" },
+  { value: "DE-gb", name: "Germany / English" },
+  { value: "GH-gb", name: "Ghana / English" },
+  { value: "GR-gb", name: "Greece / English" },
+  { value: "HK-gb", name: "Hong Kong / English" },
+  { value: "HU-gb", name: "Hungary / English" },
+  { value: "IS-gb", name: "Iceland / English" },
+  { value: "IN-gb", name: "India / English" },
+  { value: "ID-gb", name: "Indonesia / English" },
+  { value: "IR-gb", name: "Iran / English" },
+  { value: "IQ-gb", name: "Iraq / English" },
+  { value: "IE-gb", name: "Ireland / English" },
+  { value: "IL-gb", name: "Israel / English" },
+  { value: "IT-it", name: "Italy / Italiano" },
+  { value: "IT-gb", name: "Italy / English" },
+  { value: "JP-gb", name: "Japan / English" },
+  { value: "JO-gb", name: "Jordan / English" },
+  { value: "KZ-gb", name: "Kazakhstan / English" },
+  { value: "KE-gb", name: "Kenya / English" },
+  { value: "KR-gb", name: "Republic of Korea / English" },
+  { value: "KW-gb", name: "Kuwait / English" },
+  { value: "LV-gb", name: "Latvia / English" },
+  { value: "LB-gb", name: "Lebanon / English" },
+  { value: "LY-gb", name: "Libya / English" },
+  { value: "LT-gb", name: "Lithuania / English" },
+  { value: "LU-gb", name: "Luxembourg / English" },
+  { value: "MY-gb", name: "Malaysia / English" },
+  { value: "MV-gb", name: "Maldives / English" },
+  { value: "MT-gb", name: "Malta / English" },
+  { value: "MU-gb", name: "Mauritius / English" },
+  { value: "MX-es", name: "Mexico / Español" },
+  { value: "MD-gb", name: "Moldova / English" },
+  { value: "MA-fr", name: "Morocco / Français" },
+  { value: "NL-gb", name: "Netherlands / English" },
+  { value: "NZ-gb", name: "New Zealand / English" },
+  { value: "NG-gb", name: "Nigeria / English" },
+  { value: "NO-gb", name: "Norway / English" },
+  { value: "OM-gb", name: "Oman / English" },
+  { value: "PK-gb", name: "Pakistan / English" },
+  { value: "PA-es", name: "Panama / Español" },
+  { value: "PH-gb", name: "Philippines / English" },
+  { value: "PL-gb", name: "Poland / English" },
+  { value: "PL-pl", name: "Poland / Polski" },
+  { value: "PT-gb", name: "Portugal / English" },
+  { value: "PT-pt", name: "Portugal / Português" },
+  { value: "QA-gb", name: "Qatar / English" },
+  { value: "CD-gb", name: "Republic of the Congo / English" },
+  { value: "RO-gb", name: "Romania / English" },
+  { value: "RU-gb", name: "Russia / English" },
+  { value: "RU-ru", name: "Russia / Русский" },
+  { value: "SA-gb", name: "Saudi Arabia / English" },
+  { value: "RS-gb", name: "Serbia / English" },
+  { value: "SG-gb", name: "Singapore / English" },
+  { value: "SK-gb", name: "Slovakia / English" },
+  { value: "SI-gb", name: "Slovenia / English" },
+  { value: "ZA-gb", name: "South Africa / English" },
+  { value: "ES-gb", name: "Spain / English" },
+  { value: "ES-es", name: "Spain / Español" },
+  { value: "SD-gb", name: "Sudan / English" },
+  { value: "SE-gb", name: "Sweden / English" },
+  { value: "CH-de", name: "Switzerland / Deutsch" },
+  { value: "CH-gb", name: "Switzerland / English" },
+  { value: "CH-fr", name: "Switzerland / Français" },
+  { value: "TW-gb", name: "Taiwan / English " },
+  { value: "TH-gb", name: "Thailand / English" },
+  { value: "TN-fr", name: "Tunisia / Français" },
+  { value: "TR-gb", name: "Turkey / English" },
+  { value: "TM-gb", name: "Turkmenistan / English" },
+  { value: "UA-gb", name: "Ukraine / English" },
+  { value: "AE-gb", name: "United Arab Emirates / English" },
+  { value: "UK-gb", name: "United Kingdom / English" },
+  { value: "US-gb", name: "United States / English" },
+  { value: "VE-es", name: "Venezuela / Español" },
+  { value: "VN-gb", name: "Vietnam / English" },
+  { value: "XX-gb", name: "Other countries / English" }
 ];
 
-function printLX() {
-  if (!(0,___WEBPACK_IMPORTED_MODULE_2__.anyCarriers)("LX")) {
+function print() {
+  if (!(0,___WEBPACK_IMPORTED_MODULE_1__.anyCarriers)("LH", "LX", "OS", "SN")) {
     return;
   }
 
-  // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
-  var cabins = ["", "", "/class-business", "/class-first"];
-  var mincabin = 3;
   var createUrl = function(edition) {
-    var url =
-      "https://www.swiss.com/" +
-      edition[0] +
-      "/" +
-      edition[1] +
-      "/Book/Combined";
-    var pax = (0,___WEBPACK_IMPORTED_MODULE_2__.validatePax)({
+    var paxConfig = { allowinf: 1, youthage: 0 };
+    var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
       maxPaxcount: 9,
       countInf: false,
       childAsAdult: 12,
@@ -10077,61 +10168,39 @@ function printLX() {
       childMinAge: 2
     });
     if (!pax) {
-      (0,_utils__WEBPACK_IMPORTED_MODULE_4__.printNotification)("Error: Failed to validate Passengers in printLX");
-      return;
+      (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in print");
+      return false;
     }
-    //Build multi-city search based on legs
-    for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin.length; i++) {
-      // walks each leg
-      url +=
-        "/" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].orig + "-" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].dest + "/";
-      for (var j = 0; j < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg.length; j++) {
-        //walks each segment of leg
-        var k = 0;
-        // lets have a look if we need to skip segments - Flightnumber has to be the same and it must be just a layover
-        while (j + k < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg.length - 1) {
-          if (
-            _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j + k].fnr !=
-              _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j + k + 1].fnr ||
-            _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j + k].layoverduration >= 1440
-          )
-            break;
-          k++;
-        }
-        url +=
-          _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].carrier +
-          _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].fnr +
-          "-";
-        if (_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].cabin < mincabin) {
-          mincabin = _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].cabin;
-        }
-        j += k;
-      }
-      url = url.substring(0, url.length - 1);
-      url +=
-        "/" +
-        (i > 0 ? "to" : "from") +
-        "-" +
-        _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].dep.year +
-        "-" +
-        ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].dep.month).slice(-2) +
-        "-" +
-        ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].dep.day).slice(-2);
-    }
+    var amadeusConfig = {
+      sepcabin: 0,
+      detailed: 0,
+      allowpremium: 1,
+      inctimes: 0
+    };
+    var url = "https://book.swiss.com/lh/dyn/air-lh/revenue/availThenFare?";
+    url += "WDS_MSE_PRICE_CURRENCY=EUR&WDS_MSE_TOTAL_PRICE=1.00&";
     url +=
-      "/adults-" +
-      pax.adults +
-      "/children-" +
-      pax.children.length +
-      "/infants-" +
-      pax.infLap;
-    url += cabins[_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.default.cabin === "Auto" ? mincabin : (0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getForcedCabin)()];
+      "PORTAL=LX&COUNTRY_SITE=" +
+      edition[0].toUpperCase() +
+      "&POS=" +
+      edition[0].toUpperCase() +
+      "&LANGUAGE=" +
+      edition[1].toUpperCase() +
+      "&SECURE=TRUE&SITE=LUFTSWSS";
+    var tmpPax = (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusPax)(pax, paxConfig);
+    url += tmpPax.url;
+    url += "&NB_ADT=" + tmpPax.adults;
+    url += "&NB_INF=" + tmpPax.infants;
+    url += "&NB_CHD=" + tmpPax.children;
+    url += "&TRIP_TYPE=" + (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusTriptype)();
+    url += (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusUrl)(amadeusConfig);
+
     return url;
   };
   // get edition
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.lxEdition.split("_");
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.lxEdition2.split("-");
   if (edition.length != 2) {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_4__.printNotification)("Error:Invalid Swiss-Edition");
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error:Invalid Swiss-Edition");
     return;
   }
   var url = createUrl(edition);
@@ -10144,7 +10213,7 @@ function printLX() {
     .map(function(obj, i) {
       return (
         '<a href="' +
-        createUrl(obj.value.split("_")) +
+        createUrl(obj.value.split("-")) +
         '" target="_blank">' +
         obj.name +
         "</a>"
@@ -10160,8 +10229,8 @@ function printLX() {
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_2__.register)("airlines", printLX);
-(0,_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.registerSetting)("Swiss", "lxEdition", lxEditions, "us_en");
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("airlines", print);
+(0,_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.registerSetting)("Swiss", "lxEdition2", lxEditions, "US-gb");
 
 
 /***/ }),
@@ -10235,39 +10304,135 @@ function printOA() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
 /* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
 
 
 
 
 
-const editions = [
-  { value: "en", name: "English" },
-  { value: "de", name: "Deutsch" },
-  { value: "cs", name: "čeština" },
-  { value: "fr", name: "Français" },
-  { value: "it", name: "Italiano" },
-  { value: "ja", name: "日本語" },
-  { value: "ro", name: "Romana" },
-  { value: "ru", name: "Русский" },
-  { value: "uk", name: "Українська" },
-  { value: "pl", name: "Polski" },
-  { value: "sv", name: "Svenska" },
-  { value: "es", name: "Español" },
-  { value: "zh", name: "中文" },
-  { value: "el", name: "Ελληνικά" }
+const osEditions = [
+  { value: "AL-gb", name: "Albania / English" },
+  { value: "DZ-fr", name: "Algeria / Français" },
+  { value: "AO-gb", name: "Angola / English" },
+  { value: "AR-es", name: "Argentina / Español" },
+  { value: "AM-gb", name: "Armenia / English" },
+  { value: "AU-gb", name: "Australia / English" },
+  { value: "AT-de", name: "Austria / Deutsch" },
+  { value: "AT-gb", name: "Austria / English" },
+  { value: "AZ-gb", name: "Azerbaijan / English" },
+  { value: "BH-gb", name: "Bahrain / English" },
+  { value: "BY-gb", name: "Belarus / English" },
+  { value: "BE-gb", name: "Belgium / English" },
+  { value: "BA-gb", name: "Bosnia/Hercegovina / English" },
+  { value: "BR-pt", name: "Brazil / Português" },
+  { value: "BG-gb", name: "Bulgaria / English" },
+  { value: "CA-gb", name: "Canada / English" },
+  { value: "CA-fr", name: "Canada / Français" },
+  { value: "CL-es", name: "Chile / Español" },
+  { value: "CN-gb", name: "China / English" },
+  { value: "CO-es", name: "Colombia / Español" },
+  { value: "HR-gb", name: "Croatia / English" },
+  { value: "CY-gb", name: "Cyprus / English" },
+  { value: "CZ-gb", name: "Czech Republic / English" },
+  { value: "DK-gb", name: "Denmark / English" },
+  { value: "EG-gb", name: "Egypt / English" },
+  { value: "GQ-gb", name: "Equatorial Guinea / English" },
+  { value: "ER-gb", name: "Eritrea / English" },
+  { value: "EE-gb", name: "Estonia / English" },
+  { value: "ET-gb", name: "Ethiopia / English" },
+  { value: "FI-gb", name: "Finland / English" },
+  { value: "FR-gb", name: "France / English" },
+  { value: "FR-fr", name: "France / Français" },
+  { value: "GA-gb", name: "Gabon / English" },
+  { value: "GE-gb", name: "Georgia / English" },
+  { value: "DE-de", name: "Germany / Deutsch" },
+  { value: "DE-gb", name: "Germany / English" },
+  { value: "GH-gb", name: "Ghana / English" },
+  { value: "GR-gb", name: "Greece / English" },
+  { value: "HK-gb", name: "Hong Kong / English" },
+  { value: "HU-gb", name: "Hungary / English" },
+  { value: "IS-gb", name: "Iceland / English" },
+  { value: "IN-gb", name: "India / English" },
+  { value: "ID-gb", name: "Indonesia / English" },
+  { value: "IR-gb", name: "Iran / English" },
+  { value: "IQ-gb", name: "Iraq / English" },
+  { value: "IE-gb", name: "Ireland / English" },
+  { value: "IL-gb", name: "Israel / English" },
+  { value: "IT-it", name: "Italy / Italiano" },
+  { value: "IT-gb", name: "Italy / English" },
+  { value: "JP-gb", name: "Japan / English" },
+  { value: "JO-gb", name: "Jordan / English" },
+  { value: "KZ-gb", name: "Kazakhstan / English" },
+  { value: "KE-gb", name: "Kenya / English" },
+  { value: "KR-gb", name: "Republic of Korea / English" },
+  { value: "KW-gb", name: "Kuwait / English" },
+  { value: "LV-gb", name: "Latvia / English" },
+  { value: "LB-gb", name: "Lebanon / English" },
+  { value: "LY-gb", name: "Libya / English" },
+  { value: "LT-gb", name: "Lithuania / English" },
+  { value: "LU-gb", name: "Luxembourg / English" },
+  { value: "MY-gb", name: "Malaysia / English" },
+  { value: "MV-gb", name: "Maldives / English" },
+  { value: "MT-gb", name: "Malta / English" },
+  { value: "MU-gb", name: "Mauritius / English" },
+  { value: "MX-es", name: "Mexico / Español" },
+  { value: "MD-gb", name: "Moldova / English" },
+  { value: "MA-fr", name: "Morocco / Français" },
+  { value: "NL-gb", name: "Netherlands / English" },
+  { value: "NZ-gb", name: "New Zealand / English" },
+  { value: "NG-gb", name: "Nigeria / English" },
+  { value: "NO-gb", name: "Norway / English" },
+  { value: "OM-gb", name: "Oman / English" },
+  { value: "PK-gb", name: "Pakistan / English" },
+  { value: "PA-es", name: "Panama / Español" },
+  { value: "PH-gb", name: "Philippines / English" },
+  { value: "PL-gb", name: "Poland / English" },
+  { value: "PL-pl", name: "Poland / Polski" },
+  { value: "PT-gb", name: "Portugal / English" },
+  { value: "PT-pt", name: "Portugal / Português" },
+  { value: "QA-gb", name: "Qatar / English" },
+  { value: "CD-gb", name: "Republic of the Congo / English" },
+  { value: "RO-gb", name: "Romania / English" },
+  { value: "RU-gb", name: "Russia / English" },
+  { value: "RU-ru", name: "Russia / Русский" },
+  { value: "SA-gb", name: "Saudi Arabia / English" },
+  { value: "RS-gb", name: "Serbia / English" },
+  { value: "SG-gb", name: "Singapore / English" },
+  { value: "SK-gb", name: "Slovakia / English" },
+  { value: "SI-gb", name: "Slovenia / English" },
+  { value: "ZA-gb", name: "South Africa / English" },
+  { value: "ES-gb", name: "Spain / English" },
+  { value: "ES-es", name: "Spain / Español" },
+  { value: "SD-gb", name: "Sudan / English" },
+  { value: "SE-gb", name: "Sweden / English" },
+  { value: "CH-de", name: "Switzerland / Deutsch" },
+  { value: "CH-gb", name: "Switzerland / English" },
+  { value: "CH-fr", name: "Switzerland / Français" },
+  { value: "TW-gb", name: "Taiwan / English " },
+  { value: "TH-gb", name: "Thailand / English" },
+  { value: "TN-fr", name: "Tunisia / Français" },
+  { value: "TR-gb", name: "Turkey / English" },
+  { value: "TM-gb", name: "Turkmenistan / English" },
+  { value: "UA-gb", name: "Ukraine / English" },
+  { value: "AE-gb", name: "United Arab Emirates / English" },
+  { value: "UK-gb", name: "United Kingdom / English" },
+  { value: "US-gb", name: "United States / English" },
+  { value: "VE-es", name: "Venezuela / Español" },
+  { value: "VN-gb", name: "Vietnam / English" },
+  { value: "XX-gb", name: "Other countries / English" }
 ];
 
 function print() {
-  if (!(0,___WEBPACK_IMPORTED_MODULE_1__.anyCarriers)("OS")) {
+  if (!(0,___WEBPACK_IMPORTED_MODULE_1__.anyCarriers)("LH", "LX", "OS", "SN")) {
     return;
   }
 
-  const createUrl = function(edition) {
-    const pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
+  var createUrl = function(edition) {
+    var paxConfig = { allowinf: 1, youthage: 0 };
+    var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
       maxPaxcount: 9,
       countInf: false,
       childAsAdult: 12,
@@ -10275,58 +10440,38 @@ function print() {
       childMinAge: 2
     });
     if (!pax) {
-      (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers for OS");
-      return;
+      (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in print");
+      return false;
     }
-
-    let url = "https://book.austrian.com/app/fb.fly?action=avail&mode=date";
-
-    const carriers = {};
-    const farebases = [];
-    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.forEach((itin, itinnum) => {
-      const startDate = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.toDate)(itin.dep);
-      /** @param {Date} endDate */
-      const getDays = function(endDate) {
-        const days = (0,_utils__WEBPACK_IMPORTED_MODULE_3__.dayDiff)(startDate, endDate);
-        return days ? "+" + days : "";
-      };
-
-      itin.seg.forEach((seg, segnum) => {
-        const endDate = new Date(seg.arr.year, seg.arr.month, seg.arr.day);
-
-        url += `&origin${itinnum}_${segnum}=${seg.orig}`;
-        url += `&destin${itinnum}_${segnum}=${seg.dest}`;
-        url += `&day${itinnum}_${segnum}=${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(itin.dep.day)}`;
-        url += `&month${itinnum}_${segnum}=${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(itin.dep.month)}`;
-        url += `&year${itinnum}_${segnum}=${itin.dep.year}`;
-        url +=
-          `&deptime${itinnum}_${segnum}=${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to4digitTime)(seg.dep.time24)}` +
-          getDays((0,_utils__WEBPACK_IMPORTED_MODULE_3__.toDate)(seg.dep));
-        url +=
-          `&arrtime${itinnum}_${segnum}=${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to4digitTime)(seg.arr.time24)}` +
-          getDays((0,_utils__WEBPACK_IMPORTED_MODULE_3__.toDate)(seg.arr));
-        url += `&fn${itinnum}_${segnum}=${seg.carrier}${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to4digits)(seg.fnr)}`;
-        url += `&comp${itinnum}_${segnum}=EC`;
-
-        carriers[seg.carrier] = (carriers[seg.carrier] || 0) + 1;
-        farebases.push(_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.farebases[itinnum]);
-      });
-    });
-    url += `&fbc=` + farebases.join(",");
-    url += `&numadt=${pax.adults}`;
-    url += `&numchd=${pax.children.length}`;
-    url += `&numinf=${pax.infLap}`;
-    url += `&l=${edition}`;
+    var amadeusConfig = {
+      sepcabin: 0,
+      detailed: 0,
+      allowpremium: 1,
+      inctimes: 0
+    };
+    var url =
+      "https://bookflights.austrian.com/lh/dyn/air-lh/revenue/availThenFare?";
+    url += "WDS_MSE_PRICE_CURRENCY=EUR&WDS_MSE_TOTAL_PRICE=1.00&";
     url +=
-      `&carrier=` +
-        (Object.keys(carriers) || []).sort(
-          (a, b) => carriers[b] - carriers[a]
-        )[0] || 0;
+      "PORTAL=OS&COUNTRY_SITE=" +
+      edition[0].toUpperCase() +
+      "&POS=" +
+      edition[0].toUpperCase() +
+      "&LANGUAGE=" +
+      edition[1].toUpperCase() +
+      "&SECURE=TRUE&SITE=LUFTAUST";
+    var tmpPax = (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusPax)(pax, paxConfig);
+    url += tmpPax.url;
+    url += "&NB_ADT=" + tmpPax.adults;
+    url += "&NB_INF=" + tmpPax.infants;
+    url += "&NB_CHD=" + tmpPax.children;
+    url += "&TRIP_TYPE=" + (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusTriptype)();
+    url += (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusUrl)(amadeusConfig);
 
     return url;
   };
-
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.osEdition;
+  // get edition
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.osEdition2.split("-");
   if (edition.length != 2) {
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error:Invalid Austrian-Edition");
     return;
@@ -10335,14 +10480,13 @@ function print() {
   if (!url) {
     return;
   }
-
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
-  extra += editions
+  extra += osEditions
     .map(function(obj, i) {
       return (
         '<a href="' +
-        createUrl(obj.value) +
+        createUrl(obj.value.split("-")) +
         '" target="_blank">' +
         obj.name +
         "</a>"
@@ -10359,7 +10503,7 @@ function print() {
 }
 
 (0,___WEBPACK_IMPORTED_MODULE_1__.register)("airlines", print);
-(0,_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.registerSetting)("Austrian", "osEdition", editions, "en");
+(0,_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.registerSetting)("Austrian", "osEdition2", osEditions, "US-gb");
 
 
 /***/ }),
@@ -10671,6 +10815,215 @@ function print() {
 }
 
 (0,___WEBPACK_IMPORTED_MODULE_0__.register)("airlines", print);
+
+
+/***/ }),
+
+/***/ "./src/matrix3/links/airlines/sn.js":
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
+
+
+
+
+
+const snEditions = [
+  { value: "AL-gb", name: "Albania / English" },
+  { value: "DZ-fr", name: "Algeria / Français" },
+  { value: "AO-gb", name: "Angola / English" },
+  { value: "AR-es", name: "Argentina / Español" },
+  { value: "AM-gb", name: "Armenia / English" },
+  { value: "AU-gb", name: "Australia / English" },
+  { value: "AT-de", name: "Austria / Deutsch" },
+  { value: "AT-gb", name: "Austria / English" },
+  { value: "AZ-gb", name: "Azerbaijan / English" },
+  { value: "BH-gb", name: "Bahrain / English" },
+  { value: "BY-gb", name: "Belarus / English" },
+  { value: "BE-gb", name: "Belgium / English" },
+  { value: "BA-gb", name: "Bosnia/Hercegovina / English" },
+  { value: "BR-pt", name: "Brazil / Português" },
+  { value: "BG-gb", name: "Bulgaria / English" },
+  { value: "CA-gb", name: "Canada / English" },
+  { value: "CA-fr", name: "Canada / Français" },
+  { value: "CL-es", name: "Chile / Español" },
+  { value: "CN-gb", name: "China / English" },
+  { value: "CO-es", name: "Colombia / Español" },
+  { value: "HR-gb", name: "Croatia / English" },
+  { value: "CY-gb", name: "Cyprus / English" },
+  { value: "CZ-gb", name: "Czech Republic / English" },
+  { value: "DK-gb", name: "Denmark / English" },
+  { value: "EG-gb", name: "Egypt / English" },
+  { value: "GQ-gb", name: "Equatorial Guinea / English" },
+  { value: "ER-gb", name: "Eritrea / English" },
+  { value: "EE-gb", name: "Estonia / English" },
+  { value: "ET-gb", name: "Ethiopia / English" },
+  { value: "FI-gb", name: "Finland / English" },
+  { value: "FR-gb", name: "France / English" },
+  { value: "FR-fr", name: "France / Français" },
+  { value: "GA-gb", name: "Gabon / English" },
+  { value: "GE-gb", name: "Georgia / English" },
+  { value: "DE-de", name: "Germany / Deutsch" },
+  { value: "DE-gb", name: "Germany / English" },
+  { value: "GH-gb", name: "Ghana / English" },
+  { value: "GR-gb", name: "Greece / English" },
+  { value: "HK-gb", name: "Hong Kong / English" },
+  { value: "HU-gb", name: "Hungary / English" },
+  { value: "IS-gb", name: "Iceland / English" },
+  { value: "IN-gb", name: "India / English" },
+  { value: "ID-gb", name: "Indonesia / English" },
+  { value: "IR-gb", name: "Iran / English" },
+  { value: "IQ-gb", name: "Iraq / English" },
+  { value: "IE-gb", name: "Ireland / English" },
+  { value: "IL-gb", name: "Israel / English" },
+  { value: "IT-it", name: "Italy / Italiano" },
+  { value: "IT-gb", name: "Italy / English" },
+  { value: "JP-gb", name: "Japan / English" },
+  { value: "JO-gb", name: "Jordan / English" },
+  { value: "KZ-gb", name: "Kazakhstan / English" },
+  { value: "KE-gb", name: "Kenya / English" },
+  { value: "KR-gb", name: "Republic of Korea / English" },
+  { value: "KW-gb", name: "Kuwait / English" },
+  { value: "LV-gb", name: "Latvia / English" },
+  { value: "LB-gb", name: "Lebanon / English" },
+  { value: "LY-gb", name: "Libya / English" },
+  { value: "LT-gb", name: "Lithuania / English" },
+  { value: "LU-gb", name: "Luxembourg / English" },
+  { value: "MY-gb", name: "Malaysia / English" },
+  { value: "MV-gb", name: "Maldives / English" },
+  { value: "MT-gb", name: "Malta / English" },
+  { value: "MU-gb", name: "Mauritius / English" },
+  { value: "MX-es", name: "Mexico / Español" },
+  { value: "MD-gb", name: "Moldova / English" },
+  { value: "MA-fr", name: "Morocco / Français" },
+  { value: "NL-gb", name: "Netherlands / English" },
+  { value: "NZ-gb", name: "New Zealand / English" },
+  { value: "NG-gb", name: "Nigeria / English" },
+  { value: "NO-gb", name: "Norway / English" },
+  { value: "OM-gb", name: "Oman / English" },
+  { value: "PK-gb", name: "Pakistan / English" },
+  { value: "PA-es", name: "Panama / Español" },
+  { value: "PH-gb", name: "Philippines / English" },
+  { value: "PL-gb", name: "Poland / English" },
+  { value: "PL-pl", name: "Poland / Polski" },
+  { value: "PT-gb", name: "Portugal / English" },
+  { value: "PT-pt", name: "Portugal / Português" },
+  { value: "QA-gb", name: "Qatar / English" },
+  { value: "CD-gb", name: "Republic of the Congo / English" },
+  { value: "RO-gb", name: "Romania / English" },
+  { value: "RU-gb", name: "Russia / English" },
+  { value: "RU-ru", name: "Russia / Русский" },
+  { value: "SA-gb", name: "Saudi Arabia / English" },
+  { value: "RS-gb", name: "Serbia / English" },
+  { value: "SG-gb", name: "Singapore / English" },
+  { value: "SK-gb", name: "Slovakia / English" },
+  { value: "SI-gb", name: "Slovenia / English" },
+  { value: "ZA-gb", name: "South Africa / English" },
+  { value: "ES-gb", name: "Spain / English" },
+  { value: "ES-es", name: "Spain / Español" },
+  { value: "SD-gb", name: "Sudan / English" },
+  { value: "SE-gb", name: "Sweden / English" },
+  { value: "CH-de", name: "Switzerland / Deutsch" },
+  { value: "CH-gb", name: "Switzerland / English" },
+  { value: "CH-fr", name: "Switzerland / Français" },
+  { value: "TW-gb", name: "Taiwan / English " },
+  { value: "TH-gb", name: "Thailand / English" },
+  { value: "TN-fr", name: "Tunisia / Français" },
+  { value: "TR-gb", name: "Turkey / English" },
+  { value: "TM-gb", name: "Turkmenistan / English" },
+  { value: "UA-gb", name: "Ukraine / English" },
+  { value: "AE-gb", name: "United Arab Emirates / English" },
+  { value: "UK-gb", name: "United Kingdom / English" },
+  { value: "US-gb", name: "United States / English" },
+  { value: "VE-es", name: "Venezuela / Español" },
+  { value: "VN-gb", name: "Vietnam / English" },
+  { value: "XX-gb", name: "Other countries / English" }
+];
+
+function print() {
+  if (!(0,___WEBPACK_IMPORTED_MODULE_1__.anyCarriers)("LH", "LX", "OS", "SN")) {
+    return;
+  }
+
+  var createUrl = function(edition) {
+    var paxConfig = { allowinf: 1, youthage: 0 };
+    var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
+      maxPaxcount: 9,
+      countInf: false,
+      childAsAdult: 12,
+      sepInfSeat: false,
+      childMinAge: 2
+    });
+    if (!pax) {
+      (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in print");
+      return false;
+    }
+    var amadeusConfig = {
+      sepcabin: 0,
+      detailed: 0,
+      allowpremium: 1,
+      inctimes: 0
+    };
+    var url =
+      "https://book.brusselsairlines.com/lh/dyn/air-lh/revenue/availThenFare?";
+    url += "WDS_MSE_PRICE_CURRENCY=EUR&WDS_MSE_TOTAL_PRICE=1.00&";
+    url +=
+      "PORTAL=SN&COUNTRY_SITE=" +
+      edition[0].toUpperCase() +
+      "&POS=" +
+      edition[0].toUpperCase() +
+      "&LANGUAGE=" +
+      edition[1].toUpperCase() +
+      "&SECURE=TRUE&SITE=LUFTBRUS";
+    var tmpPax = (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusPax)(pax, paxConfig);
+    url += tmpPax.url;
+    url += "&NB_ADT=" + tmpPax.adults;
+    url += "&NB_INF=" + tmpPax.infants;
+    url += "&NB_CHD=" + tmpPax.children;
+    url += "&TRIP_TYPE=" + (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusTriptype)();
+    url += (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusUrl)(amadeusConfig);
+
+    return url;
+  };
+  // get edition
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.lxEdition.split("-");
+  if (edition.length != 2) {
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error:Invalid Brussels-Edition");
+    return;
+  }
+  var url = createUrl(edition);
+  if (!url) {
+    return;
+  }
+  var extra =
+    ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
+  extra += snEditions
+    .map(function(obj, i) {
+      return (
+        '<a href="' +
+        createUrl(obj.value.split("-")) +
+        '" target="_blank">' +
+        obj.name +
+        "</a>"
+      );
+    })
+    .join("<br/>");
+  extra += "</span></span>";
+
+  return {
+    url,
+    title: "Brussels Airlines",
+    extra
+  };
+}
+
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("airlines", print);
+(0,_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.registerSetting)("Brussels Airlines", "snEdition", snEditions, "US-gb");
 
 
 /***/ }),
@@ -13161,6 +13514,7 @@ var map = {
 	"./airlines/ps.js": "./src/matrix3/links/airlines/ps.js",
 	"./airlines/qf.js": "./src/matrix3/links/airlines/qf.js",
 	"./airlines/qr.js": "./src/matrix3/links/airlines/qr.js",
+	"./airlines/sn.js": "./src/matrix3/links/airlines/sn.js",
 	"./airlines/tk.js": "./src/matrix3/links/airlines/tk.js",
 	"./airlines/vs.js": "./src/matrix3/links/airlines/vs.js",
 	"./index.js": "./src/matrix3/links/index.js",
@@ -13615,11 +13969,9 @@ async function loadUserSettings() {
 /* harmony export */   "to4digitTime": () => (/* binding */ to4digitTime),
 /* harmony export */   "monthnumberToName": () => (/* binding */ monthnumberToName),
 /* harmony export */   "monthnameToNumber": () => (/* binding */ monthnameToNumber),
-/* harmony export */   "toDate": () => (/* binding */ toDate),
-/* harmony export */   "dayDiff": () => (/* binding */ dayDiff),
 /* harmony export */   "toTitleCase": () => (/* binding */ toTitleCase)
 /* harmony export */ });
-/* unused harmony exports padChars, uuidv4 */
+/* unused harmony exports padChars, uuidv4, toDate, dayDiff */
 function findtarget(className, nth) {
   return document.getElementsByClassName(className)[(nth || 1) - 1];
 }
