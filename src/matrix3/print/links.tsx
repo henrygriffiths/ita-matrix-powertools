@@ -49,14 +49,14 @@ export function printLinksContainer() {
 
       if (link.img) {
         printImage(link);
-      } else if (mptUserSettings.enableInlineMode == 1) {
+      } else if (mptUserSettings.enableInlineMode !== 0) {
         printUrlInline(link);
       } else {
         printUrl(link);
       }
     });
 
-    mptUserSettings.enableDeviders == 1 &&
+    mptUserSettings.enableDeviders !== 0 &&
       links[group].length &&
       i != groups.length - 1 &&
       printSeperator();
@@ -110,7 +110,7 @@ export function printImage(link) {
 export function getSidebarContainer() {
   return (
     document.getElementById("powertoolslinkcontainer") ||
-    (mptUserSettings.enableInlineMode == 1 || classSettings.matrixVersion == 5
+    (mptUserSettings.enableInlineMode !== 0 || classSettings.matrixVersion == 5
       ? createUrlContainerInline()
       : createUrlContainer())
   );
@@ -166,7 +166,7 @@ function printLink(link) {
           href={link.url}
           target={link.target || "_blank"}
           onClick={e => {
-            if (mptUserSettings.enableAffiliates == 1) {
+            if (mptUserSettings.enableAffiliates !== 0) {
               e.preventDefault();
               window.open(
                 `https://go.skimresources.com/?id=${
