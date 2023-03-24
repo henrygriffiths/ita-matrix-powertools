@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.11
+// @version 0.55.12
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -2992,14 +2992,14 @@ function printLinksContainer() {
             if (link.img) {
                 printImage(link);
             }
-            else if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.enableInlineMode == 1) {
+            else if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.enableInlineMode !== 0) {
                 printUrlInline(link);
             }
             else {
                 printUrl(link);
             }
         });
-        _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.enableDeviders == 1 &&
+        _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.enableDeviders !== 0 &&
             links[group].length &&
             i != groups.length - 1 &&
             printSeperator();
@@ -3031,7 +3031,7 @@ function printImage(link) {
 }
 function getSidebarContainer() {
     return (document.getElementById("powertoolslinkcontainer") ||
-        (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.enableInlineMode == 1 || _settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__.default.matrixVersion == 5
+        (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.enableInlineMode !== 0 || _settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__.default.matrixVersion == 5
             ? createUrlContainerInline()
             : createUrlContainer()));
 }
@@ -3065,7 +3065,7 @@ function printLink(link) {
     return (dom_chef__WEBPACK_IMPORTED_MODULE_0__.default.createElement("div", null,
         dom_chef__WEBPACK_IMPORTED_MODULE_0__.default.createElement("label", { style: { fontSize: `${Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.linkFontsize)}%` } },
             dom_chef__WEBPACK_IMPORTED_MODULE_0__.default.createElement("a", { href: link.url, target: link.target || "_blank", onClick: e => {
-                    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.enableAffiliates == 1) {
+                    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.default.enableAffiliates !== 0) {
                         e.preventDefault();
                         window.open(`https://go.skimresources.com/?id=${!!location.hostname.match(/^old/i)
                             ? "122783X1686784"
@@ -3567,7 +3567,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.11",
+    version: "0.55.12",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -10991,7 +10991,7 @@ function print() {
     return url;
   };
   // get edition
-  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.lxEdition.split("-");
+  var edition = _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.default.snEdition.split("-");
   if (edition.length != 2) {
     (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error:Invalid Brussels-Edition");
     return;
@@ -11983,6 +11983,154 @@ function print(method) {
 
 (0,___WEBPACK_IMPORTED_MODULE_2__.register)("meta", () => print(0));
 (0,___WEBPACK_IMPORTED_MODULE_2__.register)("meta", () => print(1));
+
+
+/***/ }),
+
+/***/ "./src/matrix3/links/otas/agoda.js":
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
+
+
+
+
+
+const editions = [
+  { name: "English", lang: "en", pos: "US" },
+  { name: "한국어", lang: "ko", pos: "KR" },
+  { name: "繁體中文 (台灣)", lang: "zh", pos: "TW" },
+  { name: "Español", lang: "es", pos: "ES" },
+  { name: "简体中文", lang: "zh", pos: "CN" },
+  { name: "日本語", lang: "ja", pos: "JP" },
+  { name: "繁體中文 (香港)", lang: "zh", pos: "HK" },
+  { name: "ภาษาไทย", lang: "th", pos: "TH" },
+  { name: "Français", lang: "fr", pos: "FR" },
+  { name: "Tiếng Việt", lang: "vi", pos: "VN" },
+  { name: "Deutsch", lang: "de", pos: "DE" },
+  { name: "Русский", lang: "ru", pos: "RU" },
+  { name: "Bahasa Indonesia", lang: "id", pos: "ID" },
+  { name: "العربية", lang: "ar", pos: "AE" },
+  { name: "Português (PT)", lang: "pt", pos: "PT" },
+  { name: "Português (BR)", lang: "pt", pos: "BR" },
+  { name: "עברית", lang: "he", pos: "IL" },
+  { name: "Język polski", lang: "pl", pos: "PL" },
+  { name: "Italiano", lang: "it", pos: "IT" },
+  { name: "Nederlands", lang: "nl", pos: "NL" },
+  { name: "Română", lang: "ro", pos: "RO" },
+  { name: "Svenska", lang: "sv", pos: "SE" },
+  { name: "Türkçe", lang: "tr", pos: "TR" },
+  { name: "Dansk", lang: "da", pos: "DK" },
+  { name: "Українська", lang: "uk", pos: "UA" },
+  { name: "Bahasa Malaysia", lang: "ms", pos: "MY" },
+  { name: "Norsk", lang: "nb", pos: "NO" },
+  { name: "Čeština", lang: "cs", pos: "CZ" },
+  { name: "Suomi", lang: "fi", pos: "FI" },
+  { name: "Magyar", lang: "hu", pos: "HU" },
+  { name: "Ελληνικά", lang: "el", pos: "GR" },
+  { name: "Lietuvių", lang: "lt", pos: "LT" },
+  { name: "Filipino", lang: "tl", pos: "PH" },
+  { name: "Slovenski jezik", lang: "sl", pos: "SI" },
+  { name: "Български език", lang: "bg", pos: "BG" },
+  { name: "Català", lang: "ca", pos: "ES" },
+  { name: "Eesti", lang: "et", pos: "EE" },
+  { name: "Latviešu", lang: "lv", pos: "LV" },
+  { name: "Hrvatski", lang: "hr", pos: "HR" }
+];
+
+function buildQueryString(cur, pos = "", lang = null) {
+  const cabins = ["ECO", "PEO", "BIZ", "FST"];
+  const pax = (0,___WEBPACK_IMPORTED_MODULE_0__.validatePax)({
+    maxPaxcount: 9,
+    countInf: true,
+    childAsAdult: 12,
+    sepInfSeat: false,
+    childMinAge: 2
+  });
+  if (!pax) {
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in edestinos");
+    return;
+  }
+
+  let url = `cid=1841944&currency=${cur}&DisplayedPrice=${
+    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.price
+  }&TripType=${(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.getTripType)("OneWay", "RoundTrip", "MultiCity")}`;
+  url += "&Adult=" + pax.adults;
+  url += "&Child=" + pax.children.length;
+  url += "&InfantLap=" + pax.infLap;
+
+  let j = 0;
+  _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.forEach((itin, i) => {
+    const slices = [];
+
+    itin.seg.forEach(seg => {
+      j++;
+      slices.push(j);
+
+      url += `&Cabin${j}=` + cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_2__.getCabin)(seg.cabin)];
+      url += `&Carrier${j}=` + seg.carrier;
+      url += `&Origin${j}=` + seg.orig;
+      url += `&Destination${j}=` + seg.dest;
+      url += `&BookingCode${j}=` + seg.bookingclass;
+      url += `&FlightNumber${j}=` + seg.fnr;
+      url += `&DepartureDate${j}=${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(
+        seg.dep.month
+      )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(seg.dep.day)}T${seg.dep.time24}:00`;
+      url += `&FareBasis${j}=` + seg.farebase;
+    });
+
+    url += `&Slice${i + 1}=` + slices.join(",");
+  });
+
+  return url;
+}
+
+function print() {
+  const createUrl = edition =>
+    `https://www.agoda.com/bookings/details?${buildQueryString(
+      _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.cur || "USD",
+      edition.pos,
+      edition.lang
+    )}`;
+
+  // get edition
+  const url = createUrl({ lang: "en", pos: "US" });
+  if (!url) {
+    return;
+  }
+
+  let container = "";
+  if (editions && editions.length > 1) {
+    container +=
+      ' <span class="pt-hover-container">[+]<span class="pt-hover-menu-flex"><div style="margin-right: 1rem;">';
+    container += editions
+      .slice(1)
+      .map(function(obj, i) {
+        return (
+          '<a href="' +
+          createUrl(obj) +
+          '" target="_blank">' +
+          obj.name +
+          "</a>"
+        );
+      })
+      .join("<br/>");
+    container += "</div></span></span>";
+  }
+
+  return {
+    url,
+    title: "Agoda",
+    extra: container
+  };
+}
+
+(0,___WEBPACK_IMPORTED_MODULE_0__.register)("otas", print);
 
 
 /***/ }),
@@ -13523,6 +13671,7 @@ var map = {
 	"./meta/momondo.js": "./src/matrix3/links/meta/momondo.js",
 	"./meta/skyscanner.js": "./src/matrix3/links/meta/skyscanner.js",
 	"./meta/tripadvisor.js": "./src/matrix3/links/meta/tripadvisor.js",
+	"./otas/agoda.js": "./src/matrix3/links/otas/agoda.js",
 	"./otas/cheapoair.js": "./src/matrix3/links/otas/cheapoair.js",
 	"./otas/edestinos.js": "./src/matrix3/links/otas/edestinos.js",
 	"./otas/edreams.js": "./src/matrix3/links/otas/edreams.js",
