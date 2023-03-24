@@ -165,7 +165,7 @@ function print() {
     return url;
   };
   // get edition
-  var edition = mptUserSettings.lxEdition.split("-");
+  var edition = mptUserSettings.snEdition.split("-");
   if (edition.length != 2) {
     printNotification("Error:Invalid Brussels-Edition");
     return;
