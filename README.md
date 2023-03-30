@@ -65,7 +65,7 @@ You need to access the command line of your browser to execute the script. You c
 - Installing via a userscript manager simplifies saving your settings between sessions
 - You can also create a [Bookmarklet](https://support.mozilla.org/en-US/kb/bookmarklets-perform-common-web-page-tasks) by creating a Bookmark or Favorite in your browser with the following code as the URL:
 
-`javascript:var scr=document.createElement('script');scr.src='https://rawgit.com/adamhwang/ita-matrix-powertools/master/script_minified.js';document.body.appendChild(scr);`
+`javascript:var%20scr=document.createElement('script');scr.src='https://cdn.jsdelivr.net/gh/adamhwang/ita-matrix-powertools/script_minified.js';document.body.appendChild(scr);`
 
 ![ITA Buy Bookmarklet example GIF](http://i.imgur.com/q5ttPrY.gif)
 
