@@ -228,7 +228,7 @@ const baEditions = [
 ];
 
 function printBA() {
-  if (!anyCarriers("IB", "BA")) {
+  if (!anyCarriers("IB", "EI", "BA")) {
     return;
   }
 
