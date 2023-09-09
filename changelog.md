@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.55.13] - 2023-09-09
+
+Edited by reedy
+
+- added EI to BA links
+
 ## [0.55.12] - 2023-03-23
 
 Edited by IAkH
