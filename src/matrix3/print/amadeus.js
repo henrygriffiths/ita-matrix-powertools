@@ -8,7 +8,7 @@ export function getAmadeusUrl(config) {
     detailed: 0,
     inctimes: 1,
     enablesegskip: 1,
-    allowpremium: 1
+    allowpremium: 1,
   };
   config.sepcabin = config.sepcabin === undefined ? 1 : config.sepcabin;
   config.detailed = config.detailed === undefined ? 0 : config.detailed;
@@ -177,7 +177,7 @@ export function getAmadeusUrl(config) {
 export function getAmadeusPax(pax, config) {
   config = config || {
     allowinf: 1,
-    youthage: 0
+    youthage: 0,
   };
   config.allowinf = config.allowinf === undefined ? 1 : config.allowinf;
   config.youthage = config.sepyouth === undefined ? 0 : config.sepyouth;
@@ -220,7 +220,7 @@ export function getAmadeusPax(pax, config) {
     adults: pax.adults,
     youth: tmpPax.y,
     children: tmpPax.c,
-    infants: pax.infLap
+    infants: pax.infLap,
   };
 }
 

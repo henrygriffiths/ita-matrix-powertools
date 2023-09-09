@@ -5,19 +5,19 @@ const itaSettings = [
   {
     matrixVersion: 5,
     startpage: {
-      maindiv: "mat-app-background"
+      maindiv: "mat-app-background",
     },
     resultpage: {
       mcDiv: "info-container",
       mcHeader: "info-title",
-      copyAsJsonButton: "button.share-button:nth-child(4)"
-    }
+      copyAsJsonButton: "button.share-button:nth-child(4)",
+    },
   },
   {
     matrixVersion: 3,
     startpage: {
       maindiv: "KIR33AB-w-d", //Container of main content. Unfortunately id "contentwrapper" is used twice
-      tabBarItem: "gwt-TabBarItem-wrapper" // Round trip, One-way and Multi-city tab wrapper class
+      tabBarItem: "gwt-TabBarItem-wrapper", // Round trip, One-way and Multi-city tab wrapper class
     },
     resultpage: {
       itin: "KIR33AB-v-d", //Container with headline: "Itinerary"
@@ -31,14 +31,14 @@ const itaSettings = [
       //inline
       mcDiv: "KIR33AB-y-d", // Right menu sections class (3 divs surrounding entire Mileage, Emissions, and Airport Info)
       mcHeader: "KIR33AB-y-b", // Right menu header class ("Mileage", etc.)
-      mcLinkList: "KIR33AB-y-c" // Right menu ul list class (immediately following header)
-    }
+      mcLinkList: "KIR33AB-y-c", // Right menu ul list class (immediately following header)
+    },
   },
   {
     matrixVersion: 3,
     startpage: {
       maindiv: "IR6M2QD-w-d", //Container of main content. Unfortunately id "contentwrapper" is used twice
-      tabBarItem: "gwt-TabBarItem-wrapper" // Round trip, One-way and Multi-city tab wrapper class
+      tabBarItem: "gwt-TabBarItem-wrapper", // Round trip, One-way and Multi-city tab wrapper class
     },
     resultpage: {
       itin: "IR6M2QD-v-d", //Container with headline: "Itinerary"
@@ -52,15 +52,15 @@ const itaSettings = [
       //inline
       mcDiv: "IR6M2QD-y-d", // Right menu sections class (3 divs surrounding entire Mileage, Emissions, and Airport Info)
       mcHeader: "IR6M2QD-y-b", // Right menu header class ("Mileage", etc.)
-      mcLinkList: "IR6M2QD-y-c" // Right menu ul list class (immediately following header)
-    }
-  }
+      mcLinkList: "IR6M2QD-y-c", // Right menu ul list class (immediately following header)
+    },
+  },
 ];
 
-const classSettings = itaSettings.filter(setting =>
+const classSettings = itaSettings.filter((setting) =>
   window.location.host === "oldmatrix.itasoftware.com"
     ? setting.matrixVersion === 3
-    : true
+    : true,
 )[0];
 
 export function findTargetSetVersion(classSelector, nth) {

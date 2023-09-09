@@ -4,7 +4,7 @@ import {
   printNotification,
   to2digits,
   to4digitTime,
-  to4digits
+  to4digits,
 } from "../../utils";
 import { validatePax, register, anyCarriers } from "..";
 import { getCurrentSegs } from "../../../matrix5/parse/itin";
@@ -18,7 +18,7 @@ const editions = [
   { name: "Netherlands", value: "www.airfrance.nl", country: "NL" },
   { name: "Spain", value: "www.airfrance.es", country: "ES" },
   { name: "United Kingdom", value: "www.airfrance.co.uk", country: "GB" },
-  { name: "United States", value: "www.airfrance.us", country: "US" }
+  { name: "United States", value: "www.airfrance.us", country: "US" },
 ];
 
 const cabins = ["ECONOMY", "W", "C", "F"];
@@ -33,7 +33,7 @@ function print() {
     countInf: true,
     childAsAdult: 12,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printAF");
@@ -41,27 +41,27 @@ function print() {
   }
 
   const segs = getCurrentSegs();
-  const cabin = cabins[getCabin(Math.max(...segs.map(seg => seg.cabin)))];
+  const cabin = cabins[getCabin(Math.max(...segs.map((seg) => seg.cabin)))];
 
-  const createUrl = function(edition) {
-    const country = editions.find(e => e.value === edition).country;
+  const createUrl = function (edition) {
+    const country = editions.find((e) => e.value === edition).country;
     return (
       `https://${edition}/ams/exchange?language=${mptUserSettings.language}&country=${country}&target=` +
       encodeURIComponent(
         `/search/summary?deviationValue=5&connections=${segs
           .map(
-            seg =>
+            (seg) =>
               `${seg.orig}:${seg.dep.year}${to2digits(
-                seg.dep.month
+                seg.dep.month,
               )}${to2digits(seg.dep.day)}@${to4digitTime(seg.dep.time24)}:${
                 seg.carrier
               }${to4digits(seg.fnr)}:${seg.bookingclass}:${seg.farebase}:${
                 cabins[getCabin(seg.cabin)]
-              }>${seg.dest}`
+              }>${seg.dest}`,
           )
           .join("-")}&cabinClass=${cabin}&pax=${pax.adults}:0:${
           pax.children.length
-        }:${pax.infLap}`
+        }:${pax.infLap}`,
       )
     );
   };
@@ -74,7 +74,7 @@ function print() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value) +
@@ -89,7 +89,7 @@ function print() {
   return {
     url,
     title: "Air France",
-    extra
+    extra,
   };
 }
 

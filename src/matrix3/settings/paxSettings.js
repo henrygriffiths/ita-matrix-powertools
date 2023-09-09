@@ -3,5 +3,5 @@ export default {
   adults: 1,
   infantsLap: 0,
   infantsSeat: 0,
-  cAges: new Array()
+  cAges: new Array(),
 };

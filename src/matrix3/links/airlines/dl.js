@@ -3,14 +3,14 @@ import {
   printNotification,
   monthnumberToName,
   to2digits,
-  to4digits
+  to4digits,
 } from "../../utils";
 import { validatePax, register, anyCarriers } from "..";
 import { currentItin } from "../../../matrix5/parse/itin";
 
 const dlEditions = [
   { value: "de_de", name: "Germany" },
-  { value: "www_us", name: "US" }
+  { value: "www_us", name: "US" },
 ];
 
 function printDL() {
@@ -18,13 +18,13 @@ function printDL() {
     return;
   }
 
-  var createUrl = function(edition) {
+  var createUrl = function (edition) {
     var pax = validatePax({
       maxPaxcount: 9,
       countInf: true,
       childAsAdult: 12,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printDL");
@@ -40,7 +40,7 @@ function printDL() {
 
     let segnum = 0;
     currentItin.itin.forEach((itin, legnum) => {
-      itin.seg.forEach(seg => {
+      itin.seg.forEach((seg) => {
         const hour = seg.dep.time24.split(":")[0];
         const time =
           to2digits(+hour - (+hour < 12 ? 0 : 12)) + (+hour < 12 ? "A" : "P");
@@ -54,7 +54,7 @@ function printDL() {
           monthnumberToName(seg.dep.month),
           to2digits(seg.dep.day),
           seg.dep.year,
-          time
+          time,
         ];
         url += `&itinSegment[${segnum}]=${values.join(":")}`;
 
@@ -81,7 +81,7 @@ function printDL() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += dlEditions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value.split("_")) +
@@ -96,7 +96,7 @@ function printDL() {
   return {
     url,
     title: "Delta",
-    extra
+    extra,
   };
 }
 

@@ -40,7 +40,7 @@ function printPriceline() {
         ("0" + currentItin.itin[i].seg[j + k].arr.month).slice(-2) +
         ("0" + currentItin.itin[i].seg[j + k].arr.day).slice(-2) +
         ("0" + currentItin.itin[i].seg[j + k].arr.time.replace(":", "")).slice(
-          -4
+          -4,
         );
       searchparam +=
         currentItin.itin[i].seg[j].bookingclass +
@@ -56,21 +56,21 @@ function printPriceline() {
     countInf: true,
     childAsAdult: 18,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printPriceline");
     return;
   }
-  pricelineurl += `/details/R_${searchparam}_${pax.adults +
-    pax.children.length +
-    pax.infLap}_USD0.00?refid=COUK100109861&num-adults=${
+  pricelineurl += `/details/R_${searchparam}_${
+    pax.adults + pax.children.length + pax.infLap
+  }_USD0.00?refid=COUK100109861&num-adults=${
     pax.adults
   }&num-youths=0&num-children=${pax.children.length}&num-infants=${pax.infLap}`;
 
   return {
     url: pricelineurl,
-    title: "Priceline"
+    title: "Priceline",
   };
 }
 

@@ -2,7 +2,7 @@ import mptSettings from "../settings/appSettings";
 import classSettings from "../settings/itaSettings";
 import mptUserSettings, {
   registeredSettings,
-  saveUserSettings
+  saveUserSettings,
 } from "../settings/userSettings";
 import mtpPassengerConfig from "../settings/paxSettings";
 import { toggleVis } from "../utils";
@@ -21,13 +21,13 @@ export function createUsersettings(target) {
     '<div style="display:inline-block;float:left;cursor:pointer;" id="passengerVisToggler">Passengers (<label id="mtpPaxCount">1a</label>)</div><div id="mptStartparse" class="invis" style="margin-left:20px;display:none;cursor:pointer">Editor-Mode:Parse!</div><div id="mtpNotification" style="margin-left:50px;display:inline-block;"></div><div style="display:inline-block;float:right;"><div id="settingsVisToggler" style="display:inline-block;cursor:pointer;">Settings</div> (v' +
       mptSettings.version +
       (classSettings.matrixVersion == 5 ? " **Matrix 5 BETA**" : "") +
-      ') <div id="mptCabintoggler" style="display:inline-block;">(Cabin: <span id="mptcabin"><label style="width:30px;text-align:center;cursor:pointer;display:inline-block">Auto</label></span>)</div></div><div id="mptSettings" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div id="mptPassengers" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div style="clear:both;"></div>'
+      ') <div id="mptCabintoggler" style="display:inline-block;">(Cabin: <span id="mptcabin"><label style="width:30px;text-align:center;cursor:pointer;display:inline-block">Auto</label></span>)</div></div><div id="mptSettings" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div id="mptPassengers" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div style="clear:both;"></div>',
   );
   target.parentElement.insertBefore(settingscontainer, target);
-  document.getElementById("settingsVisToggler").onclick = function() {
+  document.getElementById("settingsVisToggler").onclick = function () {
     toggleVis(document.getElementById("mptSettings"));
   };
-  document.getElementById("passengerVisToggler").onclick = function() {
+  document.getElementById("passengerVisToggler").onclick = function () {
     toggleVis(document.getElementById("mptPassengers"));
   };
 
@@ -121,11 +121,11 @@ export function createUsersettings(target) {
     '<div style="text-align:center;font-style:italic;">Disclosure: Some of these links are affiliate links</div>';
   str += '<div style="margin:5px 0">';
 
-  Object.keys(registeredSettings).forEach(setting => {
+  Object.keys(registeredSettings).forEach((setting) => {
     str += `<div id="mpt${setting}" style="width:33%;float:left;">${
       registeredSettings[setting].name
     }: <label style="cursor:pointer;">${printSettingsvalue(
-      setting
+      setting,
     )}</label></div>`;
   });
   str += '<div style="clear:both"></div></div>';
@@ -134,74 +134,74 @@ export function createUsersettings(target) {
   target.innerHTML = unsafeHTML(str);
 
   // these onClick event handlers need only be added once:
-  document.getElementById("mptrestoredefault").onclick = function() {
+  document.getElementById("mptrestoredefault").onclick = function () {
     restoreDefaultSettings();
   };
-  document.getElementById("mptenableDarkmode").onclick = function() {
+  document.getElementById("mptenableDarkmode").onclick = function () {
     toggleSettings("enableDarkmode");
   };
-  document.getElementById("mpttimeformat").onclick = function() {
+  document.getElementById("mpttimeformat").onclick = function () {
     toggleSettings("timeformat");
   };
-  document.getElementById("mptlanguage").onclick = function() {
+  document.getElementById("mptlanguage").onclick = function () {
     toggleSettings("language");
   };
-  document.getElementById("mptenableDeviders").onclick = function() {
+  document.getElementById("mptenableDeviders").onclick = function () {
     toggleSettings("enableDeviders");
   };
-  document.getElementById("mptenableInlineMode").onclick = function() {
+  document.getElementById("mptenableInlineMode").onclick = function () {
     toggleSettings("enableInlineMode");
   };
-  document.getElementById("mptenableEditormode").onclick = function() {
+  document.getElementById("mptenableEditormode").onclick = function () {
     toggleSettings("enableEditormode");
   };
-  document.getElementById("mptenableMultiSearch").onclick = function() {
+  document.getElementById("mptenableMultiSearch").onclick = function () {
     toggleSettings("enableMultiSearch");
   };
-  document.getElementById("mptenableHistory").onclick = function() {
+  document.getElementById("mptenableHistory").onclick = function () {
     toggleSettings("enableHistory");
   };
-  document.getElementById("mptenableIMGautoload").onclick = function() {
+  document.getElementById("mptenableIMGautoload").onclick = function () {
     toggleSettings("enableIMGautoload");
   };
-  document.getElementById("mptenableFarerules").onclick = function() {
+  document.getElementById("mptenableFarerules").onclick = function () {
     toggleSettings("enableFarerules");
   };
-  document.getElementById("mptenablePricebreakdown").onclick = function() {
+  document.getElementById("mptenablePricebreakdown").onclick = function () {
     toggleSettings("enablePricebreakdown");
   };
-  document.getElementById("mptlinkFontsize").onclick = function() {
+  document.getElementById("mptlinkFontsize").onclick = function () {
     toggleSettings("linkFontsize");
   };
-  document.getElementById("mptshowAllAirlines").onclick = function() {
+  document.getElementById("mptshowAllAirlines").onclick = function () {
     toggleSettings("showAllAirlines");
   };
-  document.getElementById("mptenablePlanefinder").onclick = function() {
+  document.getElementById("mptenablePlanefinder").onclick = function () {
     toggleSettings("enablePlanefinder");
   };
-  document.getElementById("mptenableSeatguru").onclick = function() {
+  document.getElementById("mptenableSeatguru").onclick = function () {
     toggleSettings("enableSeatguru");
   };
-  document.getElementById("mptenableWheretocredit").onclick = function() {
+  document.getElementById("mptenableWheretocredit").onclick = function () {
     toggleSettings("enableWheretocredit");
   };
-  document.getElementById("mptenableAffiliates").onclick = function() {
+  document.getElementById("mptenableAffiliates").onclick = function () {
     toggleSettings("enableAffiliates");
   };
-  document.getElementById("mptCabintoggler").onclick = function() {
+  document.getElementById("mptCabintoggler").onclick = function () {
     toggleSettings("cabin");
   };
-  document.getElementById("configcloser").onclick = function() {
+  document.getElementById("configcloser").onclick = function () {
     toggleVis(document.getElementById("mptSettings"));
   };
-  document.getElementById("mptStartparse").onclick = function() {
-    setTimeout(async function() {
+  document.getElementById("mptStartparse").onclick = function () {
+    setTimeout(async function () {
       await render();
     }, 50);
   };
 
-  Object.keys(registeredSettings).forEach(setting => {
-    document.getElementById("mpt" + setting).onclick = function() {
+  Object.keys(registeredSettings).forEach((setting) => {
+    document.getElementById("mpt" + setting).onclick = function () {
       toggleSettings(setting);
     };
   });
@@ -279,10 +279,10 @@ export function createUsersettings(target) {
     '<div style="width:150px;margin:2px 0"><div id="mtpConfirmPax" style="float:left;width:50%;text-align:center;cursor:pointer;font-weight:bold">Confirm</div><div id="mtpCancelPax" style="float:left;width:50%;text-align:center;cursor:pointer;font-weight:bold">Cancel</div></div>';
   str += '</div><div style="clear:both;"></div>';
   target.innerHTML = unsafeHTML(str);
-  document.getElementById("mtpCancelPax").onclick = function() {
+  document.getElementById("mtpCancelPax").onclick = function () {
     toggleVis(document.getElementById("mptPassengers"));
   };
-  document.getElementById("mtpConfirmPax").onclick = function() {
+  document.getElementById("mtpConfirmPax").onclick = function () {
     processPassengers();
     toggleVis(document.getElementById("mptPassengers"));
     // reload links
@@ -294,7 +294,7 @@ function restoreDefaultSettings() {
   // this function will remove any saved settings and restore default values
   if (
     window.confirm(
-      "Are you sure you want to reset any saved settings to the default values? The page will automatically reload to complete the reset."
+      "Are you sure you want to reset any saved settings to the default values? The page will automatically reload to complete the reset.",
     )
   ) {
     (async () => {
@@ -313,7 +313,7 @@ function toggleSettings(target) {
   if (registeredSettings[target] && registeredSettings[target].values) {
     const pos = findPositionForValue(
       mptUserSettings[target],
-      registeredSettings[target].values
+      registeredSettings[target].values,
     );
     if (pos >= registeredSettings[target].values.length - 1 || pos === -1) {
       mptUserSettings[target] = registeredSettings[target].values[0].value;
@@ -370,9 +370,8 @@ function toggleSettings(target) {
         }
     }
   }
-  document.getElementById(
-    "mpt" + target
-  ).firstElementChild.innerHTML = unsafeHTML(printSettingsvalue(target));
+  document.getElementById("mpt" + target).firstElementChild.innerHTML =
+    unsafeHTML(printSettingsvalue(target));
   saveUserSettings();
 }
 
@@ -413,7 +412,7 @@ function printSettingsvalue(target) {
   if (registeredSettings[target]) {
     return findNameForValue(
       mptUserSettings[target],
-      registeredSettings[target].values
+      registeredSettings[target].values,
     );
   }
 
@@ -442,7 +441,7 @@ function findNameForValue(needle, haystack) {
 }
 
 function findPositionForValue(needle, haystack) {
-  return haystack.findIndex(o => o.value == needle);
+  return haystack.findIndex((o) => o.value == needle);
 }
 
 function boolToEnabled(value) {

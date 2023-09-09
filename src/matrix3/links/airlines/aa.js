@@ -29,7 +29,7 @@ const aaEditions = [
   { value: "en_ES", name: "Spain / English" },
   { value: "es_ES", name: "Spain / Spanish" },
   { value: "en_SE", name: "Sweden" },
-  { value: "en_CH", name: "Switzerland" }
+  { value: "en_CH", name: "Switzerland" },
 ];
 
 function printAA() {
@@ -37,7 +37,7 @@ function printAA() {
     return;
   }
 
-  var createUrl = function(edition) {
+  var createUrl = function (edition) {
     var url =
       "http://i11l-services.aa.com/xaa/mseGateway/entryPoint.php?PARAM=";
     var search = "1,,USD0.00," + currentItin.itin.length + ",";
@@ -119,7 +119,7 @@ function printAA() {
       countInf: false,
       childAsAdult: 12,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printAA");
@@ -149,7 +149,7 @@ function printAA() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += aaEditions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value.split("_")) +
@@ -165,7 +165,7 @@ function printAA() {
     url,
     title: "American",
     desc: "Europe/Asia/Pacific",
-    extra
+    extra,
   };
 }
 
@@ -174,5 +174,5 @@ registerSetting(
   "American (Europe/Asia/Pacific)",
   "aaEdition",
   aaEditions,
-  "en_DE"
+  "en_DE",
 );

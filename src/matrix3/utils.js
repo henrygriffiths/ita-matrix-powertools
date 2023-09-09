@@ -74,7 +74,7 @@ export function to4digitTime(time) {
 }
 
 export function uuidv4() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
       v = c == "x" ? r : (r & 0x3) | 0x8;
     return v.toString(16);
@@ -93,7 +93,7 @@ const monthnames = [
   "SEP",
   "OCT",
   "NOV",
-  "DEC"
+  "DEC",
 ];
 
 export function monthnumberToName(month) {
@@ -116,7 +116,7 @@ export function dayDiff(startDate, endDate) {
 }
 
 export function toTitleCase(str) {
-  return str.replace(/\w\S*/g, function(txt) {
+  return str.replace(/\w\S*/g, function (txt) {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
   });
 }

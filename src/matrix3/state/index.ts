@@ -1,6 +1,6 @@
 import {
   JSONCrush,
-  JSONUncrush
+  JSONUncrush,
 } from "../../../node_modules/JSONCrush/JSONCrush";
 
 import userSettings from "../settings/userSettings";
@@ -24,15 +24,15 @@ export function manageState() {
 
   // save session after searches
   const originalOpen = XMLHttpRequest.prototype.open;
-  XMLHttpRequest.prototype.open = function(method, url) {
+  XMLHttpRequest.prototype.open = function (method, url) {
     if ((url || "").toLowerCase().endsWith("/search")) {
       const search = JSON.parse(window.localStorage["savedSearch.0"]);
       saveStateToUrl({ search });
       this.addEventListener("load", () =>
         saveStateToUrl({
           search,
-          sessionState: JSON.parse(window.localStorage["savedSessionState"])
-        })
+          sessionState: JSON.parse(window.localStorage["savedSessionState"]),
+        }),
       );
     }
     originalOpen.apply(this, arguments);
@@ -51,7 +51,7 @@ function loadState() {
     const { search, sessionState } = JSON.parse(JSONUncrush(savedState));
     if (search)
       updateCurrentSearch(
-        typeof search === "string" ? search : JSON.stringify(search)
+        typeof search === "string" ? search : JSON.stringify(search),
       );
     if (sessionState)
       window.localStorage["savedSessionState"] =
@@ -68,7 +68,7 @@ export function updateCurrentSearch(search) {
     const savedSearch = window.localStorage[`savedSearch.${i}`];
     if (savedSearch) searches.push(savedSearch);
   }
-  searches = [search, ...searches.filter(s => s !== search)];
+  searches = [search, ...searches.filter((s) => s !== search)];
   for (let i = 0; i < Math.min(len, searches.length); i++) {
     window.localStorage[`savedSearch.${i}`] = searches[i];
   }
@@ -82,7 +82,7 @@ export function getStateUrl(state, hash) {
     search.set("mpt:state", JSONCrush(JSON.stringify(state), 10));
   } else search.delete("mpt:state");
   return decodeURIComponent(
-    `${window.location.pathname}?${search}` + (hash || "")
+    `${window.location.pathname}?${search}` + (hash || ""),
   );
 }
 

@@ -42,14 +42,14 @@ function startScript() {
         pageChanged();
       }
     },
-    false
+    false,
   );
 }
 
 function pageChanged() {
   reset();
   cleanUp();
-  setTimeout(function() {
+  setTimeout(function () {
     getPage();
   }, 200);
   mptSettings.laststatus = window.location.hash;
@@ -71,7 +71,7 @@ function getPage() {
 /********************************************* Start page *********************************************/
 function startPage() {
   // try to get content
-  if (!findTargetSetVersion(settings => settings.startpage.maindiv, 1)) {
+  if (!findTargetSetVersion((settings) => settings.startpage.maindiv, 1)) {
     printNotification("Error: Unable to find content on start page.");
     return false;
   } else {
@@ -81,7 +81,7 @@ function startPage() {
     const target = findtarget(classSettings.startpage.maindiv, 1);
     target.children[0].children[0].children[0].children[0].setAttribute(
       "valign",
-      "top"
+      "top",
     );
   }
 }
@@ -96,13 +96,13 @@ function fixSearchTab() {
   const searchIndexes = {
     MULTI_CITY: 2,
     ONE_WAY: 1,
-    ROUND_TRIP: 0 // default - can ignore
+    ROUND_TRIP: 0, // default - can ignore
   };
   const searchIndex = searchIndexes[search[2]];
   if (!searchIndex) return;
 
   const tabBarItems = window.document.querySelectorAll(
-    `.${classSettings.startpage.tabBarItem}`
+    `.${classSettings.startpage.tabBarItem}`,
   );
   tabBarItems[searchIndex] &&
     tabBarItems[searchIndex].firstElementChild &&
@@ -113,7 +113,7 @@ function fixSearchTab() {
 //Primary function for extracting flight data from ITA/Matrix
 function resultPage() {
   // try to get content
-  const itin = findTargetSetVersion(settings => settings.resultpage.itin, 1);
+  const itin = findTargetSetVersion((settings) => settings.resultpage.itin, 1);
   if (!itin) {
     printNotification("Error: Unable to find Content on result page.");
     return false;
@@ -123,11 +123,11 @@ function resultPage() {
     mptSettings.retrycount++;
     if (mptSettings.retrycount > 50) {
       printNotification(
-        "Error: Timeout on result page. Content not found after 10s."
+        "Error: Timeout on result page. Content not found after 10s.",
       );
       return false;
     }
-    setTimeout(function() {
+    setTimeout(function () {
       resultPage();
     }, 200);
     return false;
@@ -140,7 +140,7 @@ function resultPage() {
           classSettings.resultpage[i] +
           " for " +
           i +
-          "."
+          ".",
       );
       return false;
     }
@@ -157,8 +157,9 @@ function injectCss() {
     style = document.createElement("style");
   style.type = "text/css";
 
-  css += `@media only screen and (max-width: ${984 +
-    261 * 2}px) { body.show-history { padding-left: 261px; } }`; // max-width + history-width * 2 for centered content
+  css += `@media only screen and (max-width: ${
+    984 + 261 * 2
+  }px) { body.show-history { padding-left: 261px; } }`; // max-width + history-width * 2 for centered content
   css += `body.dark-mode, body.dark-mode input[type='text'], body.dark-mode input[type='radio'], body.dark-mode textarea, body.dark-mode select, body.dark-mode button, body.dark-mode .powertoolsimage, body.dark-mode .pt-hover-menu, body.dark-mode .pt-hover-menu-flex { background-color: #121212; color: #f5f5f5; }`;
   css += `body.dark-mode .${classSettings.resultpage.mcDiv}.powertoolslinkinlinecontainer { background-color: #1f1f1f; }`;
   css +=

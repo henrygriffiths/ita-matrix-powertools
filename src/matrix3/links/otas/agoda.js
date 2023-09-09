@@ -42,7 +42,7 @@ const editions = [
   { name: "Català", lang: "ca", pos: "ES" },
   { name: "Eesti", lang: "et", pos: "EE" },
   { name: "Latviešu", lang: "lv", pos: "LV" },
-  { name: "Hrvatski", lang: "hr", pos: "HR" }
+  { name: "Hrvatski", lang: "hr", pos: "HR" },
 ];
 
 function buildQueryString(cur, pos = "", lang = null) {
@@ -52,7 +52,7 @@ function buildQueryString(cur, pos = "", lang = null) {
     countInf: true,
     childAsAdult: 12,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in edestinos");
@@ -70,7 +70,7 @@ function buildQueryString(cur, pos = "", lang = null) {
   currentItin.itin.forEach((itin, i) => {
     const slices = [];
 
-    itin.seg.forEach(seg => {
+    itin.seg.forEach((seg) => {
       j++;
       slices.push(j);
 
@@ -81,7 +81,7 @@ function buildQueryString(cur, pos = "", lang = null) {
       url += `&BookingCode${j}=` + seg.bookingclass;
       url += `&FlightNumber${j}=` + seg.fnr;
       url += `&DepartureDate${j}=${seg.dep.year}-${to2digits(
-        seg.dep.month
+        seg.dep.month,
       )}-${to2digits(seg.dep.day)}T${seg.dep.time24}:00`;
       url += `&FareBasis${j}=` + seg.farebase;
     });
@@ -93,11 +93,11 @@ function buildQueryString(cur, pos = "", lang = null) {
 }
 
 function print() {
-  const createUrl = edition =>
+  const createUrl = (edition) =>
     `https://www.agoda.com/bookings/details?${buildQueryString(
       currentItin.cur || "USD",
       edition.pos,
-      edition.lang
+      edition.lang,
     )}`;
 
   // get edition
@@ -112,7 +112,7 @@ function print() {
       ' <span class="pt-hover-container">[+]<span class="pt-hover-menu-flex"><div style="margin-right: 1rem;">';
     container += editions
       .slice(1)
-      .map(function(obj, i) {
+      .map(function (obj, i) {
         return (
           '<a href="' +
           createUrl(obj) +
@@ -128,7 +128,7 @@ function print() {
   return {
     url,
     title: "Agoda",
-    extra: container
+    extra: container,
   };
 }
 

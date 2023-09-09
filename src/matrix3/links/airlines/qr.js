@@ -15,7 +15,7 @@ function print() {
     countInf: false,
     childAsAdult: 12,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printQR");
@@ -23,7 +23,7 @@ function print() {
   }
 
   const cabin =
-    cabins[getCabin(Math.min(...getCurrentSegs().map(seg => seg.cabin)))];
+    cabins[getCabin(Math.min(...getCurrentSegs().map((seg) => seg.cabin)))];
 
   const tripType = currentItin.itin.length > 1 ? "M" : "O";
 
@@ -35,7 +35,7 @@ function print() {
       }-${to2digits(itin.dep.month)}-${to2digits(itin.dep.day)}`;
       if (i <= 1)
         qs += `&${i === 0 ? "out" : "in"}boundFltNumber=${itin.seg
-          .map(seg => seg.fnr)
+          .map((seg) => seg.fnr)
           .join(",")}`;
       return qs;
     })
@@ -43,7 +43,7 @@ function print() {
   if (currentItin.itin.length <= 2) url += "&price=0";
   return {
     url,
-    title: "Qatar Airways"
+    title: "Qatar Airways",
   };
 }
 

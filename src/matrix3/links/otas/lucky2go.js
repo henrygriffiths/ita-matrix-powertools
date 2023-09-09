@@ -17,17 +17,17 @@ const editions = [
   { lang: "it", country: "IT" },
   { lang: "de", country: "DE" },
   { lang: "fr", country: "FR" },
-  { lang: "el", country: "GR" }
+  { lang: "el", country: "GR" },
 ];
 
 function printLucky2go() {
   var cabins = ["Economy", "Economy", "Business", "First"];
-  var createUrl = edition =>
+  var createUrl = (edition) =>
     `https://secure.lucky2go.com/flights/options/?${buildQueryString(
       currentItin.cur || "USD",
       edition.country,
       edition.lang,
-      cabins
+      cabins,
     )}`;
 
   // get edition
@@ -39,10 +39,10 @@ function printLucky2go() {
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
     .map(
-      edition =>
+      (edition) =>
         `<a href="${createUrl(edition)}" target="_blank">${
           edition.lang
-        }&#8209;${edition.country}</a>`
+        }&#8209;${edition.country}</a>`,
     )
     .join("<br/>");
   extra += "</span></span>";
@@ -50,7 +50,7 @@ function printLucky2go() {
   return {
     url,
     title: "lucky2go",
-    extra
+    extra,
   };
 }
 

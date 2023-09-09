@@ -13,7 +13,7 @@ const azEditions = [
   { value: "ca_en", name: "Canada / Englisch" },
   { value: "us_en", name: "US / Englisch" },
   { value: "gb_en", name: "GB / Englisch" },
-  { value: "en_en", name: "International / Englisch" }
+  { value: "en_en", name: "International / Englisch" },
 ];
 
 function printAZ() {
@@ -21,7 +21,7 @@ function printAZ() {
     return;
   }
 
-  var createUrl = function(edition) {
+  var createUrl = function (edition) {
     var azUrl =
       "https://www.alitalia.com/" +
       edition +
@@ -92,7 +92,7 @@ function printAZ() {
       countInf: false,
       childAsAdult: 12,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printAZ");
@@ -116,7 +116,7 @@ function printAZ() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += azEditions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value) +
@@ -131,7 +131,7 @@ function printAZ() {
   return {
     url: azUrl,
     title: "Alitalia",
-    extra
+    extra,
   };
 }
 

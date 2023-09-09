@@ -13,7 +13,7 @@ function printPS() {
       currency,
       edition[1],
       edition[0],
-      cabins
+      cabins,
     )}`;
 
   var url = createUrl(["EN", "US"], "USD");
@@ -23,7 +23,7 @@ function printPS() {
 
   return {
     url,
-    title: "UIA"
+    title: "UIA",
   };
 }
 

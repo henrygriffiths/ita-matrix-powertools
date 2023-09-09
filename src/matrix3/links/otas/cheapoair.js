@@ -12,7 +12,7 @@ function printCheapOair() {
     countInf: true,
     childAsAdult: 12,
     sepInfSeat: true,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printCheapOair");
@@ -67,7 +67,7 @@ function printCheapOair() {
 
   return {
     url: coaUrl,
-    title: "CheapOair"
+    title: "CheapOair",
   };
 }
 

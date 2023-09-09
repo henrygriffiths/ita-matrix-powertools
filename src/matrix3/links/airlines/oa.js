@@ -4,7 +4,7 @@ import { validatePax, register, anyCarriers } from "..";
 import {
   getAmadeusUrl,
   getAmadeusTriptype,
-  getAmadeusPax
+  getAmadeusPax,
 } from "../../print/amadeus";
 
 function printOA() {
@@ -19,7 +19,7 @@ function printOA() {
     countInf: false,
     childAsAdult: 12,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printOA");
@@ -30,7 +30,7 @@ function printOA() {
     sepcabin: 0,
     detailed: 0,
     allowpremium: 1,
-    inctimes: 1
+    inctimes: 1,
   };
   var tmpPax = getAmadeusPax(pax, paxConfig);
   url += "&TRIP_TYPE=" + getAmadeusTriptype();
@@ -48,7 +48,7 @@ function printOA() {
 
   return {
     url,
-    title: "Olympic Air"
+    title: "Olympic Air",
   };
 }
 

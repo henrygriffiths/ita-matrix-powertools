@@ -25,10 +25,10 @@ const de = {
     " Oct ": " Oktober ",
     " Nov ": " November ",
     " Dec ": " Dezember ",
-    "OPERATED BY ": "Durchgef&uuml,hrt von "
-  }
+    "OPERATED BY ": "Durchgef&uuml,hrt von ",
+  },
 };
 
 export default {
-  de
+  de,
 };

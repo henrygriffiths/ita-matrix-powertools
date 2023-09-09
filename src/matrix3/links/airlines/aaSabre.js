@@ -2,7 +2,7 @@ import mptUserSettings, { registerSetting } from "../../settings/userSettings";
 import { printNotification } from "../../utils";
 import { validatePax, register, anyCarriers } from "..";
 import { currentItin, isOneway } from "../../../matrix5/parse/itin";
-import zonedTimeToUtc from "date-fns-tz/esm/zonedTimeToUtc";
+import { zonedTimeToUtc } from "date-fns-tz";
 import apTimeZones from "../../json/timezones.json";
 
 const aaSabreEditions = [
@@ -11,7 +11,7 @@ const aaSabreEditions = [
   { value: "CA", name: "Canada (CAD)" },
   { value: "PR", name: "Puerto Rico (USD)" },
   { value: "GB", name: "United Kingdom (GBP)" },
-  { value: "US", name: "United States (USD)" }
+  { value: "US", name: "United States (USD)" },
 ];
 
 function printAaSabre() {
@@ -19,7 +19,7 @@ function printAaSabre() {
     return;
   }
 
-  let datetimeToEpoch = function(y, m, d, t, ap) {
+  let datetimeToEpoch = function (y, m, d, t, ap) {
     /**
      * This function converts a datetime from the local timezone of the
      * departing airport to its epoch value, while accounting for
@@ -53,13 +53,13 @@ function printAaSabre() {
   };
 
   // validate Passengers here: Max Paxcount = 7 (Infs not included) - >11 = Adult - InfSeat = Child
-  var createUrl = function(edition) {
+  var createUrl = function (edition) {
     var pax = validatePax({
       maxPaxcount: 6,
       countInf: true,
       childAsAdult: 12,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printAaSabre");
@@ -99,7 +99,7 @@ function printAaSabre() {
           currentItin.itin[0].seg[0].dep.month,
           currentItin.itin[0].seg[0].dep.day,
           currentItin.itin[0].seg[0].dep.time24,
-          currentItin.itin[0].seg[0].orig
+          currentItin.itin[0].seg[0].orig,
         );
     }
     url += "," + currentItin.price + ",1,";
@@ -119,7 +119,7 @@ function printAaSabre() {
           currentItin.itin[i].seg[0].dep.month,
           currentItin.itin[i].seg[0].dep.day,
           currentItin.itin[i].seg[0].dep.time24,
-          currentItin.itin[i].seg[0].orig
+          currentItin.itin[i].seg[0].orig,
         );
       }
       url += encodeURIComponent(addon) + ",";
@@ -161,7 +161,7 @@ function printAaSabre() {
             currentItin.itin[i].seg[j].dep.month,
             currentItin.itin[i].seg[j].dep.day,
             currentItin.itin[i].seg[j].dep.time24,
-            currentItin.itin[i].seg[j].orig
+            currentItin.itin[i].seg[j].orig,
           );
         itinseg += "|" + i;
         itinsegs.push(itinseg);
@@ -178,7 +178,7 @@ function printAaSabre() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += aaSabreEditions
-    .map(function(edition, i) {
+    .map(function (edition, i) {
       return (
         '<a href="' +
         createUrl(edition.value.toUpperCase()) +
@@ -194,7 +194,7 @@ function printAaSabre() {
     url,
     title: "American",
     desc: "America & UK",
-    extra
+    extra,
   };
 }
 
@@ -203,5 +203,5 @@ registerSetting(
   "American (America & UK)",
   "aaSabreEdition",
   aaSabreEditions,
-  "US"
+  "US",
 );

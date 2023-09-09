@@ -224,7 +224,7 @@ const baEditions = [
   { value: "WS", name: "Western Samoa" },
   { value: "YE", name: "Yemen Republic" },
   { value: "ZM", name: "Zambia" },
-  { value: "ZW", name: "Zimbabwe" }
+  { value: "ZW", name: "Zimbabwe" },
 ];
 
 function printBA() {
@@ -232,7 +232,7 @@ function printBA() {
     return;
   }
 
-  var createUrl = function(edition, language) {
+  var createUrl = function (edition, language) {
     // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
     var cabins = ["M", "W", "C", "F"];
     var pax = validatePax({
@@ -240,7 +240,7 @@ function printBA() {
       countInf: false,
       childAsAdult: 16,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printBA");
@@ -287,7 +287,7 @@ function printBA() {
           ("0" + currentItin.itin[i].seg[j].dep.month).slice(-2) +
           currentItin.itin[i].seg[j].dep.year +
           ("0" + currentItin.itin[i].seg[j].dep.time.replace(":", "")).slice(
-            -4
+            -4,
           );
         url +=
           currentItin.itin[i].seg[j].carrier +
@@ -320,7 +320,7 @@ function printBA() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += baEditions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value, mptUserSettings.baLanguage) +
@@ -335,7 +335,7 @@ function printBA() {
   return {
     url,
     title: "British Airways",
-    extra
+    extra,
   };
 }
 

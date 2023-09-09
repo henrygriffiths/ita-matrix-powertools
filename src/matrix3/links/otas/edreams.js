@@ -35,7 +35,7 @@ const eDreams = [
   { name: "eDreams.pt", domain: "www.edreams.pt" },
   { name: "eDreams.sg", domain: "sg.edreams.com" },
   { name: "eDreams.th", domain: "th.edreams.com" },
-  { name: "eDreams.za", domain: "za.edreams.com" }
+  { name: "eDreams.za", domain: "za.edreams.com" },
 ];
 
 const opodo = [
@@ -55,7 +55,7 @@ const opodo = [
   { name: "Opodo.no", domain: "www.opodo.no" },
   { name: "Opodo.pl", domain: "www.opodo.pl" },
   { name: "Opodo.pt", domain: "www.opodo.pt" },
-  { name: "Opodo.se", domain: "www.opodo.se" }
+  { name: "Opodo.se", domain: "www.opodo.se" },
 ];
 
 const travellink = [
@@ -65,7 +65,7 @@ const travellink = [
   { name: "Travellink.fi", domain: "www.travellink.fi" },
   { name: "Travellink.is", domain: "www.travellink.is" },
   { name: "Travellink.no", domain: "www.travellink.no" },
-  { name: "Travellink.se", domain: "www.travellink.se" }
+  { name: "Travellink.se", domain: "www.travellink.se" },
 ];
 
 const cabins = ["TOURIST", "PREMIUM_ECONOMY", "BUSINESS", "FIRST"];
@@ -76,7 +76,7 @@ function printEdreams(title, editions) {
     countInf: false,
     childAsAdult: 12,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printEdreams");
@@ -84,15 +84,15 @@ function printEdreams(title, editions) {
   }
 
   const cabin =
-    cabins[getCabin(Math.min(...getCurrentSegs().map(seg => seg.cabin)))];
+    cabins[getCabin(Math.min(...getCurrentSegs().map((seg) => seg.cabin)))];
 
-  var createUrl = function(domain) {
+  var createUrl = function (domain) {
     const deeplink = `/results/type=M;${currentItin.itin
       .map(
         (itin, i) =>
           `dep${i}=${itin.dep.year}-${to2digits(itin.dep.month)}-${to2digits(
-            itin.dep.day
-          )};from${i}=${itin.orig};to${i}=${itin.dest}`
+            itin.dep.day,
+          )};from${i}=${itin.orig};to${i}=${itin.dest}`,
       )
       .join(";")};class=${cabin};adults=${pax.adults};children=${
       pax.children.length
@@ -104,8 +104,8 @@ function printEdreams(title, editions) {
       .map(
         (itin, i) =>
           `segmentKey${i}=0,${itin.seg
-            .map(seg => seg.carrier + seg.fnr)
-            .join(",")}`
+            .map((seg) => seg.carrier + seg.fnr)
+            .join(",")}`,
       )
       .join("&");
 
@@ -118,7 +118,7 @@ function printEdreams(title, editions) {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.domain) +
@@ -133,7 +133,7 @@ function printEdreams(title, editions) {
   return {
     url,
     title,
-    extra
+    extra,
   };
 }
 

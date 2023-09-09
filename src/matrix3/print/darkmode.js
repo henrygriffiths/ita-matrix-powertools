@@ -22,7 +22,7 @@ const tokens = {
   "#f7f7f7": "#232323", // light gray
   "#f0f0f0": "#232323", // light gray
   "rgba\\(255,255,255,0.6\\)": "#232323", // light gray
-  "#c2e0ff": "rgba(194,224,255,.1)" // light blue
+  "#c2e0ff": "rgba(194,224,255,.1)", // light blue
 };
 
 let headObserver;
@@ -34,14 +34,14 @@ export function bindDarkmode() {
       document.head.querySelectorAll("style").forEach(transformCss);
 
       headObserver = new window.MutationObserver((mutations, observer) =>
-        mutations.forEach(m => m.addedNodes.forEach(transformCss))
+        mutations.forEach((m) => m.addedNodes.forEach(transformCss)),
       );
       headObserver.observe(document.head, { childList: true });
     }
   }
 }
 
-const transformCss = node => {
+const transformCss = (node) => {
   if (
     node.nodeName.toUpperCase() === "STYLE" &&
     node.textContent.indexOf("dark-mode") === -1
@@ -49,7 +49,7 @@ const transformCss = node => {
     const old = node.textContent;
     node.textContent = Object.keys(tokens).reduce(
       (css, token) => css.replace(new RegExp(token, "gi"), tokens[token]),
-      node.textContent
+      node.textContent,
     );
     if (old == node.textContent) alert("no changes");
   }

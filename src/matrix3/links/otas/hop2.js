@@ -5,7 +5,7 @@ import { getCabin } from "../../settings/appSettings";
 
 const editions = [
   { title: "Ovago", host: "ovago.com" },
-  { title: "Wowfare", host: "wowfare.com" }
+  { title: "Wowfare", host: "wowfare.com" },
 ];
 
 const cabins = ["Y", "S", "C", "F"];
@@ -16,7 +16,7 @@ function print() {
     countInf: false,
     childAsAdult: 12,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printHop2");
@@ -24,25 +24,25 @@ function print() {
   }
 
   const cabin =
-    cabins[getCabin(Math.min(...getCurrentSegs().map(seg => seg.cabin)))];
+    cabins[getCabin(Math.min(...getCurrentSegs().map((seg) => seg.cabin)))];
 
   const segs = getCurrentSegs();
   const search = `OSKDCR*${cabin}${pax.adults}${pax.children.length}${
     pax.infSeat
   }0/${currentItin.itin
     .map(
-      itin =>
+      (itin) =>
         itin.orig +
         itin.dest +
         `${itin.dep.year}-${to2digits(itin.dep.month)}-${to2digits(
-          itin.dep.day
-        )}`
+          itin.dep.day,
+        )}`,
     )
     .join("/")}*${segs[segs.length - 1].carrier}~#${segs
-    .map(seg => seg.carrier + seg.fnr)
+    .map((seg) => seg.carrier + seg.fnr)
     .join("#")}`;
 
-  const createUrl = function(host) {
+  const createUrl = function (host) {
     return `https://${host}/ms?key=1_${btoa(search)}`;
   };
 
@@ -52,7 +52,7 @@ function print() {
   let extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.host) +
@@ -67,7 +67,7 @@ function print() {
   return {
     url,
     title: "Hop2",
-    extra
+    extra,
   };
 }
 

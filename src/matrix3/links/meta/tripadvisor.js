@@ -60,7 +60,7 @@ const editions = [
   { name: "United Kingdom", host: "www.tripadvisor.co.uk" },
   { name: "United States", host: "www.tripadvisor.com" },
   { name: "Venezuela", host: "www.tripadvisor.com.ve" },
-  { name: "Vietnam", host: "www.tripadvisor.com.vn" }
+  { name: "Vietnam", host: "www.tripadvisor.com.vn" },
 ];
 
 const cabins = ["0", "3", "1", "2"];
@@ -75,7 +75,7 @@ function print(method) {
     countInf: false,
     childAsAdult: 12,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printOvago");
@@ -83,20 +83,20 @@ function print(method) {
   }
 
   const cabin =
-    cabins[getCabin(Math.min(...getCurrentSegs().map(seg => seg.cabin)))];
+    cabins[getCabin(Math.min(...getCurrentSegs().map((seg) => seg.cabin)))];
 
   const nonstop = method ? "yes" : "no";
 
-  const createUrl = function(host) {
+  const createUrl = function (host) {
     let url = `https://${host}/CheapFlightsSearchResults?&cos=${cabin}&nonstop=${nonstop}`;
 
     let paxNum = 0;
 
-    const addPax = age => (url += `&pax${paxNum++}=${age}`);
+    const addPax = (age) => (url += `&pax${paxNum++}=${age}`);
 
-    Array.apply(null, { length: pax.adults }).forEach(o => addPax("a"));
-    Array.apply(null, { length: pax.infLap }).forEach(o => addPax(0));
-    pax.children.forEach(age => addPax(age));
+    Array.apply(null, { length: pax.adults }).forEach((o) => addPax("a"));
+    Array.apply(null, { length: pax.infLap }).forEach((o) => addPax(0));
+    pax.children.forEach((age) => addPax(age));
 
     url +=
       "&" +
@@ -104,9 +104,10 @@ function print(method) {
         .map(
           (seg, i) =>
             `date${i * 2}=${seg.dep.year}${to2digits(seg.dep.month)}${to2digits(
-              seg.dep.day
-            )}&airport${i * 2}=${seg.orig}&nearby${i * 2}=no&airport${i * 2 +
-              1}=${seg.dest}&nearby${i * 2 + 1}=no`
+              seg.dep.day,
+            )}&airport${i * 2}=${seg.orig}&nearby${i * 2}=no&airport${
+              i * 2 + 1
+            }=${seg.dest}&nearby${i * 2 + 1}=no`,
         )
         .join("&");
 
@@ -116,7 +117,7 @@ function print(method) {
   let extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.host) +
@@ -135,7 +136,7 @@ function print(method) {
       mptUserSettings.language == "de"
         ? `Benutze ${segs.length} Segment(e)`
         : `Based on ${segs.length} segment(s)`,
-    extra
+    extra,
   };
 }
 

@@ -13,7 +13,7 @@ function printTK() {
     countInf: false,
     childAsAdult: 12,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printTK");
@@ -26,26 +26,26 @@ function printTK() {
   url += `&cur=${currentItin.cur || "USD"}`;
   url += `&lp=PROM`;
   url += `&pax=A:${pax.adults},C:${pax.children.length},I:${pax.infLap}`;
-  url += `&cc=${cabins[Math.max(...getCurrentSegs().map(seg => seg.cabin))]}`;
+  url += `&cc=${cabins[Math.max(...getCurrentSegs().map((seg) => seg.cabin))]}`;
   currentItin.itin.forEach((itin, i) => {
     url += `&so${i}=${itin.seg.length}`;
     url += `&b${i + 1}=org:${itin.orig}/dst:${itin.dest}/fb:${itin.seg
-      .map(seg => seg.farebase)
+      .map((seg) => seg.farebase)
       .join(",")}/orgd:${formatDate(itin.dep)}/fn:${itin.seg
-      .map(seg => seg.carrier + seg.fnr)
+      .map((seg) => seg.carrier + seg.fnr)
       .join(",")}`;
   });
 
   return {
     url,
-    title: "Turkish"
+    title: "Turkish",
   };
 }
 
 function formatDate(time) {
-  return `${to2digits(time.day)}${to2digits(
-    time.month
-  )}${time.year.toString().slice(-2)}`;
+  return `${to2digits(time.day)}${to2digits(time.month)}${time.year
+    .toString()
+    .slice(-2)}`;
 }
 
 register("airlines", printTK);

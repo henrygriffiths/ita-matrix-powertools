@@ -4,14 +4,14 @@ import translations from "../settings/translations";
 import {
   currentItin,
   getCurrentSegs,
-  readItinerary
+  readItinerary,
 } from "../../matrix5/parse/itin";
 import {
   printNotification,
   findtarget,
   hasClass,
   findtargets,
-  toggleVis
+  toggleVis,
 } from "../utils";
 import { printLinksContainer } from "./links";
 
@@ -43,7 +43,7 @@ export async function render() {
     bindTranslations(
       "resultpage",
       mptUserSettings.language,
-      findtarget(classSettings.resultpage.itin, 1).nextElementSibling
+      findtarget(classSettings.resultpage.itin, 1).nextElementSibling,
     );
 
   if (mptUserSettings.enablePricebreakdown == 1) bindPriceBreakdown();
@@ -84,7 +84,7 @@ function addEditor() {
         ["Economy", "Y"],
         ["Premium Economy", "Y+"],
         ["Business", "C"],
-        ["First", "F"]
+        ["First", "F"],
       ];
       var str = '<select style="width:40px" class="editoritem">';
       for (var k = 0; k < cabins.length; k++) {
@@ -123,7 +123,7 @@ function removeEditor() {
 function bindPageLayout() {
   findtarget(classSettings.resultpage.milagecontainer, 1).setAttribute(
     "rowspan",
-    "10"
+    "10",
   );
   const target = findtarget(classSettings.resultpage.htbContainer, 1)
     .parentElement.parentElement;
@@ -135,16 +135,18 @@ function bind24HourTime() {
   // lets do the time-replacement
   const segs = getCurrentSegs();
   if (segs.length > 0) {
-    const target = findtarget(classSettings.resultpage.itin, 1)
-      .nextElementSibling;
+    const target = findtarget(
+      classSettings.resultpage.itin,
+      1,
+    ).nextElementSibling;
     for (let i = 0; i < segs.length; i++) {
       target.innerHTML = target.innerHTML.replace(
         new RegExp(segs[i].dep.timeDisplay, "g"),
-        segs[i].dep.time24
+        segs[i].dep.time24,
       );
       target.innerHTML = target.innerHTML.replace(
         new RegExp(segs[i].arr.timeDisplay, "g"),
-        segs[i].arr.time24
+        segs[i].arr.time24,
       );
     }
   }
@@ -158,7 +160,7 @@ function bindRulelinks() {
   if (target != undefined) {
     do {
       var current = Number(
-        target.firstElementChild.innerHTML.replace(/[^\d]/gi, "")
+        target.firstElementChild.innerHTML.replace(/[^\d]/gi, ""),
       );
       if (i > current) {
         j++;
@@ -208,13 +210,13 @@ function bindPriceBreakdown() {
         var price = Number(
           target.nextElementSibling.firstElementChild.innerHTML.replace(
             /[^\d\.]/gi,
-            ""
-          )
+            "",
+          ),
         );
         if (cur == "")
           cur = target.nextElementSibling.firstElementChild.innerHTML.replace(
             /[\d,.]/g,
-            ""
+            "",
           );
         basefares += price;
       } else if (basefound == 1 && type == 3) {
@@ -223,13 +225,13 @@ function bindPriceBreakdown() {
         var price = Number(
           target.nextElementSibling.firstElementChild.innerHTML.replace(
             /[^\d\.]/gi,
-            ""
-          )
+            "",
+          ),
         );
         if (
           hasClass(
             target.nextElementSibling,
-            classSettings.resultpage.htbGreyBorder
+            classSettings.resultpage.htbGreyBorder,
           )
         ) {
           //we are done for this container
@@ -252,7 +254,7 @@ function bindPriceBreakdown() {
               "</div></td>";
             target.parentElement.parentElement.insertBefore(
               newtr,
-              target.parentElement
+              target.parentElement,
             );
             var newtr = document.createElement("tr");
             newtr.innerHTML =
@@ -271,7 +273,7 @@ function bindPriceBreakdown() {
               "</div></td>";
             target.parentElement.parentElement.insertBefore(
               newtr,
-              target.parentElement
+              target.parentElement,
             );
             var newtr = document.createElement("tr");
             newtr.innerHTML =
@@ -290,7 +292,7 @@ function bindPriceBreakdown() {
               "</div></td>";
             target.parentElement.parentElement.insertBefore(
               newtr,
-              target.parentElement
+              target.parentElement,
             );
             var newtr = document.createElement("tr");
             newtr.innerHTML =
@@ -309,7 +311,7 @@ function bindPriceBreakdown() {
               "</div></td>";
             target.parentElement.parentElement.insertBefore(
               newtr,
-              target.parentElement
+              target.parentElement,
             );
           } else {
             count++;
@@ -405,7 +407,7 @@ function bindTranslations(page, lang, target) {
   }
   if (translations[lang][page] === undefined) {
     printNotification(
-      "Error: Translation " + lang + " not found for page " + page
+      "Error: Translation " + lang + " not found for page " + page,
     );
     return false;
   }
@@ -413,7 +415,7 @@ function bindTranslations(page, lang, target) {
     const re = new RegExp(i, "g");
     target.innerHTML = target.innerHTML.replace(
       re,
-      translations[lang][page][i]
+      translations[lang][page][i],
     );
   }
 }
@@ -425,7 +427,7 @@ function printCPM() {
       "beforeend",
       `<li class="powertoolsitem">${(
         Number(currentItin.price) / Number(currentItin.dist)
-      ).toFixed(4)} cpm</li>`
+      ).toFixed(4)} cpm</li>`,
     );
 }
 
@@ -535,7 +537,7 @@ function bindWheretocredit() {
         target.children[0].innerHTML = target.children[0].innerHTML
           .replace(
             /<a.*?\/a>/,
-            "(" + currentItin.itin[i].seg[j].bookingclass + ")"
+            "(" + currentItin.itin[i].seg[j].bookingclass + ")",
           )
           .replace(
             "(" + currentItin.itin[i].seg[j].bookingclass + ")",
@@ -543,7 +545,7 @@ function bindWheretocredit() {
               url +
               '" target="_blank">(' +
               currentItin.itin[i].seg[j].bookingclass +
-              ")</a>"
+              ")</a>",
           );
       }
     }
@@ -589,7 +591,7 @@ function findItinTarget(leg, seg, tcell) {
       printNotification(
         "Error: Call to unreachable Segment in Leg " +
           leg +
-          " in findItinTarget-function"
+          " in findItinTarget-function",
       );
       return;
     }

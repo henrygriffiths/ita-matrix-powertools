@@ -43,7 +43,7 @@ const editions = [
   { name: "Momondo.tw", host: "www.momondo.tw" },
   { name: "Momondo.ua", host: "www.momondo.ua" },
   { name: "Momondo.uk", host: "www.momondo.co.uk" },
-  { name: "Momondo.za", host: "www.momondo.co.za" }
+  { name: "Momondo.za", host: "www.momondo.co.za" },
 ];
 
 var cabins = ["economy", "premium", "business", "first"];
@@ -60,7 +60,7 @@ function print(method) {
     countInf: false,
     childAsAdult: 12,
     sepInfSeat: true,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printOvago");
@@ -68,17 +68,17 @@ function print(method) {
   }
 
   const cabin =
-    cabins[getCabin(Math.min(...getCurrentSegs().map(seg => seg.cabin)))];
+    cabins[getCabin(Math.min(...getCurrentSegs().map((seg) => seg.cabin)))];
 
-  var createUrl = function(host) {
+  var createUrl = function (host) {
     let url =
       `https://${host}/flight-search/` +
       segs
         .map(
-          seg =>
+          (seg) =>
             `${seg.orig}-${seg.dest}/${seg.dep.year}-${to2digits(
-              seg.dep.month
-            )}-${to2digits(seg.dep.day)}`
+              seg.dep.month,
+            )}-${to2digits(seg.dep.day)}`,
         )
         .join("/");
 
@@ -108,7 +108,7 @@ function print(method) {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.host) +
@@ -127,7 +127,7 @@ function print(method) {
       mptUserSettings.language == "de"
         ? `Benutze ${segs.length} Segment(e)`
         : `Based on ${segs.length} segment(s)`,
-    extra
+    extra,
   };
 }
 

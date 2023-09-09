@@ -9,93 +9,93 @@ const travix = [
     name: "CheapTickets.nl",
     value: "www.cheaptickets.nl",
     pos: "NL",
-    cur: "EUR"
+    cur: "EUR",
   },
   {
     name: "CheapTickets.be",
     value: "www.cheaptickets.be",
     pos: "BE",
-    cur: "EUR"
+    cur: "EUR",
   },
   {
     name: "CheapTickets.de",
     value: "www.cheaptickets.de",
     pos: "DE",
-    cur: "EUR"
+    cur: "EUR",
   },
   {
     name: "CheapTickets.ch",
     value: "www.cheaptickets.ch",
     pos: "CH",
-    cur: "CHF"
+    cur: "CHF",
   },
   {
     name: "CheapTickets.sg",
     value: "www.cheaptickets.sg",
     pos: "SG",
-    cur: "SGD"
+    cur: "SGD",
   },
   {
     name: "CheapTickets.co.th",
     value: "www.cheaptickets.co.th",
     pos: "TH",
-    cur: "THB"
+    cur: "THB",
   },
   {
     name: "CheapTickets.hk",
     value: "www.cheaptickets.hk",
     pos: "HK",
-    cur: "HKD"
+    cur: "HKD",
   },
   {
     name: "Vliegwinkel.nl",
     value: "www.vliegwinkel.nl",
     pos: "NL",
-    cur: "EUR"
+    cur: "EUR",
   },
   {
     name: "Vayama Argentina",
     value: "www.vayama.com/es_ar",
     pos: "AR",
-    cur: "ARS"
+    cur: "ARS",
   },
   {
     name: "Vayama Chile",
     value: "www.vayama.com/es_cl",
     pos: "CL",
-    cur: "CLP"
+    cur: "CLP",
   },
   {
     name: "Vayama Colombia",
     value: "www.vayama.com/es_co",
     pos: "CO",
-    cur: "COP"
+    cur: "COP",
   },
   { name: "Vayama Ireland", value: "www.vayama.ie", pos: "IE", cur: "EUR" },
   {
     name: "Vayama Mexico",
     value: "www.vayama.com/es_mx",
     pos: "MX",
-    cur: "MXN"
+    cur: "MXN",
   },
   {
     name: "Vayama Panama",
     value: "www.vayama.com/es_pa",
     pos: "PA",
-    cur: "USD"
+    cur: "USD",
   },
   {
     name: "Flugladen Austria",
     value: "www.flugladen.at",
     pos: "AT",
-    cur: "EUR"
+    cur: "EUR",
   },
   {
     name: "Flugladen Deutschland",
     value: "www.flugladen.de",
     pos: "DE",
-    cur: "EUR"
-  }
+    cur: "EUR",
+  },
 ];
 
 const budgetairs = [
@@ -103,143 +103,143 @@ const budgetairs = [
     name: "BudgetAir Australia",
     value: "www.budgetair.com/en_au",
     pos: "AU",
-    cur: "AUD"
+    cur: "AUD",
   },
   {
     name: "BudgetAir Belgium",
     value: "www.budgetair.be",
     pos: "BE",
-    cur: "EUR"
+    cur: "EUR",
   },
   {
     name: "BudgetAir Canada",
     value: "www.budgetair.com/en_ca",
     pos: "CA",
-    cur: "CAD"
+    cur: "CAD",
   },
   {
     name: "BudgetAir Denmark",
     value: "www.budgetair.dk",
     pos: "DK",
-    cur: "DKK"
+    cur: "DKK",
   },
   {
     name: "BudgetAir France",
     value: "www.budgetair.fr",
     pos: "FR",
-    cur: "EUR"
+    cur: "EUR",
   },
   { name: "BudgetAir India", value: "www.budgetair.in", pos: "IN", cur: "INR" },
   {
     name: "BudgetAir Indonesia",
     value: "www.budgetair.com/id_id",
     pos: "ID",
-    cur: "IDR"
+    cur: "IDR",
   },
   { name: "BudgetAir Italy", value: "www.budgetair.it", pos: "IT", cur: "EUR" },
   {
     name: "BudgetAir Japan",
     value: "www.budgetair.com/jp",
     pos: "JP",
-    cur: "JPY"
+    cur: "JPY",
   },
   {
     name: "BudgetAir Korea",
     value: "www.budgetair.com/ko_kr",
     pos: "KR",
-    cur: "KRW"
+    cur: "KRW",
   },
   {
     name: "BudgetAir Latvia",
     value: "www.budgetair.lv",
     pos: "LV",
-    cur: "EUR"
+    cur: "EUR",
   },
   {
     name: "BudgetAir Malaysia",
     value: "www.budgetair.com/en_my",
     pos: "MY",
-    cur: "MYR"
+    cur: "MYR",
   },
   {
     name: "BudgetAir Netherlands",
     value: "www.budgetair.nl",
     pos: "NL",
-    cur: "EUR"
+    cur: "EUR",
   },
   {
     name: "BudgetAir New Zealand",
     value: "www.budgetair.com/en_nz",
     pos: "NZ",
-    cur: "NZD"
+    cur: "NZD",
   },
   {
     name: "BudgetAir Philippines",
     value: "www.budgetair.com/en_ph",
     pos: "PH",
-    cur: "PHP"
+    cur: "PHP",
   },
   {
     name: "BudgetAir Poland",
     value: "www.budgetair.com/pl_pl",
     pos: "PL",
-    cur: "PLN"
+    cur: "PLN",
   },
   {
     name: "BudgetAir Portugal",
     value: "www.budgetair.pt",
     pos: "PT",
-    cur: "EUR"
+    cur: "EUR",
   },
   {
     name: "BudgetAir Saudi Arabia",
     value: "www.budgetair.com/en_sa",
     pos: "SA",
-    cur: "SAR"
+    cur: "SAR",
   },
   {
     name: "BudgetAir South Africa",
     value: "www.budgetair.com/en_za",
     pos: "ZA",
-    cur: "ZAR"
+    cur: "ZAR",
   },
   { name: "BudgetAir Spain", value: "www.budgetair.es", pos: "ES", cur: "EUR" },
   {
     name: "BudgetAir Sweden",
     value: "www.budgetair.se",
     pos: "SE",
-    cur: "SEK"
+    cur: "SEK",
   },
   {
     name: "BudgetAir Arab Emirates",
     value: "www.budgetair.com/en_ae",
     pos: "AE",
-    cur: "AED"
+    cur: "AED",
   },
   {
     name: "BudgetAir Taiwan",
     value: "www.budgetair.com.tw",
     pos: "TW",
-    cur: "TWD"
+    cur: "TWD",
   },
   {
     name: "BudgetAir Turkey",
     value: "www.budgetair.com/tr_tr",
     pos: "TR",
-    cur: "TRY"
+    cur: "TRY",
   },
   {
     name: "BudgetAir United Kingdom",
     value: "www.budgetair.co.uk",
     pos: "GB",
-    cur: "GBP"
+    cur: "GBP",
   },
   {
     name: "BudgetAir Vietnam",
     value: "www.budgetair.com/vn",
     pos: "VN",
-    cur: "VND"
-  }
+    cur: "VND",
+  },
 ];
 
 const defaultCabins = ["Economy", "PremiumEconomy", "Business", "First"];
@@ -250,7 +250,7 @@ export function buildQueryString(cur, pos = "", lang = null, cabins = null) {
     countInf: true,
     childAsAdult: 12,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in edestinos");
@@ -265,7 +265,7 @@ export function buildQueryString(cur, pos = "", lang = null, cabins = null) {
   }&DisplayedPriceCurrency=${cur}&UserLanguage=${lang}&TripType=${getTripType(
     "OneWay",
     "RoundTrip",
-    "MultiCity"
+    "MultiCity",
   )}`;
   url += "&Adult=" + pax.adults;
   url += "&Child=" + pax.children.length;
@@ -275,7 +275,7 @@ export function buildQueryString(cur, pos = "", lang = null, cabins = null) {
   currentItin.itin.forEach((itin, i) => {
     const slices = [];
 
-    itin.seg.forEach(seg => {
+    itin.seg.forEach((seg) => {
       j++;
       slices.push(j);
 
@@ -286,7 +286,7 @@ export function buildQueryString(cur, pos = "", lang = null, cabins = null) {
       url += `&BookingCode${j}=` + seg.bookingclass;
       url += `&FlightNumber${j}=` + seg.fnr;
       url += `&DepartureDate${j}=${seg.dep.year}-${to2digits(
-        seg.dep.month
+        seg.dep.month,
       )}-${to2digits(seg.dep.day)}`;
       url += `&FareBasis${j}=` + seg.farebase;
     });
@@ -301,12 +301,12 @@ function print(displayName, editions, startValue) {
   var createUrl = (host, cur, pos) =>
     `https://${host}/checkout/googleflights?${buildQueryString(cur, pos)}`;
 
-  var startEdition = editions.find(e => e.value === startValue);
+  var startEdition = editions.find((e) => e.value === startValue);
   var url = createUrl(startEdition.value, startEdition.pos, startEdition.cur);
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value, obj.cur, obj.pos) +
@@ -321,7 +321,7 @@ function print(displayName, editions, startValue) {
   return {
     url,
     title: displayName,
-    extra
+    extra,
   };
 }
 

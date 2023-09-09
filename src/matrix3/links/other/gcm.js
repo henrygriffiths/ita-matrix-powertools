@@ -23,7 +23,7 @@ function printGCM() {
   return {
     img: "http://www.gcmap.com/map?MR=900&MX=182x182&PM=*&P=" + url,
     url: "http://www.gcmap.com/mapui?P=" + url,
-    title: "GCM"
+    title: "GCM",
   };
 }
 

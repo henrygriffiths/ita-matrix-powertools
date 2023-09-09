@@ -19,7 +19,7 @@ export function allCarriers() {
   const args = Array.from(arguments);
   return (
     mptUserSettings.showAllAirlines ||
-    currentItin.carriers.every(cxr => args.some(arg => cxr === arg))
+    currentItin.carriers.every((cxr) => args.some((arg) => cxr === arg))
   );
 }
 
@@ -27,7 +27,7 @@ export function anyCarriers() {
   const args = Array.from(arguments);
   return (
     mptUserSettings.showAllAirlines ||
-    currentItin.carriers.some(cxr => args.some(arg => cxr === arg))
+    currentItin.carriers.some((cxr) => args.some((arg) => cxr === arg))
   );
 }
 
@@ -42,7 +42,7 @@ export function validatePax(config) {
     adults: mtpPassengerConfig.adults,
     children: new Array(),
     infLap: mtpPassengerConfig.infantsLap,
-    infSeat: 0
+    infSeat: 0,
   };
   if (config.sepInfSeat === true) {
     ret.infSeat = mtpPassengerConfig.infantsSeat;

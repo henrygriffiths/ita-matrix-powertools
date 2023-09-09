@@ -10,7 +10,7 @@ const appSettings = {
   retrycount: 1,
   laststatus: "",
   scriptrunning: 1,
-  cabin: "Auto"
+  cabin: "Auto",
 };
 
 export function reset() {
@@ -48,7 +48,7 @@ export function reset() {
 
   const ages = [
     ...new Array(itaYouths).fill(17),
-    ...new Array(itaChildren).fill(11)
+    ...new Array(itaChildren).fill(11),
   ];
   for (let i = 1; i <= 8; i++) {
     e = document.getElementById("child" + i + "age") as HTMLSelectElement;

@@ -11,13 +11,13 @@ function printEY() {
     return;
   }
 
-  var createUrl = function() {
+  var createUrl = function () {
     var pax = validatePax({
       maxPaxcount: 9,
       countInf: false,
       childAsAdult: 12,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printEY");
@@ -35,16 +35,16 @@ function printEY() {
 
     let segnum = 0;
     currentItin.itin.forEach((itin, legnum) => {
-      itin.seg.forEach(seg => {
+      itin.seg.forEach((seg) => {
         url += `&ms[${segnum}].from=${seg.orig}`;
         url += `&ms[${segnum}].to=${seg.dest}`;
         url += `&ms[${segnum}].departure=${seg.dep.year}-${to2digits(
-          seg.dep.month
+          seg.dep.month,
         )}-${to2digits(seg.dep.day)}T${to4digitTime(seg.dep.time24)}`;
         url += `&ms[${segnum}].flight=${seg.fnr}`;
         url += `&ms[${segnum}].fbcode=${seg.farebase}`;
         url += `&ms[${segnum}].arrival=${seg.arr.year}-${to2digits(
-          seg.arr.month
+          seg.arr.month,
         )}-${to2digits(seg.arr.day)}T${to4digitTime(seg.arr.time24)}`;
         url += `&ms[${segnum}].mktAirline=${seg.carrier}`;
         url += `&ms[${segnum}].leg=${legnum}`;
@@ -66,7 +66,7 @@ function printEY() {
 
   return {
     url,
-    title: "Etihad"
+    title: "Etihad",
   };
 }
 

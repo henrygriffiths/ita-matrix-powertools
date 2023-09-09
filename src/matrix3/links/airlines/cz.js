@@ -67,7 +67,7 @@ const czEditions = [
   { value: "US-GB", name: "United  States / English" },
   { value: "UZ-GB", name: "Uzbekistan / English" },
   { value: "VE-GB", name: "Venezuela / English" },
-  { value: "VN-GB", name: "Vietnam / English" }
+  { value: "VN-GB", name: "Vietnam / English" },
 ];
 
 function printCZ() {
@@ -75,14 +75,14 @@ function printCZ() {
     return;
   }
 
-  var createUrl = function(edition) {
+  var createUrl = function (edition) {
     var paxConfig = { allowinf: 1, youthage: 0 };
     var pax = validatePax({
       maxPaxcount: 9,
       countInf: false,
       childAsAdult: 12,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printCZ");
@@ -92,7 +92,7 @@ function printCZ() {
       sepcabin: 0,
       detailed: 0,
       allowpremium: 0,
-      inctimes: 0
+      inctimes: 0,
     };
     var url =
       "http://global.csair.com/CZPortal/dyn/portal/doEnc?SITE=J00YJ00Y&BOOKING_FLOW=REVENUE&IS_FLEXIBLE=FALSE&LANGUAGE=" +
@@ -122,7 +122,7 @@ function printCZ() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += czEditions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value.split("-")) +
@@ -137,7 +137,7 @@ function printCZ() {
   return {
     url,
     title: "China Southern",
-    extra
+    extra,
   };
 }
 

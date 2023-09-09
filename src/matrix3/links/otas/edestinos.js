@@ -52,18 +52,18 @@ const editions = [
   { name: "New Zealand", value: "www2.secure.eskytravel.co.nz" },
   { name: "eSky.eu", value: "www2.secure.esky.eu" },
   { name: "eSky.com", value: "www2.secure.esky.com" },
-  { name: "eDestinos.com", value: "www2.secure.edestinos.com" }
+  { name: "eDestinos.com", value: "www2.secure.edestinos.com" },
 ];
 
 function print() {
-  var createUrl = host =>
+  var createUrl = (host) =>
     `https://${host}/api?${buildQueryString(currentItin.cur || "USD")}`;
 
   var url = createUrl("www2.secure.edestinos.com.br");
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value) +
@@ -78,7 +78,7 @@ function print() {
   return {
     url,
     title: "eDestinos",
-    extra
+    extra,
   };
 }
 

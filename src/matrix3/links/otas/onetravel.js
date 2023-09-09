@@ -12,7 +12,7 @@ function print() {
     countInf: true,
     childAsAdult: 12,
     sepInfSeat: true,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in print");
@@ -67,7 +67,7 @@ function print() {
 
   return {
     url: coaUrl,
-    title: "OneTravel"
+    title: "OneTravel",
   };
 }
 

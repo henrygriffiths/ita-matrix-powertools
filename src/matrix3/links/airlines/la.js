@@ -23,7 +23,7 @@ const laEditions = [
   { value: "en/au", name: "Australia / English" },
   { value: "en/nz", name: "New Zealand / English" },
   { value: "es/un", name: "Other Countries / Spanish" },
-  { value: "en/un", name: "Other Countries / English" }
+  { value: "en/un", name: "Other Countries / English" },
 ];
 
 function printLA() {
@@ -32,13 +32,13 @@ function printLA() {
   }
 
   // NOTE: currency will be determined by the locale; the deeplink does not support manually specifying the currency
-  var createUrl = function(edition) {
+  var createUrl = function (edition) {
     var pax = validatePax({
       maxPaxcount: 9,
       countInf: false,
       childAsAdult: 12,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printLA");
@@ -49,14 +49,14 @@ function printLA() {
       passengers: {
         numberAdults: pax.adults.toString(),
         numberInfants: pax.infLap.toString(),
-        numberChildren: pax.children.length.toString()
+        numberChildren: pax.children.length.toString(),
       },
       trip: {
-        flights: currentItin.itin.map(itin => {
+        flights: currentItin.itin.map((itin) => {
           return {
             amount: currentItin.price,
             currency: currentItin.cur || "USD",
-            segments: itin.seg.map(seg => {
+            segments: itin.seg.map((seg) => {
               return {
                 departure_airport: seg.orig,
                 flight_number: seg.fnr,
@@ -65,12 +65,12 @@ function printLA() {
                 farebasis: seg.farebase,
                 marketing_airline: seg.carrier,
                 class: seg.bookingclass,
-                arrival_date: formatDate(seg.arr)
+                arrival_date: formatDate(seg.arr),
               };
-            })
+            }),
           };
-        })
-      }
+        }),
+      },
     };
 
     // The booking.lan.com url as of 2/27/2020 needs to be http instead of https. Fortunately, it does redirect you
@@ -87,7 +87,7 @@ function printLA() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += laEditions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value) +
@@ -101,7 +101,7 @@ function printLA() {
   return {
     url,
     title: "LATAM",
-    extra
+    extra,
   };
 }
 

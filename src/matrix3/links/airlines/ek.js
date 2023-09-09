@@ -5,7 +5,7 @@ import {
   currentItin,
   getCurrentSegs,
   isOneway,
-  isRoundtrip
+  isRoundtrip,
 } from "../../../matrix5/parse/itin";
 import { getCabin } from "../../settings/appSettings";
 
@@ -108,7 +108,7 @@ const editions = [
   { name: "Swedish (SE)", value: "/se/swedish" },
   { name: "Thai (TH)", value: "/th/thai" },
   { name: "Turkish (TR)", value: "/tr/turkish" },
-  { name: "Vietnamese (VN)", value: "/vn/vietnamese" }
+  { name: "Vietnamese (VN)", value: "/vn/vietnamese" },
 ];
 
 function print() {
@@ -121,7 +121,7 @@ function print() {
     countInf: false,
     childAsAdult: 12,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printEK");
@@ -129,18 +129,18 @@ function print() {
   }
 
   let desc = "";
-  const createUrl = function(edition) {
+  const createUrl = function (edition) {
     let url = `https://www.emirates.com/sessionhandler.aspx?pageurl=/IBE.aspx&pub=${edition}&j=f&section=IBE&j=t&seldcity1=${
       currentItin.itin[0].orig
     }&selacity1=${currentItin.itin[0].dest}&selddate1=${formatDate(
-      currentItin.itin[0].dep
+      currentItin.itin[0].dep,
     )}&seladults=${pax.adults}&selofw=0&selteenager=0&selchildren=${
       pax.children.length
     }&selinfants=${pax.infLap}&selcabinclass=${
-      cabins[getCabin(Math.max(...getCurrentSegs().map(seg => seg.cabin)))]
+      cabins[getCabin(Math.max(...getCurrentSegs().map((seg) => seg.cabin)))]
     }&selcabinclass1=${
       cabins[
-        getCabin(Math.max(...currentItin.itin[0].seg.map(seg => seg.cabin)))
+        getCabin(Math.max(...currentItin.itin[0].seg.map((seg) => seg.cabin)))
       ]
     }&showsearch=false&showTeenager=false&showOFW=false&chkFlexibleDates=false&resultby=0&multiCity=`;
     if (isOneway()) {
@@ -153,14 +153,14 @@ function print() {
         `https://mobile.emirates.com${edition}/CAB/IBE/searchResults.xhtml?cugoDisabledCabinClass=true&flexiDate=false&searchType=MC&classTypeRadioMulti=0&bookingType=Revenue&originInterlineFlag=false&destInterlineFlag=false&totalAdults=${pax.adults}&totalTeens=0&totalChildren=${pax.children.length}&totalInfants=${pax.infLap}&` +
         currentItin.itin
           .map(
-            itin =>
+            (itin) =>
               `fromCity=${itin.orig}&toCity=${itin.dest}&classType=${
-                cabins[getCabin(Math.max(...itin.seg.map(seg => seg.cabin)))]
+                cabins[getCabin(Math.max(...itin.seg.map((seg) => seg.cabin)))]
               }&departDay=${to2digits(itin.dep.day)}&departMonth=${to2digits(
-                itin.dep.month
+                itin.dep.month,
               )}&departYear=${
                 itin.dep.year
-              }&returnDay=&returnMonth=&returnYear=`
+              }&returnDay=&returnMonth=&returnYear=`,
           )
           .join("&");
       desc = "Mobile (or resize browser)";
@@ -175,7 +175,7 @@ function print() {
   let extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
-    .map(function(edition, i) {
+    .map(function (edition, i) {
       return (
         '<a href="' +
         createUrl(edition.value) +
@@ -191,13 +191,13 @@ function print() {
     url,
     title: "Emirates",
     desc,
-    extra
+    extra,
   };
 }
 
 function formatDate(date) {
   return `${to2digits(date.day)}-${monthnumberToName(date.month)}-${to2digits(
-    date.year
+    date.year,
   )}`;
 }
 

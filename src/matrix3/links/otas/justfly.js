@@ -5,12 +5,12 @@ import { buildQueryString } from "./travix";
 function print() {
   // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
   var cabins = ["Economy", "Economy", "Business", "First"];
-  var createUrl = edition =>
+  var createUrl = (edition) =>
     `https://www.justfly.com/checkout/gdeeplink?${buildQueryString(
       currentItin.cur || "USD",
       edition.country,
       edition.lang,
-      cabins
+      cabins,
     )}`;
 
   // get edition
@@ -21,7 +21,7 @@ function print() {
 
   return {
     url,
-    title: "Justfly"
+    title: "Justfly",
   };
 }
 

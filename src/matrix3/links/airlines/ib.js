@@ -107,7 +107,7 @@ const ibEditions = [
   { value: "en-UY", name: "Uruguay - English" },
   { value: "es-UY", name: "Uruguay - Español" },
   { value: "en-VE", name: "Venezuela - English" },
-  { value: "es-VE", name: "Venezuela - Español" }
+  { value: "es-VE", name: "Venezuela - Español" },
 ];
 
 function printIB() {
@@ -122,7 +122,7 @@ function printIB() {
       currency,
       edition[1],
       edition[0],
-      cabins
+      cabins,
     )}`;
 
   // get edition
@@ -134,7 +134,7 @@ function printIB() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += ibEditions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value.split("-"), "USD") +
@@ -149,7 +149,7 @@ function printIB() {
   return {
     url,
     title: "Iberia",
-    extra
+    extra,
   };
 }
 

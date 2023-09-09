@@ -34,11 +34,11 @@ const expedia = [
   { name: "expedia.mx", host: "www.expedia.mx" },
   { name: "expedia.nl", host: "www.expedia.nl" },
   { name: "expedia.no", host: "www.expedia.no" },
-  { name: "expedia.se", host: "www.expedia.se" }
+  { name: "expedia.se", host: "www.expedia.se" },
 ];
 
 const cheaptickets = [
-  { name: "cheaptickets.com", host: "www.cheaptickets.com" }
+  { name: "cheaptickets.com", host: "www.cheaptickets.com" },
 ];
 
 const ebookers = [
@@ -47,7 +47,7 @@ const ebookers = [
   { name: "ebookers.de", host: "www.ebookers.de" },
   { name: "ebookers.fi", host: "www.ebookers.fi" },
   { name: "ebookers.fr", host: "www.ebookers.fr" },
-  { name: "ebookers.ie", host: "www.ebookers.ie" }
+  { name: "ebookers.ie", host: "www.ebookers.ie" },
 ];
 
 const hotwire = [{ name: "hotwire.com", host: "vacation.hotwire.com" }];
@@ -58,7 +58,7 @@ const orbitz = [{ name: "orbitz.com", host: "www.orbitz.com" }];
 
 const travelocity = [
   { name: "travelocity.com", host: "www.travelocity.com" },
-  { name: "travelocity.ca", host: "www.travelocity.ca" }
+  { name: "travelocity.ca", host: "www.travelocity.ca" },
 ];
 
 const others = [
@@ -72,7 +72,7 @@ const others = [
   { name: "lastminute.co.nz", host: "www.lastminute.co.nz" },
   { name: "lastminute.com.au", host: "www.lastminute.com.au" },
   { name: "wotif.co.nz", host: "www.wotif.co.nz" },
-  { name: "wotif.com", host: "www.wotif.com" }
+  { name: "wotif.com", host: "www.wotif.com" },
 ];
 
 function printExpedia(title, editions) {
@@ -81,7 +81,7 @@ function printExpedia(title, editions) {
     countInf: true,
     childAsAdult: 18,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printExpedia");
@@ -89,7 +89,7 @@ function printExpedia(title, editions) {
   }
   let expediaClasses = ["coach", "premium", "business", "first"];
   let minCabin = 3;
-  let ExpediaCreateUrl = function(expediaBase) {
+  let ExpediaCreateUrl = function (expediaBase) {
     let segUrl = "";
     for (var i = 0; i < currentItin.itin.length; i++) {
       segUrl +=
@@ -158,7 +158,7 @@ function printExpedia(title, editions) {
       ' <span class="pt-hover-container">[+]<span class="pt-hover-menu-flex"><div style="margin-right: 1rem;">';
     container += editions
       .slice(1)
-      .map(function(obj, i) {
+      .map(function (obj, i) {
         return (
           '<a href="' +
           ExpediaCreateUrl(obj.host) +
@@ -174,7 +174,7 @@ function printExpedia(title, editions) {
   return {
     url: ExpediaCreateUrl(editions[0].host),
     title,
-    extra: container
+    extra: container,
   };
 }
 

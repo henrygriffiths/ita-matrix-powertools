@@ -8,13 +8,13 @@ function printAS() {
   }
 
   // validate Passengers here: Max Paxcount = 7 (Infs not included) - >11 = Adult - InfSeat = Child
-  var createUrl = function() {
+  var createUrl = function () {
     var pax = validatePax({
       maxPaxcount: 6,
       countInf: true,
       childAsAdult: 6,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printAS");
@@ -58,7 +58,7 @@ function printAS() {
 
   return {
     url,
-    title: "Alaska"
+    title: "Alaska",
   };
 }
 

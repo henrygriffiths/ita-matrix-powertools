@@ -3,7 +3,7 @@ import { register } from "..";
 import {
   currentItin,
   isOneway,
-  isRoundtrip
+  isRoundtrip,
 } from "../../../matrix5/parse/itin";
 
 const editions = [
@@ -53,7 +53,7 @@ const editions = [
   { name: "Supersaver.fi", host: "www.supersaver.fi" },
   { name: "Supersaver.nl", host: "www.supersaver.nl" },
   { name: "Supersaver.no", host: "www.supersaver.no" },
-  { name: "Supersaver.ru", host: "www.supersaver.ru" }
+  { name: "Supersaver.ru", host: "www.supersaver.ru" },
 ];
 
 const convertDate = (date, withYear, titleMonth) =>
@@ -63,7 +63,7 @@ const convertDate = (date, withYear, titleMonth) =>
     : monthnumberToName(date.month)) +
   (withYear ? date.year.toString().slice(-2) : "");
 
-export const createUrl = host => {
+export const createUrl = (host) => {
   let ggUrl = "https://" + host + "/air/";
   if (isOneway()) {
     ggUrl += `${currentItin.itin[0].orig}${
@@ -74,29 +74,29 @@ export const createUrl = host => {
       currentItin.itin[0].dest
     }${convertDate(currentItin.itin[0].dep, false)}${convertDate(
       currentItin.itin[1].dep,
-      false
+      false,
     )}`;
   } else {
     ggUrl += currentItin.itin
-      .map(itin => `${itin.orig}${itin.dest}${convertDate(itin.dep, false)}`)
+      .map((itin) => `${itin.orig}${itin.dest}${convertDate(itin.dep, false)}`)
       .join(",");
   }
   ggUrl += "/" + currentItin.numPax;
   ggUrl +=
     "?selectionKey=" +
     currentItin.itin
-      .map(itin =>
+      .map((itin) =>
         itin.seg
           .map(
-            seg =>
+            (seg) =>
               seg.carrier +
               seg.fnr +
               "-" +
               convertDate(seg.dep, true, true) +
               "-" +
-              seg.bookingclass
+              seg.bookingclass,
           )
-          .join("_")
+          .join("_"),
       )
       .join("_");
 
@@ -108,7 +108,7 @@ function printEtraveli() {
   let extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.host) +
@@ -123,7 +123,7 @@ function printEtraveli() {
   return {
     url: ggUrl,
     title: editions[0].name,
-    extra
+    extra,
   };
 }
 

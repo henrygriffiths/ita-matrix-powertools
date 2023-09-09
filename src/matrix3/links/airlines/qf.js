@@ -7,13 +7,13 @@ import { currentItin } from "../../../matrix5/parse/itin";
 const qfEditions = [
   { value: "EN_AU", name: "Australia" },
   { value: "EN_NZ", name: "New Zealand" },
-  { value: "EN_US", name: "United States" }
+  { value: "EN_US", name: "United States" },
 ];
 
 const qfCurrencies = [
   { value: "AUD", name: "AUD" },
   { value: "NZD", name: "NZD" },
-  { value: "USD", name: "USD" }
+  { value: "USD", name: "USD" },
 ];
 
 function printQF() {
@@ -22,7 +22,7 @@ function printQF() {
   }
 
   /* Qantas partner deep-link */
-  var createUrl = function(edition, currency) {
+  var createUrl = function (edition, currency) {
     // 0 = Economy; 1=Premium Economy; 2=Business; 3=First
     var travelClass = ["ECO", "PRM", "BUS", "FIR"];
     // Start the minimum cabin at highest possible (it will drop as we check each leg):
@@ -33,7 +33,7 @@ function printQF() {
       countInf: false,
       childAsAdult: 16,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printQF");
@@ -170,7 +170,7 @@ function printQF() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += qfEditions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value, mptUserSettings.qfCurrency) +
@@ -185,7 +185,7 @@ function printQF() {
   return {
     url,
     title: "Qantas",
-    extra
+    extra,
   };
 }
 

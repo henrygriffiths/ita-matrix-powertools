@@ -1,7 +1,7 @@
 import classSettings from "../../matrix3/settings/itaSettings";
 import {
   readItinerary as readItinerary3,
-  currentItin as currentItin3
+  currentItin as currentItin3,
 } from "../../matrix3/parse/itin";
 
 const doNothing = new Promise<void>(() => {});
@@ -21,22 +21,22 @@ async function readItinerary5(): Promise<typeof currentItin3> {
   const bookingDetails = await getBookingDetails();
 
   return {
-    itin: bookingDetails.itinerary.slices.map(itin => {
+    itin: bookingDetails.itinerary.slices.map((itin) => {
       const fareMap = bookingDetails.tickets
-        .flatMap(t => t.pricings.flatMap(p => p.fares))
+        .flatMap((t) => t.pricings.flatMap((p) => p.fares))
         .reduce((acc, fare) => {
-          fare.bookingInfos.forEach(bi => {
+          fare.bookingInfos.forEach((bi) => {
             acc[
               `${bi.segment.origin}${bi.segment.destination}${bi.bookingCode}`
             ] = {
               carrier: fare.carrier,
-              code: fare.code
+              code: fare.code,
             };
           });
           return acc;
         }, {});
-      const segments = itin.segments.flatMap(seg =>
-        seg.legs.map(leg => {
+      const segments = itin.segments.flatMap((seg) =>
+        seg.legs.map((leg) => {
           const fare =
             fareMap[
               `${seg.origin.code}${seg.destination.code}${seg.bookingInfos[0].bookingCode}`
@@ -52,36 +52,36 @@ async function readItinerary5(): Promise<typeof currentItin3> {
             cabin: getCabin(seg.bookingInfos[0].cabin),
             bookingclass: seg.bookingInfos[0].bookingCode,
             farebase: fare.code,
-            farecarrier: fare.carrier
+            farecarrier: fare.carrier,
           };
-        })
+        }),
       );
       return {
         arr: isoToDateObj(itin.arrival),
         dep: isoToDateObj(itin.departure),
         orig: itin.origin.code,
         dest: itin.destination.code,
-        seg: segments
+        seg: segments,
       };
     }),
     price: +bookingDetails.displayTotal.substring(3),
     numPax: bookingDetails.passengerCount,
     carriers: [
       ...new Set<string>(
-        bookingDetails.itinerary.slices.flatMap(itin =>
-          itin.segments.map(seg => seg.carrier.code)
-        )
-      )
+        bookingDetails.itinerary.slices.flatMap((itin) =>
+          itin.segments.map((seg) => seg.carrier.code),
+        ),
+      ),
     ],
     cur: bookingDetails.displayTotal.substring(0, 3),
     farebases: [
       ...new Set<string>(
-        bookingDetails.tickets.flatMap(t =>
-          t.pricings.flatMap(p => p.fares.code)
-        )
-      )
+        bookingDetails.tickets.flatMap((t) =>
+          t.pricings.flatMap((p) => p.fares.code),
+        ),
+      ),
     ],
-    dist: bookingDetails.itinerary.distance.value
+    dist: bookingDetails.itinerary.distance.value,
   };
 }
 
@@ -90,7 +90,7 @@ function getBookingDetails() {
     (function _wait() {
       setTimeout(async () => {
         const copyAsJsonButton: HTMLElement = document.querySelector(
-          classSettings.resultpage.copyAsJsonButton
+          classSettings.resultpage.copyAsJsonButton,
         );
         if (!copyAsJsonButton) {
           return _wait();
@@ -124,7 +124,7 @@ function isoToDateObj(isoDate: string) {
     month: +isoDate.substring(5, 7),
     year: +isoDate.substring(0, 4),
     time,
-    time24
+    time24,
   };
 }
 
@@ -143,10 +143,10 @@ function getCabin(cabin: string) {
 
 export function getCurrentSegs() {
   return currentItin.itin
-    .map(function(p) {
+    .map(function (p) {
       return p.seg;
     })
-    .reduce(function(a, b) {
+    .reduce(function (a, b) {
       return a.concat(b);
     }, []);
 }

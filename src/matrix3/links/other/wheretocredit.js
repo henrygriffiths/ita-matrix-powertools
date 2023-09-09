@@ -6,11 +6,11 @@ function printWheretocredit() {
     url:
       "https://www.wheretocredit.com/calculator#" +
       getCurrentSegs()
-        .map(seg =>
-          [seg.orig, seg.dest, seg.carrier, seg.bookingclass].join("-")
+        .map((seg) =>
+          [seg.orig, seg.dest, seg.carrier, seg.bookingclass].join("-"),
         )
         .join("/"),
-    title: "Where to Credit"
+    title: "Where to Credit",
   };
 }
 

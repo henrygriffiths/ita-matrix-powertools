@@ -7,7 +7,7 @@ import { currentItin } from "../../../matrix5/parse/itin";
 import {
   getAmadeusUrl,
   getAmadeusTriptype,
-  getAmadeusPax
+  getAmadeusPax,
 } from "../../print/amadeus";
 import { unsafeHTML, unsafeScript } from "../../../unsafe-policy";
 
@@ -82,7 +82,7 @@ const acEditions = [
   { name: "United Kingdom", value: "gb" },
   { name: "United States", value: "us" },
   { name: "Venezuela", value: "ve" },
-  { name: "Vietnam", value: "vn" }
+  { name: "Vietnam", value: "vn" },
 ];
 
 function printAC() {
@@ -90,7 +90,7 @@ function printAC() {
     return;
   }
 
-  var createUrl = function(edition) {
+  var createUrl = function (edition) {
     var acUrl =
       "https://book.aircanada.com/pl/AConline/en/RedirectionServlet?FareRequest=YES&PRICING_MODE=0&fromThirdParty=YES";
     acUrl +=
@@ -107,7 +107,7 @@ function printAC() {
       countInf: true,
       childAsAdult: 16,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printAC");
@@ -151,7 +151,7 @@ function printAC() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += acEditions
-    .map(function(edition, i) {
+    .map(function (edition, i) {
       return (
         '<a href="' +
         createUrl(edition.value.toUpperCase()) +
@@ -168,14 +168,14 @@ function printAC() {
   return {
     url: acUrl,
     title: "Air Canada",
-    extra
+    extra,
   };
 }
 
 function addACPromoControls(url) {
   var script = document.createElement("script");
   script.appendChild(
-    document.createTextNode(unsafeScript("(" + addACPromo + ")();"))
+    document.createTextNode(unsafeScript("(" + addACPromo + ")();")),
   );
   (
     document.body ||
@@ -204,10 +204,10 @@ function addACPromoControls(url) {
 }
 
 function addACPromo() {
-  window.addACPromo = function() {
+  window.addACPromo = function () {
     var input = document.getElementById("ac-promo-input");
     input.style.display = "inline";
-    input.addEventListener("change", event => {
+    input.addEventListener("change", (event) => {
       var replacement =
         event.target.value != ""
           ? "&AUTHORIZATION_ID=" + event.target.value

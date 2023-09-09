@@ -2,7 +2,7 @@ import { register, validatePax } from "..";
 import {
   currentItin,
   getCurrentSegs,
-  isMulticity
+  isMulticity,
 } from "../../../matrix5/parse/itin";
 import { printNotification, to2digits } from "../../utils";
 import { getCabin } from "../../settings/appSettings";
@@ -21,7 +21,7 @@ const editions = [
   { name: "España", host: "https://www.jetcost.es/vuelos/busqueda" },
   {
     name: "Estados Unidos (es)",
-    host: "https://us.jetcost.com/es/vuelos/busqueda"
+    host: "https://us.jetcost.com/es/vuelos/busqueda",
   },
   { name: "France", host: "https://www.jetcost.com/vols/recherche" },
   { name: "Hong Kong", host: "https://www.jetcost.hk/en/flights/search" },
@@ -50,11 +50,11 @@ const editions = [
   { name: "United Kingdom", host: "https://www.jetcost.co.uk/flights/search" },
   {
     name: "United States (en)",
-    host: "https://us.jetcost.com/en/flights/search"
+    host: "https://us.jetcost.com/en/flights/search",
   },
   { name: "Uruguay", host: "https://www.jetcost.com.uy/vuelos/busqueda" },
   { name: "Venezuela", host: "https://www.jetcost.co.ve/vuelos/busqueda" },
-  { name: "한국", host: "https://www.jetcost.co.kr/flights/search" }
+  { name: "한국", host: "https://www.jetcost.co.kr/flights/search" },
 ];
 
 const cabins = [0, 0, 1, 2];
@@ -67,7 +67,7 @@ function print() {
     countInf: false,
     childAsAdult: 12,
     sepInfSeat: false,
-    childMinAge: 2
+    childMinAge: 2,
   });
   if (!pax) {
     printNotification("Error: Failed to validate Passengers in printOvago");
@@ -75,9 +75,9 @@ function print() {
   }
 
   const cabin =
-    cabins[getCabin(Math.min(...getCurrentSegs().map(seg => seg.cabin)))];
+    cabins[getCabin(Math.min(...getCurrentSegs().map((seg) => seg.cabin)))];
 
-  var createUrl = function(host) {
+  var createUrl = function (host) {
     return `${host}?adults=${pax.adults}&children=${
       pax.children.length
     }&infants=${pax.infLap}&cabin_class=${cabin}&${currentItin.itin
@@ -85,7 +85,7 @@ function print() {
         (seg, i) =>
           `trips[${i}][date]=${formatDate(seg.dep)}&trips[${i}][from_iata]=${
             seg.orig
-          }&trips[${i}][to_iata]=${seg.dest}`
+          }&trips[${i}][to_iata]=${seg.dest}`,
       )
       .join("&")}`;
   };
@@ -98,7 +98,7 @@ function print() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += editions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.host) +
@@ -113,7 +113,7 @@ function print() {
   return {
     url,
     title: "Jetcost",
-    extra
+    extra,
   };
 }
 

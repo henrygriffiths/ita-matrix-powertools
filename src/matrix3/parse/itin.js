@@ -1,7 +1,7 @@
 import {
   printNotification,
   exRE,
-  monthnameToNumber
+  monthnameToNumber,
 } from "../../matrix3/utils";
 
 // initialize local storage for current itin
@@ -14,7 +14,7 @@ const matrixCurrencies = [
   { p: /\£/, c: "GBP" },
   { p: /CA\$/, c: "CAD" },
   { p: /RS\./, c: "INR" },
-  { p: /\₩/, c: "KRW" }
+  { p: /\₩/, c: "KRW" },
 ];
 
 export function readItinerary() {
@@ -52,7 +52,8 @@ export function readItinerary() {
     }
   }
   var segs = new Array();
-  var re = /35px\/(\w{2}).png[^\(]+\(([A-Z]{3})[^\(]+\(([A-Z]{3})[^\,]*\,\s*([a-zA-Z]{3})\s*([0-9]{1,2}).*?gwt-Label.*?([0-9]*)\<.*?Dep:[^0-9]+(.*?)\<.*?Arr:[^0-9]+(.*?)\<.*?([0-9]{1,2})h\s([0-9]{1,2})m.*?gwt-Label.*?\>(.*?)\<.*?gwt-Label\"\>(\w).*?\((\w)\).*?\<.*?tr(.*?)(table|airline_logos)/g;
+  var re =
+    /35px\/(\w{2}).png[^\(]+\(([A-Z]{3})[^\(]+\(([A-Z]{3})[^\,]*\,\s*([a-zA-Z]{3})\s*([0-9]{1,2}).*?gwt-Label.*?([0-9]*)\<.*?Dep:[^0-9]+(.*?)\<.*?Arr:[^0-9]+(.*?)\<.*?([0-9]{1,2})h\s([0-9]{1,2})m.*?gwt-Label.*?\>(.*?)\<.*?gwt-Label\"\>(\w).*?\((\w)\).*?\<.*?tr(.*?)(table|airline_logos)/g;
   segs = exRE(html, re);
   // used massive regex to get all our segment-info in one extraction
   var legnr = 0;
@@ -76,7 +77,7 @@ export function readItinerary() {
         year,
         timeDisplay: segs[i + 6],
         time: dep12,
-        time24: dep24
+        time24: dep24,
       },
       arr: {
         day: addinformations.arrDate ? addinformations.arrDate.day : day,
@@ -84,7 +85,7 @@ export function readItinerary() {
         year: addinformations.arrDate ? addinformations.arrDate.year : year,
         timeDisplay: segs[i + 7],
         time: arr12,
-        time24: arr24
+        time24: arr24,
       },
       fnr: segs[i + 5],
       duration: parseInt(segs[i + 8]) * 60 + parseInt(segs[i + 9]),
@@ -95,7 +96,7 @@ export function readItinerary() {
       layoverduration: addinformations.layoverduration,
       airportchange: addinformations.airportchange,
       farebase: "",
-      farecarrier: ""
+      farecarrier: "",
     };
 
     // find farecode for leg
@@ -113,7 +114,7 @@ export function readItinerary() {
     if (itin[legnr].seg === undefined) itin[legnr].seg = new Array();
     itin[legnr].seg.push(seg);
     // push carrier
-    if (!carrieruarray.some(cxr => cxr === seg.carrier)) {
+    if (!carrieruarray.some((cxr) => cxr === seg.carrier)) {
       carrieruarray.push(seg.carrier);
     }
     // push dates and times into leg-array
@@ -192,12 +193,13 @@ export function readItinerary() {
     }
   }
   // Combine technical stops into a single segment
-  itin.forEach(itin => {
+  itin.forEach((itin) => {
     if (itin.seg) itin.seg = combineTechnicalStops(itin.seg);
   });
   // extract mileage paxcount and total price
   var milepaxprice = new Array();
-  var re = /Mileage.*?([0-9,]+)\stotal\smiles.*?Total\scost\sfor\s([0-9])\spassenger.*?<div.*?>(.*?([1-9][0-9,.]+)[^\<]*)/g;
+  var re =
+    /Mileage.*?([0-9,]+)\stotal\smiles.*?Total\scost\sfor\s([0-9])\spassenger.*?<div.*?>(.*?([1-9][0-9,.]+)[^\<]*)/g;
   milepaxprice = exRE(html, re);
   // detect currency
   for (i = 0; i < matrixCurrencies.length; i++) {
@@ -213,7 +215,7 @@ export function readItinerary() {
     carriers: carrieruarray,
     cur: itinCur,
     farebases: farebases,
-    dist: Number(milepaxprice[0].replace(/\,/, ""))
+    dist: Number(milepaxprice[0].replace(/\,/, "")),
   };
   console.log("parsed itinerary: ", currentItin);
 }
@@ -223,7 +225,7 @@ function parseAddInfo(info) {
     codeshare: 0,
     layoverduration: 0,
     airportchange: 0,
-    arrDate: null
+    arrDate: null,
   };
   var re = /contains\s*airport\s*changes/g;
   if (re.test(info) === true) {
@@ -243,7 +245,7 @@ function parseAddInfo(info) {
     ret.arrDate = {
       month,
       day,
-      year: getFlightYear(day, month)
+      year: getFlightYear(day, month),
     };
   }
   var temp = new Array();
@@ -273,7 +275,7 @@ function combineTechnicalStops(allSegs) {
       segs.push({
         ...currSeg,
         dest: nextSeg.dest,
-        arr: nextSeg.arr
+        arr: nextSeg.arr,
       });
       i++;
     } else {

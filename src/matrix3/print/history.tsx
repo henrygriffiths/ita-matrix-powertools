@@ -23,7 +23,7 @@ export function renderHistory() {
   if (userSettings.history?.length) {
     container = renderHistoryContainer();
 
-    (async function() {
+    (async function () {
       await redrawHistory("pins");
       await redrawHistory("history");
       container.style.display = "block";
@@ -38,7 +38,7 @@ export function removeHistory() {
 
 function subscribeSearchChanges() {
   var _setItem = window.Storage.prototype.setItem;
-  window.Storage.prototype.setItem = function(key, value) {
+  window.Storage.prototype.setItem = function (key, value) {
     _setItem.apply(this, arguments);
     if (key !== "savedSearch.0") return;
 
@@ -47,12 +47,12 @@ function subscribeSearchChanges() {
       {
         ts: new Date().toISOString(),
         savedSearch: value,
-        url: getSearchUrl(search[1], value)
+        url: getSearchUrl(search[1], value),
       },
-      ...userSettings.history.filter(h => {
+      ...userSettings.history.filter((h) => {
         const hist = getSearchObject(h.savedSearch);
         return JSON.stringify(hist) !== JSON.stringify(search);
-      })
+      }),
     ].slice(0, MAX_HISTORY_LENGTH);
     saveUserSettings();
   };
@@ -75,7 +75,7 @@ function renderHistoryContainer() {
         padding: "0 20px",
         borderRight: "1px dashed grey",
         overflowY: "auto",
-        display: "none"
+        display: "none",
       }}
     ></div>
   );
@@ -91,14 +91,14 @@ async function redrawHistory(setting: "history" | "pins") {
       title: "Pinned",
       setting: "pins",
       showPin: false,
-      showDistanceToNow: false
+      showDistanceToNow: false,
     },
     history: {
       title: "History",
       setting: "history",
       showPin: true,
-      showDistanceToNow: true
-    }
+      showDistanceToNow: true,
+    },
   };
   const section = config[setting];
 
@@ -122,7 +122,7 @@ async function redrawHistory(setting: "history" | "pins") {
     if (section.showDistanceToNow) {
       const distance = formatDistanceToNow(new Date(h.ts), {
         locale: userSettings.language === "de" ? de : enUS,
-        addSuffix: true
+        addSuffix: true,
       });
       const label = distance !== lastDistance ? <div>{distance}</div> : null;
       lastDistance = distance;
@@ -133,7 +133,7 @@ async function redrawHistory(setting: "history" | "pins") {
     if (!h.url) h.url = getSearchUrl(search[1], h.savedSearch);
 
     const linkText = `${(search[3][7] || [])
-      .map(s => `${s[5]}-${s[3]}`)
+      .map((s) => `${s[5]}-${s[3]}`)
       .join(" ")} (${getCabinFromITA(search[3][8])})`;
 
     div.appendChild(
@@ -142,14 +142,14 @@ async function redrawHistory(setting: "history" | "pins") {
         style={{
           position: "relative",
           margin: "1em -1rem",
-          padding: "0 1rem"
+          padding: "0 1rem",
         }}
       >
         <a
           style={{
-            display: "block"
+            display: "block",
           }}
-          onClick={e => changeSearch(e, search[1], h.savedSearch)}
+          onClick={(e) => changeSearch(e, search[1], h.savedSearch)}
           href={h.url}
           title={linkText}
         >
@@ -164,9 +164,9 @@ async function redrawHistory(setting: "history" | "pins") {
               left: 0,
               top: 0,
               textDecoration: "none",
-              visibility: "hidden"
+              visibility: "hidden",
             }}
-            onClick={e => pin(h)}
+            onClick={(e) => pin(h)}
             title="Pin"
           >
             <svg
@@ -188,9 +188,9 @@ async function redrawHistory(setting: "history" | "pins") {
             right: 0,
             top: 0,
             textDecoration: "none",
-            visibility: "hidden"
+            visibility: "hidden",
           }}
-          onClick={e => remove(e, search)}
+          onClick={(e) => remove(e, search)}
           title="Remove"
         >
           <svg
@@ -204,24 +204,24 @@ async function redrawHistory(setting: "history" | "pins") {
             <path d="M335.188 351.188c-4.094 0-8.191-1.555-11.305-4.691L165.484 188.117a16 16 0 1 1 22.633-22.633l158.398 158.398a16 16 0 0 1 0 22.633c-3.133 3.117-7.23 4.672-11.328 4.672zm0 0" />
           </svg>
         </a>
-      </div>
+      </div>,
     );
 
     function pin(search) {
       const searchObj = getSearchObject(search.savedSearch);
       userSettings.pins = [
         search,
-        ...userSettings.pins.filter(h => {
+        ...userSettings.pins.filter((h) => {
           const hist = getSearchObject(h.savedSearch);
           return JSON.stringify(hist) !== JSON.stringify(searchObj);
-        })
+        }),
       ];
       saveUserSettings();
       redrawHistory("pins");
     }
 
     function remove(e: MouseEvent, search: SavedSearch) {
-      userSettings[setting] = userSettings[setting].filter(h => {
+      userSettings[setting] = userSettings[setting].filter((h) => {
         const hist = getSearchObject(h.savedSearch);
         return JSON.stringify(hist) !== JSON.stringify(search);
       });
@@ -251,7 +251,7 @@ function changeSearch(e: MouseEvent, key: string, savedSearch: string) {
   }
   e.preventDefault();
   window.location.hash = getHash(key);
-  window.location.reload(true);
+  window.location.reload();
 }
 
 function getSearchUrl(key: string, search: string) {

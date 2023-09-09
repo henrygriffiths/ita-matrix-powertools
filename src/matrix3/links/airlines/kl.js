@@ -4,7 +4,7 @@ import {
   printNotification,
   to2digits,
   to4digits,
-  to4digitTime
+  to4digitTime,
 } from "../../utils";
 import { validatePax, register, anyCarriers } from "..";
 import { currentItin, getCurrentSegs } from "../../../matrix5/parse/itin";
@@ -16,7 +16,7 @@ const klEditions = [
   { value: "fr_fr", name: "France / French" },
   { value: "nl_en", name: "Netherlands / English" },
   { value: "gb_en", name: "United Kingdom / English" },
-  { value: "us_en", name: "US / English" }
+  { value: "us_en", name: "US / English" },
 ];
 
 const cabins = ["M", "W", "C", "F"];
@@ -26,13 +26,13 @@ function printKL() {
     return;
   }
 
-  var createUrl = function(edition) {
+  var createUrl = function (edition) {
     var pax = validatePax({
       maxPaxcount: 9,
       countInf: false,
       childAsAdult: 12,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printKL");
@@ -47,12 +47,12 @@ function printKL() {
       "&trip=" +
       segs
         .map(
-          seg =>
+          (seg) =>
             `${seg.orig}:${seg.dep.year}${to2digits(seg.dep.month)}${to2digits(
-              seg.dep.day
+              seg.dep.day,
             )}@${to4digitTime(seg.dep.time)}:${seg.carrier}${to4digits(
-              seg.fnr
-            )}:${seg.bookingclass}>${seg.dest}`
+              seg.fnr,
+            )}:${seg.bookingclass}>${seg.dest}`,
         )
         .join("-");
     url += "&ref=MS,fb=" + currentItin.farebases.join(".");
@@ -61,7 +61,7 @@ function printKL() {
     url += "&numberOfInfants=" + pax.infLap;
     url +=
       "&cabinClass=" +
-      cabins[getCabin(Math.min(...segs.map(seg => seg.cabin)))];
+      cabins[getCabin(Math.min(...segs.map((seg) => seg.cabin)))];
     url += "&country=" + edition[0];
     url += "&language=" + edition[1];
 
@@ -81,7 +81,7 @@ function printKL() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += klEditions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value.split("_")) +
@@ -96,7 +96,7 @@ function printKL() {
   return {
     url,
     title: "KLM",
-    extra
+    extra,
   };
 }
 

@@ -4,7 +4,7 @@ import { validatePax, register, anyCarriers } from "..";
 import {
   getAmadeusUrl,
   getAmadeusTriptype,
-  getAmadeusPax
+  getAmadeusPax,
 } from "../../print/amadeus";
 
 const lhEditions = [
@@ -116,7 +116,7 @@ const lhEditions = [
   { value: "US-gb", name: "United States / English" },
   { value: "VE-es", name: "Venezuela / Español" },
   { value: "VN-gb", name: "Vietnam / English" },
-  { value: "XX-gb", name: "Other countries / English" }
+  { value: "XX-gb", name: "Other countries / English" },
 ];
 
 function printLH() {
@@ -124,14 +124,14 @@ function printLH() {
     return;
   }
 
-  var createUrl = function(edition) {
+  var createUrl = function (edition) {
     var paxConfig = { allowinf: 1, youthage: 0 };
     var pax = validatePax({
       maxPaxcount: 9,
       countInf: false,
       childAsAdult: 12,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printLH");
@@ -141,7 +141,7 @@ function printLH() {
       sepcabin: 0,
       detailed: 0,
       allowpremium: 1,
-      inctimes: 0
+      inctimes: 0,
     };
     var url = "https://book.lufthansa.com/lh/dyn/air-lh/revenue/availThenFare?";
     url += "WDS_MSE_PRICE_CURRENCY=EUR&WDS_MSE_TOTAL_PRICE=1.00&";
@@ -176,7 +176,7 @@ function printLH() {
   var extra =
     ' <span class="pt-hover-container">[+]<span class="pt-hover-menu">';
   extra += lhEditions
-    .map(function(obj, i) {
+    .map(function (obj, i) {
       return (
         '<a href="' +
         createUrl(obj.value.split("-")) +
@@ -191,7 +191,7 @@ function printLH() {
   return {
     url,
     title: "Lufthansa",
-    extra
+    extra,
   };
 }
 

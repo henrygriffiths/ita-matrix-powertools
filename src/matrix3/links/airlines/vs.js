@@ -2,7 +2,7 @@ import {
   printNotification,
   monthnumberToName,
   to2digits,
-  to4digits
+  to4digits,
 } from "../../utils";
 import { validatePax, register, anyCarriers } from "..";
 import { currentItin } from "../../../matrix5/parse/itin";
@@ -12,13 +12,13 @@ function printVS() {
     return;
   }
 
-  var createUrl = function() {
+  var createUrl = function () {
     var pax = validatePax({
       maxPaxcount: 9,
       countInf: true,
       childAsAdult: 12,
       sepInfSeat: false,
-      childMinAge: 2
+      childMinAge: 2,
     });
     if (!pax) {
       printNotification("Error: Failed to validate Passengers in printVS");
@@ -37,7 +37,7 @@ function printVS() {
 
     let segnum = 0;
     currentItin.itin.forEach((itin, legnum) => {
-      itin.seg.forEach(seg => {
+      itin.seg.forEach((seg) => {
         const hour = seg.dep.time24.split(":")[0];
         const time =
           to2digits(+hour - (+hour < 12 ? 0 : 12)) + (+hour < 12 ? "A" : "P");
@@ -51,7 +51,7 @@ function printVS() {
           monthnumberToName(seg.dep.month),
           to2digits(seg.dep.day),
           seg.dep.year,
-          time
+          time,
         ];
         url += `&itinSegment[${segnum}]=${values.join(":")}`;
 
@@ -73,7 +73,7 @@ function printVS() {
 
   return {
     url,
-    title: "Virgin Atlantic"
+    title: "Virgin Atlantic",
   };
 }
 

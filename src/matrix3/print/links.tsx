@@ -40,11 +40,11 @@ export function printLinksContainer() {
   const groups = Object.keys(links);
   groups.forEach((group, i) => {
     const groupLinks = links[group]
-      .map(link => link())
+      .map((link) => link())
       .sort((a, b) => {
         return a.title.localeCompare(b.title);
       });
-    groupLinks.forEach(link => {
+    groupLinks.forEach((link) => {
       if (!link) return;
 
       if (link.img) {
@@ -102,7 +102,7 @@ export function printImage(link) {
           }}
         >
           <span>{link.title}</span>
-        </div>
+        </div>,
       );
   }
 }
@@ -165,7 +165,7 @@ function printLink(link) {
         <a
           href={link.url}
           target={link.target || "_blank"}
-          onClick={e => {
+          onClick={(e) => {
             if (mptUserSettings.enableAffiliates !== 0) {
               e.preventDefault();
               window.open(
@@ -174,9 +174,9 @@ function printLink(link) {
                     ? "122783X1686784"
                     : "122783X1611548"
                 }&url=${encodeURIComponent(
-                  e.target.href
+                  e.target.href,
                 )}&sref=${encodeURIComponent(window.location.href)}`,
-                e.target.target
+                e.target.target,
               );
               return false;
             }
@@ -195,7 +195,7 @@ function printLink(link) {
           <br />
           <label
             style={{
-              fontSize: `${Number(mptUserSettings.linkFontsize) - 15}%`
+              fontSize: `${Number(mptUserSettings.linkFontsize) - 15}%`,
             }}
           >
             {link.desc}
@@ -223,6 +223,6 @@ function printSeperator() {
   const container = getSidebarContainer();
   container &&
     container.appendChild(
-      mptUserSettings.enableInlineMode ? <hr class="powertoolsitem" /> : <hr />
+      mptUserSettings.enableInlineMode ? <hr class="powertoolsitem" /> : <hr />,
     );
 }
