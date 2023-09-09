@@ -6,7 +6,6 @@
   "scripts": {
     "install": "napa",
     "authors": "bash scripts/authors.sh",
-    "prettier": "pretty-quick --staged",
     "type-check": "tsc --noEmit",
     "build": "webpack && npm run minify",
     "minify": "uglifyjs ita-matrix-powertools.user.js -o script_minified.js",
@@ -14,36 +13,35 @@
     "package:webext": "node scripts/package.webext.js",
     "release:chrome": "shipit chrome ./webext",
     "release:firefox": "shipit firefox ./webext",
-    "release:opera": "shipit opera ./webext"
+    "release:opera": "shipit opera ./webext",
+    "prepare": "husky install"
   },
   "dependencies": {
-    "date-fns": "^2.22.1",
-    "date-fns-tz": "^1.1.4"
+    "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.0"
   },
   "napa": {
     "JSONCrush": "KilledByAPixel/JSONCrush#29a6042e7417fde317e60ba2ae54f1384f612c4b"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run prettier"
-    }
+  "lint-staged": {
+    "src/**/*.{js,jsx,ts,tsx,css,scss,md}": "prettier --write --ignore-unknown"
   },
   "devDependencies": {
-    "@types/greasemonkey": "^4.0.1",
-    "@types/webpack-env": "^1.16.0",
+    "@types/greasemonkey": "^4.0.4",
+    "@types/webpack-env": "^1.18.1",
     "@wext/shipit": "github:adamhwang/wext-shipit",
     "dom-chef": "^4.2.2",
-    "exports-loader": "^1.1.1",
-    "husky": "^4.3.8",
+    "exports-loader": "^4.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^14.0.1",
     "napa": "^3.0.0",
     "path": "^0.12.7",
-    "prettier": "^1.19.1",
-    "pretty-quick": "^2.0.2",
-    "ts-loader": "^8.3.0",
-    "typescript": "^3.9.9",
+    "prettier": "^3.0.3",
+    "ts-loader": "^9.4.4",
+    "typescript": "^5.2.2",
     "uglify-es": "^3.3.9",
     "upload-opera-extension": "github:adamhwang/upload-opera-extension",
-    "webpack": "^5.38.1",
-    "webpack-cli": "^4.7.2"
+    "webpack": "^5.88.2",
+    "webpack-cli": "^5.1.4"
   }
 }
