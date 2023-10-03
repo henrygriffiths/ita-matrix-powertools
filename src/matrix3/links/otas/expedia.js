@@ -17,6 +17,7 @@ const expedia = [
   { name: "expedia.co.nz", host: "www.expedia.co.nz" },
   { name: "expedia.co.th", host: "www.expedia.co.th" },
   { name: "expedia.co.uk", host: "www.expedia.co.uk" },
+  { name: "expedia.com.ar", host: "www.expedia.com.ar" },
   { name: "expedia.com.au", host: "www.expedia.com.au" },
   { name: "expedia.com.br", host: "www.expedia.com.br" },
   { name: "expedia.com.hk", host: "www.expedia.com.hk" },
@@ -24,6 +25,7 @@ const expedia = [
   { name: "expedia.com.ph", host: "www.expedia.com.ph" },
   { name: "expedia.com.sg", host: "www.expedia.com.sg" },
   { name: "expedia.com.tw", host: "www.expedia.com.tw" },
+  { name: "expedia.com.vn", host: "www.expedia.com.vn" },
   { name: "expedia.de", host: "www.expedia.de" },
   { name: "expedia.dk", host: "www.expedia.dk" },
   { name: "expedia.es", host: "www.expedia.es" },
@@ -61,18 +63,52 @@ const travelocity = [
   { name: "travelocity.ca", host: "www.travelocity.ca" },
 ];
 
-const others = [
+const hotels = [
   { name: "hotels.com", host: "travel.hotels.com" },
+  { name: "hoteles.com (ar)", host: "travel.ar.hoteles.com" },
+  { name: "hotels.com (at)", host: "travel.at.hotels.com" },
+  { name: "hotels.com (au)", host: "travel.au.hotels.com" },
+  { name: "hotels.com (be)", host: "travel.be.hotels.com" },
   { name: "hotels.com (ca)", host: "travel.ca.hotels.com" },
+  { name: "hotels.com (ch)", host: "travel.ch.hotels.com" },
+  { name: "hoteles.com (co)", host: "travel.co.hoteles.com" },
+  { name: "hotels.com (de)", host: "travel.de.hotels.com" },
+  { name: "hoteles.com (es)", host: "travel.es.hoteles.com" },
+  { name: "hotels.com (fi)", host: "travel.fi.hotels.com" },
   { name: "hotels.com (fr)", host: "travel.fr.hotels.com" },
+  { name: "hotels.com (hu)", host: "travel.hu.hotels.com" },
+  { name: "hotels.com (id)", host: "travel.id.hotels.com" },
+  { name: "hotels.com (ie)", host: "travel.ie.hotels.com" },
+  { name: "hotels.com (in)", host: "travel.in.hotels.com" },
+  { name: "hotels.com (is)", host: "travel.is.hotels.com" },
+  { name: "hotels.com (it)", host: "travel.it.hotels.com" },
   { name: "hotels.com (jp)", host: "travel.jp.hotels.com" },
+  { name: "hotels.com (kr)", host: "travel.kr.hotels.com" },
+  { name: "hotels.com (ms)", host: "travel.ms.hotels.com" },
+  { name: "hotels.com (nl)", host: "travel.nl.hotels.com" },
   { name: "hotels.com (no)", host: "travel.no.hotels.com" },
-  { name: "hotels.com (se)", host: "travel.se.hotels.com" },
+  { name: "hotels.com (nz)", host: "travel.nz.hotels.com" },
+  { name: "hotels.com (ph)", host: "travel.ph.hotels.com" },
+  { name: "hoteis.com (pt)", host: "travel.pt.hoteis.com" },
+  { name: "hotels.com (sg)", host: "travel.sg.hotels.com" },
+  { name: "hotels.com (sv)", host: "travel.sv.hotels.com" },
+  { name: "hotels.com (th)", host: "travel.th.hotels.com" },
+  { name: "hotels.com (tr)", host: "travel.tr.hotels.com" },
+  { name: "hotels.com (tw)", host: "travel.tw.hotels.com" },
   { name: "hotels.com (uk)", host: "travel.uk.hotels.com" },
-  { name: "lastminute.co.nz", host: "www.lastminute.co.nz" },
-  { name: "lastminute.com.au", host: "www.lastminute.com.au" },
-  { name: "wotif.co.nz", host: "www.wotif.co.nz" },
+  { name: "hotels.com (vi)", host: "travel.vi.hotels.com" },
+  { name: "hoteis.com", host: "travel.hoteis.com" },
+  { name: "hoteles.com", host: "travel.hoteles.com" },
+  { name: "hotels.cn", host: "travel.hotels.cn" },
+  { name: "hotels.com (za)", host: "travel.za.hotels.com" },
+  { name: "hotels.com (zh)", host: "travel.zh.hotels.com" },
+];
+
+const wotif = [
   { name: "wotif.com", host: "www.wotif.com" },
+  { name: "wotif.co.nz", host: "www.wotif.co.nz" },
+  { name: "lastminute.com.au", host: "www.lastminute.com.au" },
+  { name: "lastminute.co.nz", host: "www.lastminute.co.nz" },
 ];
 
 function printExpedia(title, editions) {
@@ -178,10 +214,12 @@ function printExpedia(title, editions) {
   };
 }
 
-register("otas", () => printExpedia("Expedia", expedia.concat(others)));
+register("otas", () => printExpedia("Expedia", expedia));
 register("otas", () => printExpedia("CheapTickets", cheaptickets));
 register("otas", () => printExpedia("Ebookers", ebookers));
 register("otas", () => printExpedia("Hotwire", hotwire));
 register("otas", () => printExpedia("MrJet.se", mrjet));
 register("otas", () => printExpedia("Orbitz", orbitz));
 register("otas", () => printExpedia("Travelocity", travelocity));
+register("otas", () => printExpedia("Hotels.com", hotels));
+register("otas", () => printExpedia("Wotif", wotif));
