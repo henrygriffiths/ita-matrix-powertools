@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+message ReferrerMessage {
+  string referrer = 1;
+
+  message UnknownMessage {
+    int32 always_seventy_six = 10; // so far always 76
+
+    reserved 1,2,3,4,5,6,7,8,9;
+}
+
+  UnknownMessage referrer_unknown = 2;
+}
+
+message SearchMessage {
+  optional int32 unknown_random = 1; // no idea, seemingly random but -1 from decoded sig value
+  int32 unknown_one = 2; // so far always 1 or 2 but 1 seems to work better
+  double price = 3;
+
+  message ItineraryMessage {
+    int32 index = 1;
+
+    message SegmentMessage {
+      int32 index = 1; // total slice index and not just from this segment
+      string departure = 2; // iso date time
+      string arrival = 3; // iso date time
+      string origin = 4;
+      string destination = 5;
+      string flight_number = 6;
+      string carrier = 7;
+      string booking_code = 8;
+      string cabin = 9; // ECO, etc - maybe enum
+    }
+
+    repeated SegmentMessage segments = 2;
+  }
+
+  repeated ItineraryMessage itinerary = 4;
+
+  message FareMessage {
+    string fare_type = 1; // ADT, CHD, etc - maybe enum
+    int32 segment_index = 2;
+    string fare_basis = 3;
+  }
+
+  repeated FareMessage fares = 5;
+}
+
+message PriceKeyMessage {
+  string signature = 1;
+  ReferrerMessage referrer = 2;
+  
+  message PassengerMessage {
+    int32 value = 1;
+    int32 type = 2; // 1 - adult, 2 - child, etc
+  }
+
+  repeated PassengerMessage pax = 3;
+  
+  SearchMessage search = 4;
+}

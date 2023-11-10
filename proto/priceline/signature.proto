@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+message SignatureMessage {
+  string version = 1; // so far always v1
+  string guid = 2; // random guid ok
+  int32 always_one = 3; // so far always 1
+  string type = 4; // probably should always be CLASSIC. FUSED seems to be hacker fares
+
+  message UnknownMessage {
+    int32 unknown_plus_one = 1; // seems to be "unknown" search number + 1
+    int32 unknown_one = 2; // so far always 1 or 2 but 1 seems to work better
+  }
+
+  UnknownMessage unknown = 5;
+
+  string server_name = 6;
+  string workflow_id = 7; // format: WORKFLOW_ID_{random guid ok}
+}

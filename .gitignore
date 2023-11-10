@@ -1,5 +1,6 @@
 webext
 node_modules
+src/generated
 
 ### macOS ###
 # General

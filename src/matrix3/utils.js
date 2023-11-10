@@ -81,6 +81,17 @@ export function uuidv4() {
   });
 }
 
+export function getRandomInt(max) {
+  return Math.floor(Math.random() * max);
+}
+
+export function toUrlSafeBase64(base64) {
+  return base64
+    .replace(/\+/g, "-") // Convert '+' to '-'
+    .replace(/\//g, "_") // Convert '/' to '_'
+    .replace(/=+$/, ""); // Remove ending '='
+}
+
 const monthnames = [
   "JAN",
   "FEB",
