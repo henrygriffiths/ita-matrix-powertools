@@ -6,16 +6,22 @@ import translations from "../settings/translations";
 import { findtargets, findtarget } from "../utils";
 import { unsafeHTML } from "../../unsafe-policy";
 
-/** @type {{ [key: string]: (() => { url: string, title: string, img?: string, desc?: string, extra?: string, target?: string })[]}} */
-const links = {};
+export type Link = {
+  url: string;
+  title: string;
+  img?: string;
+  desc?: string;
+  extra?: string;
+  target?: string;
+};
+const links: { [key: string]: (() => Link)[] } = {};
 
 require("../links");
 
 /**
  * Registers a link
- * @param {() => { url: string, title: string, img?: string, desc?: string, extra?: string, target?: string }} factory
  */
-export function registerLink(type, factory) {
+export function registerLink(type: string, factory: (typeof links)[0][0]) {
   if (!links[type]) links[type] = [];
   links[type].push(factory);
 }
@@ -64,13 +70,13 @@ export function printLinksContainer() {
 }
 
 // Inline Stuff
-function printUrlInline(link) {
+function printUrlInline(link: Link) {
   const item = <li class="powertoolsitem">{printLink(link)}</li>;
   const container = getSidebarContainer();
   container && container.appendChild(item);
 }
 
-export function printImage(link) {
+export function printImage(link: Link) {
   const container = getSidebarContainer();
 
   let item = (
@@ -146,7 +152,7 @@ function createUrlContainerInline() {
 }
 
 // Printing Stuff
-function printUrl(link) {
+function printUrl(link: Link) {
   const item = (
     <div class="powertoolsitem" style={{ margin: "5px 0px 10px 0px" }}>
       {printLink(link)}
@@ -156,7 +162,7 @@ function printUrl(link) {
   container && container.appendChild(item);
 }
 
-function printLink(link) {
+function printLink(link: Link) {
   const extra = document.createElement("div");
   link.extra && extra.insertAdjacentHTML("beforeend", unsafeHTML(link.extra));
   return (

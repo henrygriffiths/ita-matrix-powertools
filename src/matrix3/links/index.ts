@@ -1,6 +1,6 @@
 import mptUserSettings from "../settings/userSettings";
 import mtpPassengerConfig from "../settings/paxSettings";
-import { registerLink } from "../print/links";
+import { Link, registerLink } from "../print/links";
 import { currentItin } from "../../matrix5/parse/itin";
 
 const req = require.context("./", true, /.[jt]s$/);
@@ -9,30 +9,32 @@ req.keys().forEach(req);
 
 /**
  * Registers a link
- * @param {() => { url: string, title: string, img?: string, desc?: string, extra?: string, target?: string }} factory
  */
-export function register(type, factory) {
+export function register(type: string, factory: () => Link) {
   registerLink(type, factory);
 }
 
-export function allCarriers() {
-  const args = Array.from(arguments);
+export function allCarriers(...args: string[]) {
   return (
     mptUserSettings.showAllAirlines ||
     currentItin.carriers.every((cxr) => args.some((arg) => cxr === arg))
   );
 }
 
-export function anyCarriers() {
-  const args = Array.from(arguments);
+export function anyCarriers(...args: string[]) {
   return (
     mptUserSettings.showAllAirlines ||
     currentItin.carriers.some((cxr) => args.some((arg) => cxr === arg))
   );
 }
 
-export function validatePax(config) {
-  //{maxPaxcount:7, countInf:false, childAsAdult:12, sepInfSeat:false, childMinAge:2}
+export function validatePax(config: {
+  maxPaxcount: number;
+  countInf: boolean;
+  childAsAdult: number;
+  sepInfSeat: boolean;
+  childMinAge: number;
+}) {
   var tmpChildren = new Array();
   // push cur children
   for (var i = 0; i < mtpPassengerConfig.cAges.length; i++) {
