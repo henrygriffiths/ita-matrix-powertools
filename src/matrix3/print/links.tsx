@@ -10,9 +10,9 @@ export type Link = {
   url: string;
   title: string;
   img?: string;
+  onclick?: HTMLAnchorElement["onclick"];
   desc?: string;
   extra?: string;
-  target?: string;
 };
 const links: { [key: string]: (() => Link)[] } = {};
 
@@ -170,8 +170,9 @@ function printLink(link: Link) {
       <label style={{ fontSize: `${Number(mptUserSettings.linkFontsize)}%` }}>
         <a
           href={link.url}
-          target={link.target || "_blank"}
+          target="_blank"
           onClick={(e) => {
+            link.onclick?.apply(this, e);
             if (mptUserSettings.enableAffiliates !== 0) {
               e.preventDefault();
               window.open(
