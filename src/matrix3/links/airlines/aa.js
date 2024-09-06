@@ -83,7 +83,7 @@ function printAA() {
           "-" +
           ("0" + currentItin.itin[i].seg[j].dep.day).slice(-2) +
           "T" +
-          ("0" + currentItin.itin[i].seg[j].dep.time).slice(-5) +
+          ("0" + currentItin.itin[i].seg[j].dep.time24).slice(-5) +
           (typeof currentItin.itin[i].seg[j].dep.offset == "undefined"
             ? "+00:00"
             : currentItin.itin[i].seg[j].dep.offset) +
