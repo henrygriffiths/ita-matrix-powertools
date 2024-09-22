@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.14
+// @version 0.55.15
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -294,6 +294,89 @@ module.exports = exports.default;
 
 /***/ }),
 
+/***/ "./src/matrix3/links/index.ts":
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   allCarriers: () => (/* binding */ allCarriers),
+/* harmony export */   anyCarriers: () => (/* binding */ anyCarriers),
+/* harmony export */   register: () => (/* binding */ register),
+/* harmony export */   validatePax: () => (/* binding */ validatePax)
+/* harmony export */ });
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
+/* harmony import */ var _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/paxSettings.js");
+/* harmony import */ var _print_links__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/links.tsx");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+
+
+
+
+const req = __webpack_require__("./src/matrix3/links sync recursive .[jt]s$");
+req.keys().forEach(req);
+/**
+ * Registers a link
+ */
+function register(type, factory) {
+    (0,_print_links__WEBPACK_IMPORTED_MODULE_2__.registerLink)(type, factory);
+}
+function allCarriers(...args) {
+    return (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].showAllAirlines ||
+        _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.carriers.every((cxr) => args.some((arg) => cxr === arg)));
+}
+function anyCarriers(...args) {
+    return (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].showAllAirlines ||
+        _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.carriers.some((cxr) => args.some((arg) => cxr === arg)));
+}
+function validatePax(config) {
+    var tmpChildren = new Array();
+    // push cur children
+    for (var i = 0; i < _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].cAges.length; i++) {
+        tmpChildren.push(_settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].cAges[i]);
+    }
+    var ret = {
+        adults: _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].adults,
+        children: new Array(),
+        infLap: _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].infantsLap,
+        infSeat: 0,
+    };
+    if (config.sepInfSeat === true) {
+        ret.infSeat = _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].infantsSeat;
+    }
+    else {
+        for (var i = 0; i < _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].infantsSeat; i++) {
+            tmpChildren.push(config.childMinAge);
+        }
+    }
+    // process children
+    for (var i = 0; i < tmpChildren.length; i++) {
+        if (tmpChildren[i] < config.childAsAdult) {
+            ret.children.push(tmpChildren[i]);
+        }
+        else {
+            ret.adults++;
+        }
+    }
+    // check Pax-Count
+    if (config.maxPaxcount <=
+        ret.adults +
+            (config.countInf && ret.infLap) +
+            ret.infSeat +
+            ret.children.length) {
+        console.log("Too many passengers");
+        return;
+    }
+    if (0 === ret.adults + ret.infSeat + ret.children.length) {
+        console.log("No passengers");
+        return;
+    }
+    return ret;
+}
+
+
+/***/ }),
+
 /***/ "./src/matrix3/links/otas/priceline.ts":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
@@ -305,8 +388,8 @@ __webpack_require__.r(__webpack_exports__);
 var base64_js = __webpack_require__("./node_modules/base64-js/index.js");
 // EXTERNAL MODULE: ./src/matrix3/utils.js
 var utils = __webpack_require__("./src/matrix3/utils.js");
-// EXTERNAL MODULE: ./src/matrix3/links/index.js
-var links = __webpack_require__("./src/matrix3/links/index.js");
+// EXTERNAL MODULE: ./src/matrix3/links/index.ts
+var links = __webpack_require__("./src/matrix3/links/index.ts");
 // EXTERNAL MODULE: ./src/matrix5/parse/itin.ts + 1 modules
 var itin = __webpack_require__("./src/matrix5/parse/itin.ts");
 ;// CONCATENATED MODULE: ./node_modules/@protobuf-ts/runtime/build/es2015/lower-camel-case.js
@@ -6214,12 +6297,10 @@ function findItinTarget(leg, seg, tcell) {
 
 
 
-/** @type {{ [key: string]: (() => { url: string, title: string, img?: string, desc?: string, extra?: string, target?: string })[]}} */
 const links = {};
-__webpack_require__("./src/matrix3/links/index.js");
+__webpack_require__("./src/matrix3/links/index.ts");
 /**
  * Registers a link
- * @param {() => { url: string, title: string, img?: string, desc?: string, extra?: string, target?: string }} factory
  */
 function registerLink(type, factory) {
     if (!links[type])
@@ -6326,7 +6407,9 @@ function printLink(link) {
     link.extra && extra.insertAdjacentHTML("beforeend", (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_4__.unsafeHTML)(link.extra));
     return (dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("div", null,
         dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("label", { style: { fontSize: `${Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].linkFontsize)}%` } },
-            dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("a", { href: link.url, target: link.target || "_blank", onClick: (e) => {
+            dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("a", { href: link.url, target: "_blank", onClick: (e) => {
+                    var _a;
+                    (_a = link.onclick) === null || _a === void 0 ? void 0 : _a.apply(this, e);
                     if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].enableAffiliates !== 0) {
                         e.preventDefault();
                         window.open(`https://go.skimresources.com/?id=${!!location.hostname.match(/^old/i)
@@ -6830,7 +6913,7 @@ function boolToEnabled(value) {
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.14",
+    version: "0.55.15",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -8194,7 +8277,7 @@ function injectCss() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -8268,7 +8351,7 @@ function printAA() {
           "-" +
           ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k].arr.day).slice(-2) +
           "T" +
-          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k].arr.time).slice(-5) +
+          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k].arr.time24).slice(-5) +
           (typeof _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k].arr.offset == "undefined"
             ? "+00:00"
             : _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j + k].arr.offset) +
@@ -8281,7 +8364,7 @@ function printAA() {
           "-" +
           ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.day).slice(-2) +
           "T" +
-          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.time).slice(-5) +
+          ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.time24).slice(-5) +
           (typeof _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.offset == "undefined"
             ? "+00:00"
             : _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].seg[j].dep.offset) +
@@ -8389,8 +8472,8 @@ __webpack_require__.r(__webpack_exports__);
 var userSettings = __webpack_require__("./src/matrix3/settings/userSettings.js");
 // EXTERNAL MODULE: ./src/matrix3/utils.js
 var utils = __webpack_require__("./src/matrix3/utils.js");
-// EXTERNAL MODULE: ./src/matrix3/links/index.js
-var links = __webpack_require__("./src/matrix3/links/index.js");
+// EXTERNAL MODULE: ./src/matrix3/links/index.ts
+var links = __webpack_require__("./src/matrix3/links/index.ts");
 // EXTERNAL MODULE: ./src/matrix5/parse/itin.ts + 1 modules
 var itin = __webpack_require__("./src/matrix5/parse/itin.ts");
 // EXTERNAL MODULE: ./node_modules/date-fns/_lib/cloneObject/index.js
@@ -9393,7 +9476,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _settings_translations__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/translations.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("./src/matrix3/print/amadeus.js");
 /* harmony import */ var _unsafe_policy__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__("./src/unsafe-policy.ts");
@@ -9635,7 +9718,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -9739,7 +9822,7 @@ function print() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -9817,7 +9900,7 @@ function printAS() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -9970,7 +10053,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -10326,7 +10409,7 @@ function printBA() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
 
 
@@ -10484,7 +10567,7 @@ function printCZ() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -10596,7 +10679,7 @@ function printDL() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 
@@ -10812,7 +10895,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _print_links__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/print/links.tsx");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/links/index.ts");
 
 
 
@@ -10896,7 +10979,7 @@ function printEY() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _otas_travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
 
 
@@ -11067,7 +11150,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -11179,7 +11262,7 @@ function printKL() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -11305,7 +11388,7 @@ function formatDate(date) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
 
 
@@ -11513,7 +11596,7 @@ function printLH() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
 
 
@@ -11721,7 +11804,7 @@ function print() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
 
 
@@ -11785,7 +11868,7 @@ function printOA() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
 
 
@@ -11992,7 +12075,7 @@ function print() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _otas_travix__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
 
 
@@ -12036,7 +12119,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -12242,7 +12325,7 @@ function printQF() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 
@@ -12306,7 +12389,7 @@ function print() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
 
 
@@ -12514,7 +12597,7 @@ function print() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -12577,7 +12660,7 @@ function formatDate(time) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -12658,109 +12741,12 @@ function printVS() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/index.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   allCarriers: () => (/* binding */ allCarriers),
-/* harmony export */   anyCarriers: () => (/* binding */ anyCarriers),
-/* harmony export */   register: () => (/* binding */ register),
-/* harmony export */   validatePax: () => (/* binding */ validatePax)
-/* harmony export */ });
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/paxSettings.js");
-/* harmony import */ var _print_links__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/links.tsx");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-
-
-
-
-
-const req = __webpack_require__("./src/matrix3/links sync recursive .[jt]s$");
-
-req.keys().forEach(req);
-
-/**
- * Registers a link
- * @param {() => { url: string, title: string, img?: string, desc?: string, extra?: string, target?: string }} factory
- */
-function register(type, factory) {
-  (0,_print_links__WEBPACK_IMPORTED_MODULE_2__.registerLink)(type, factory);
-}
-
-function allCarriers() {
-  const args = Array.from(arguments);
-  return (
-    _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].showAllAirlines ||
-    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.carriers.every((cxr) => args.some((arg) => cxr === arg))
-  );
-}
-
-function anyCarriers() {
-  const args = Array.from(arguments);
-  return (
-    _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].showAllAirlines ||
-    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.carriers.some((cxr) => args.some((arg) => cxr === arg))
-  );
-}
-
-function validatePax(config) {
-  //{maxPaxcount:7, countInf:false, childAsAdult:12, sepInfSeat:false, childMinAge:2}
-  var tmpChildren = new Array();
-  // push cur children
-  for (var i = 0; i < _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].cAges.length; i++) {
-    tmpChildren.push(_settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].cAges[i]);
-  }
-  var ret = {
-    adults: _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].adults,
-    children: new Array(),
-    infLap: _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].infantsLap,
-    infSeat: 0,
-  };
-  if (config.sepInfSeat === true) {
-    ret.infSeat = _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].infantsSeat;
-  } else {
-    for (var i = 0; i < _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__["default"].infantsSeat; i++) {
-      tmpChildren.push(config.childMinAge);
-    }
-  }
-  // process children
-  for (var i = 0; i < tmpChildren.length; i++) {
-    if (tmpChildren[i] < config.childAsAdult) {
-      ret.children.push(tmpChildren[i]);
-    } else {
-      ret.adults++;
-    }
-  }
-  // check Pax-Count
-  if (
-    config.maxPaxcount <=
-    ret.adults +
-      (config.countInf && ret.infLap) +
-      ret.infSeat +
-      ret.children.length
-  ) {
-    console.log("Too many passengers");
-    return;
-  }
-  if (0 === ret.adults + ret.infSeat + ret.children.length) {
-    console.log("No passengers");
-    return;
-  }
-  return ret;
-}
-
-
-/***/ }),
-
 /***/ "./src/matrix3/links/meta/jetcost.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
@@ -12895,7 +12881,7 @@ function formatDate(date) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
 
@@ -13050,7 +13036,7 @@ function print(method) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
 
@@ -13199,7 +13185,7 @@ function print(method) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
 
@@ -13345,7 +13331,7 @@ function print(method) {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
 
@@ -13501,7 +13487,7 @@ function print(method) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
@@ -13650,7 +13636,7 @@ function print() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
@@ -13736,7 +13722,7 @@ function printCheapOair() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
 
@@ -13834,7 +13820,7 @@ function print() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 
@@ -13992,7 +13978,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   createUrl: () => (/* binding */ createUrl)
 /* harmony export */ });
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -14131,7 +14117,7 @@ function printEtraveli() {
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -14367,7 +14353,7 @@ function printExpedia(title, editions) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
 
@@ -14408,7 +14394,7 @@ function print() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 
@@ -14494,7 +14480,7 @@ function print() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
 
@@ -14534,7 +14520,7 @@ function print() {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
 
@@ -14604,7 +14590,7 @@ function printLucky2go() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
@@ -14695,7 +14681,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
 /* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 /* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
 
@@ -15037,7 +15023,7 @@ function print(displayName, editions, startValue) {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 
 
 
@@ -15078,7 +15064,7 @@ function printGCM() {
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
 
 
 
@@ -15128,7 +15114,7 @@ var map = {
 	"./airlines/sn.js": "./src/matrix3/links/airlines/sn.js",
 	"./airlines/tk.js": "./src/matrix3/links/airlines/tk.js",
 	"./airlines/vs.js": "./src/matrix3/links/airlines/vs.js",
-	"./index.js": "./src/matrix3/links/index.js",
+	"./index.ts": "./src/matrix3/links/index.ts",
 	"./meta/jetcost.js": "./src/matrix3/links/meta/jetcost.js",
 	"./meta/kayak.js": "./src/matrix3/links/meta/kayak.js",
 	"./meta/momondo.js": "./src/matrix3/links/meta/momondo.js",
@@ -15297,7 +15283,7 @@ function getAmadeusUrl(config) {
           ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.day).slice(-2) +
           (config.inctimes == 1
             ? (
-                "0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.time.replace(":", "")
+                "0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin[i].seg[j].dep.time24.replace(":", "")
               ).slice(-4)
             : "0000");
         url +=
