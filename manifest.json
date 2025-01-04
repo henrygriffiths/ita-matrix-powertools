@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "ITA Matrix Powertools",
   "version": "__VERSION__",
   "description": "__DESCRIPTION__",
@@ -13,12 +13,17 @@
   "content_scripts": [
     {
       "matches": [
-        "*://matrix.itasoftware.com/*",
-        "*://oldmatrix.itasoftware.com/*",
-        "*://newmatrix.itasoftware.com/*"
+        "*://matrix.itasoftware.com/*"
       ],
       "js": ["webext.js"]
     }
   ],
-  "web_accessible_resources": ["ita-matrix-powertools.user.js"]
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "*://matrix.itasoftware.com/*"
+      ],
+      "resources": ["ita-matrix-powertools.user.js"]
+    }
+  ]
 }
