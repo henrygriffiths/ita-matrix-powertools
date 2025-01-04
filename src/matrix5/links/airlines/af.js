@@ -46,7 +46,7 @@ function print() {
   const createUrl = function (edition) {
     const country = editions.find((e) => e.value === edition).country;
     return (
-      `https://${edition}/ams/exchange?language=${mptUserSettings.language}&country=${country}&target=` +
+      `https://${edition}/ams/exchange?language=en&country=${country}&target=` +
       encodeURIComponent(
         `/search/summary?deviationValue=5&connections=${segs
           .map(

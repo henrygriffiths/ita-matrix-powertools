@@ -1,6 +1,5 @@
 import { clearNotification } from "../utils";
 import { processPassengers } from "../print/settings";
-import { removeHistory } from "../print/history";
 
 // General settings
 const appSettings = {
@@ -56,8 +55,6 @@ export function reset() {
   }
 
   processPassengers();
-
-  removeHistory();
 }
 
 export function getCabinFromITA(itaCabin: string) {

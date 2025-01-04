@@ -1,6 +1,4 @@
-import mptSettings from "../../settings/appSettings";
 import mptUserSettings, { registerSetting } from "../../settings/userSettings";
-import translations from "../../settings/translations";
 import { printNotification } from "../../utils";
 import { validatePax, register, anyCarriers } from "..";
 import { currentItin } from "../../../matrix5/parse/itin";
@@ -94,13 +92,7 @@ function printAC() {
     var acUrl =
       "https://book.aircanada.com/pl/AConline/en/RedirectionServlet?FareRequest=YES&PRICING_MODE=0&fromThirdParty=YES";
     acUrl +=
-      "&country=" +
-      edition +
-      "&countryOfResidence=" +
-      edition +
-      (mptSettings.itaLanguage == "de" || mptUserSettings.language == "de"
-        ? "&language=de"
-        : "&language=en");
+      "&country=" + edition + "&countryOfResidence=" + edition + "&language=en";
     // validate Passengers here: Max Paxcount = 7 (Infs not included) - >11 = Adult - InfSeat = Child
     var pax = validatePax({
       maxPaxcount: 9,
@@ -184,12 +176,6 @@ function addACPromoControls(url) {
   ).insertAdjacentHTML("beforeend", unsafeHTML(script.outerHTML));
 
   var label = "Open";
-  if (translations[mptUserSettings.language] !== undefined) {
-    if (translations[mptUserSettings.language]["open"] !== undefined) {
-      label = translations[mptUserSettings.language]["open"];
-    }
-  }
-
   var extra =
     '<input type="input" id="ac-promo-input" size="8" style="display:none;margin:0 5px;"></input>';
   extra +=

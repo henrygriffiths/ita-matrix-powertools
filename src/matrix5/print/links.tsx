@@ -1,7 +1,6 @@
 import React from "dom-chef";
 import mptUserSettings from "../settings/userSettings";
 import classSettings from "../settings/itaSettings";
-import translations from "../settings/translations";
 
 import { findtargets, findtarget } from "../utils";
 import { unsafeHTML } from "../../unsafe-policy";
@@ -55,17 +54,12 @@ export function printLinksContainer() {
 
       if (link.img) {
         printImage(link);
-      } else if (mptUserSettings.enableInlineMode !== 0) {
-        printUrlInline(link);
       } else {
-        printUrl(link);
+        printUrlInline(link);
       }
     });
 
-    mptUserSettings.enableDeviders !== 0 &&
-      links[group].length &&
-      i != groups.length - 1 &&
-      printSeperator();
+    links[group].length && i != groups.length - 1 && printSeperator();
   });
 }
 
@@ -116,9 +110,7 @@ export function printImage(link: Link) {
 export function getSidebarContainer() {
   return (
     document.getElementById("powertoolslinkcontainer") ||
-    (mptUserSettings.enableInlineMode !== 0 || classSettings.matrixVersion == 5
-      ? createUrlContainerInline()
-      : createUrlContainer())
+    createUrlContainerInline()
   );
 }
 
@@ -126,40 +118,14 @@ function createUrlContainerInline() {
   const target = findtarget(classSettings.resultpage.mcDiv, 1);
   if (!target) return;
 
-  if (classSettings.matrixVersion == 5) {
-    const matCard = (
-      <mat-card class="mat-card mat-focus-indicator mat-elevation-z8 powertoolslinkinlinecontainer">
-        <h2 class={classSettings.resultpage.mcHeader}>Powertools</h2>
-        <ul id="powertoolslinkcontainer" style={{ paddingLeft: "20px" }}></ul>
-      </mat-card>
-    );
-    target.prepend(matCard);
-  } else {
-    const newdiv = (
-      <div
-        class={`${classSettings.resultpage.mcDiv} powertoolslinkinlinecontainer`}
-      >
-        <div class={classSettings.resultpage.mcHeader}>Powertools</div>
-        <ul
-          id="powertoolslinkcontainer"
-          class={classSettings.resultpage.mcLinkList}
-        ></ul>
-      </div>
-    );
-    target.parentElement.appendChild(newdiv);
-  }
-  return document.getElementById("powertoolslinkcontainer");
-}
-
-// Printing Stuff
-function printUrl(link: Link) {
-  const item = (
-    <div class="powertoolsitem" style={{ margin: "5px 0px 10px 0px" }}>
-      {printLink(link)}
-    </div>
+  const matCard = (
+    <mat-card class="mat-card mat-focus-indicator mat-elevation-z8 powertoolslinkinlinecontainer">
+      <h2 class={classSettings.resultpage.mcHeader}>Powertools</h2>
+      <ul id="powertoolslinkcontainer" style={{ paddingLeft: "20px" }}></ul>
+    </mat-card>
   );
-  const container = getSidebarContainer();
-  container && container.appendChild(item);
+  target.prepend(matCard);
+  return document.getElementById("powertoolslinkcontainer");
 }
 
 function printLink(link: Link) {
@@ -190,10 +156,7 @@ function printLink(link: Link) {
             return true;
           }}
         >
-          {(translations[mptUserSettings.language] &&
-            translations[mptUserSettings.language]["use"]) ||
-            "Use "}{" "}
-          {link.title}
+          Use {link.title}
         </a>
       </label>
       {extra?.childNodes && Array.from(extra.childNodes)}
@@ -213,23 +176,7 @@ function printLink(link: Link) {
   );
 }
 
-function createUrlContainer(): HTMLElement {
-  const target = findtarget(classSettings.resultpage.milagecontainer, 1);
-  if (!target) return;
-
-  const newdiv = (
-    <div
-      id="powertoolslinkcontainer"
-      style={{ margin: "15px 0px 0px 10px" }}
-    ></div>
-  );
-  return target.appendChild(newdiv);
-}
-
 function printSeperator() {
   const container = getSidebarContainer();
-  container &&
-    container.appendChild(
-      mptUserSettings.enableInlineMode ? <hr class="powertoolsitem" /> : <hr />,
-    );
+  container && container.appendChild(<hr class="powertoolsitem" />);
 }

@@ -1,5 +1,4 @@
 import mptSettings from "../settings/appSettings";
-import classSettings from "../settings/itaSettings";
 import mptUserSettings, {
   registeredSettings,
   saveUserSettings,
@@ -20,7 +19,6 @@ export function createUsersettings(target) {
   settingscontainer.innerHTML = unsafeHTML(
     '<div style="display:inline-block;float:left;cursor:pointer;" id="passengerVisToggler">Passengers (<label id="mtpPaxCount">1a</label>)</div><div id="mptStartparse" class="invis" style="margin-left:20px;display:none;cursor:pointer">Editor-Mode:Parse!</div><div id="mtpNotification" style="margin-left:50px;display:inline-block;"></div><div style="display:inline-block;float:right;"><div id="settingsVisToggler" style="display:inline-block;cursor:pointer;">Settings</div> (v' +
       mptSettings.version +
-      (classSettings.matrixVersion == 5 ? " **Matrix 5 BETA**" : "") +
       ') <div id="mptCabintoggler" style="display:inline-block;">(Cabin: <span id="mptcabin"><label style="width:30px;text-align:center;cursor:pointer;display:inline-block">Auto</label></span>)</div></div><div id="mptSettings" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div id="mptPassengers" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div style="clear:both;"></div>',
   );
   target.parentElement.insertBefore(settingscontainer, target);
@@ -38,81 +36,24 @@ export function createUsersettings(target) {
   str +=
     '<div style="text-align:center;font-weight:bold">**** Display Settings: ****</div>';
   str += '<div style="margin:5px 0;"><div style="float:left;width:33%">';
-  str +=
-    '<div id="mptenableDarkmode">Dark mode: <label style="cursor:pointer;">' +
-    printSettingsvalue("enableDarkmode") +
-    "</label></div>";
-  str +=
-    '<div id="mpttimeformat">Time Format: <label style="cursor:pointer;">' +
-    printSettingsvalue("timeformat") +
-    "</label></div>";
-  str +=
-    '<div id="mptlanguage">Language: <label style="cursor:pointer;">' +
-    printSettingsvalue("language") +
-    "</label></div>";
-  str +=
-    '<div id="mptenableFarerules">Open rules in new window: <label style="cursor:pointer;">' +
-    printSettingsvalue("enableFarerules") +
-    "</label></div>";
   str += '</div><div style="float:left;width:33%">';
-  str +=
-    '<div id="mptenableInlineMode">Inline Mode: <label style="cursor:pointer;">' +
-    printSettingsvalue("enableInlineMode") +
-    "</label></div>";
   str +=
     '<div id="mptenableIMGautoload">Images autoload: <label style="cursor:pointer;">' +
     printSettingsvalue("enableIMGautoload") +
     "</label></div>";
   str +=
-    '<div id="mptenablePricebreakdown">Price breakdown: <label style="cursor:pointer;">' +
-    printSettingsvalue("enablePricebreakdown") +
+    '<div id="mptshowAllAirlines">Show all airline links: <label style="cursor:pointer;">' +
+    printSettingsvalue("showAllAirlines") +
     "</label></div>";
   str += '</div><div style="float:left;width:33%">';
-  str +=
-    '<div id="mptenableDeviders">Enable link dividers: <label style="cursor:pointer;">' +
-    printSettingsvalue("enableDeviders") +
-    "</label></div>";
   str +=
     '<div id="mptlinkFontsize">Link font size: <label style="cursor:pointer;">' +
     printSettingsvalue("linkFontsize") +
     "</label>%</div>";
-  str +=
-    '<div id="mptshowAllAirlines">Show all airline links: <label style="cursor:pointer;">' +
-    printSettingsvalue("showAllAirlines") +
-    "</label></div>";
-  str += '</div><div style="clear:both"></div></div>';
-  str +=
-    '<div style="text-align:center;font-weight:bold">**** Feature Settings: ****</div>';
-  str += '<div style="margin:5px 0"><div style="float:left;width:33%">';
-  str +=
-    '<div id="mptenableEditormode">Editor mode: <label style="cursor:pointer;">' +
-    printSettingsvalue("enableEditormode") +
-    "</label></div>";
-  str +=
-    '<div id="mptenableMultiSearch">Multi-search & share (experimental): <label style="cursor:pointer;">' +
-    printSettingsvalue("enableMultiSearch") +
-    "</label></div>";
   str += '</div><div style="float:left;width:33%">';
   str +=
     '<div id="mptenableAffiliates" title="Enables affiliate links to support the development of ITA Matrix Powertools">Support this tool: <label style="cursor:pointer;">' +
     printSettingsvalue("enableAffiliates") +
-    "</label></div>";
-  str +=
-    '<div id="mptenableHistory">Search history (experimental): <label style="cursor:pointer;">' +
-    printSettingsvalue("enableHistory") +
-    "</label></div>";
-  str += '</div><div style="float:left;width:33%">';
-  str +=
-    '<div id="mptenableWheretocredit">Enable WhereToCredit: <label style="cursor:pointer;">' +
-    printSettingsvalue("enableWheretocredit") +
-    "</label></div>";
-  str +=
-    '<div id="mptenablePlanefinder">Enable Planefinder: <label style="cursor:pointer;">' +
-    printSettingsvalue("enablePlanefinder") +
-    "</label></div>";
-  str +=
-    '<div id="mptenableSeatguru">Enable Seatguru: <label style="cursor:pointer;">' +
-    printSettingsvalue("enableSeatguru") +
     "</label></div>";
   str += '</div><div style="clear:both"></div></div>';
   str +=
@@ -137,53 +78,14 @@ export function createUsersettings(target) {
   document.getElementById("mptrestoredefault").onclick = function () {
     restoreDefaultSettings();
   };
-  document.getElementById("mptenableDarkmode").onclick = function () {
-    toggleSettings("enableDarkmode");
-  };
-  document.getElementById("mpttimeformat").onclick = function () {
-    toggleSettings("timeformat");
-  };
-  document.getElementById("mptlanguage").onclick = function () {
-    toggleSettings("language");
-  };
-  document.getElementById("mptenableDeviders").onclick = function () {
-    toggleSettings("enableDeviders");
-  };
-  document.getElementById("mptenableInlineMode").onclick = function () {
-    toggleSettings("enableInlineMode");
-  };
-  document.getElementById("mptenableEditormode").onclick = function () {
-    toggleSettings("enableEditormode");
-  };
-  document.getElementById("mptenableMultiSearch").onclick = function () {
-    toggleSettings("enableMultiSearch");
-  };
-  document.getElementById("mptenableHistory").onclick = function () {
-    toggleSettings("enableHistory");
-  };
   document.getElementById("mptenableIMGautoload").onclick = function () {
     toggleSettings("enableIMGautoload");
-  };
-  document.getElementById("mptenableFarerules").onclick = function () {
-    toggleSettings("enableFarerules");
-  };
-  document.getElementById("mptenablePricebreakdown").onclick = function () {
-    toggleSettings("enablePricebreakdown");
   };
   document.getElementById("mptlinkFontsize").onclick = function () {
     toggleSettings("linkFontsize");
   };
   document.getElementById("mptshowAllAirlines").onclick = function () {
     toggleSettings("showAllAirlines");
-  };
-  document.getElementById("mptenablePlanefinder").onclick = function () {
-    toggleSettings("enablePlanefinder");
-  };
-  document.getElementById("mptenableSeatguru").onclick = function () {
-    toggleSettings("enableSeatguru");
-  };
-  document.getElementById("mptenableWheretocredit").onclick = function () {
-    toggleSettings("enableWheretocredit");
   };
   document.getElementById("mptenableAffiliates").onclick = function () {
     toggleSettings("enableAffiliates");
@@ -323,20 +225,6 @@ function toggleSettings(target) {
     }
   } else {
     switch (target) {
-      case "timeformat":
-        if (mptUserSettings.timeformat == "12h") {
-          mptUserSettings.timeformat = "24h";
-        } else {
-          mptUserSettings.timeformat = "12h";
-        }
-        break;
-      case "language":
-        if (mptUserSettings.language == "de") {
-          mptUserSettings.language = "en";
-        } else {
-          mptUserSettings.language = "de";
-        }
-        break;
       case "linkFontsize":
         if (
           mptUserSettings.linkFontsize <= 190 &&
@@ -417,10 +305,6 @@ function printSettingsvalue(target) {
   }
 
   switch (target) {
-    case "timeformat":
-      return mptUserSettings.timeformat;
-    case "language":
-      return mptUserSettings.language;
     case "linkFontsize":
       return mptUserSettings.linkFontsize.toString();
     case "cabin":

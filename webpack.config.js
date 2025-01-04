@@ -26,13 +26,6 @@ module.exports = {
           { loader: "ts-loader", options: { onlyCompileBundledFiles: true } }
         ],
         exclude: /node_modules/
-      },
-      {
-        test: /JSONCrush\.js$/,
-        loader: "exports-loader",
-        options: {
-          exports: ["JSONCrush", "JSONUncrush"]
-        }
       }
     ]
   },

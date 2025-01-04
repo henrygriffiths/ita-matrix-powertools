@@ -1,5 +1,4 @@
 import { getCabin } from "../../settings/appSettings";
-import mptUserSettings from "../../settings/userSettings";
 import { register, validatePax } from "..";
 import { currentItin, getCurrentSegs } from "../../../matrix5/parse/itin";
 import { printNotification, to2digits } from "../../utils";
@@ -123,10 +122,7 @@ function print(method) {
   return {
     url,
     title: "Momondo",
-    desc:
-      mptUserSettings.language == "de"
-        ? `Benutze ${segs.length} Segment(e)`
-        : `Based on ${segs.length} segment(s)`,
+    desc: `Based on ${segs.length} segment(s)`,
     extra,
   };
 }

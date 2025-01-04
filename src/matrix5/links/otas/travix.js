@@ -1,4 +1,3 @@
-import mptUserSettings from "../../settings/userSettings";
 import { printNotification, to2digits } from "../../utils";
 import { register, validatePax } from "..";
 import { currentItin, getTripType } from "../../../matrix5/parse/itin";
@@ -257,7 +256,7 @@ export function buildQueryString(cur, pos = "", lang = null, cabins = null) {
     return;
   }
 
-  lang = lang || mptUserSettings.language || "en";
+  lang = lang || "en";
   cabins = cabins || defaultCabins;
 
   let url = `PointOfSaleCountry=${pos}&UserCurrency=${cur}&DisplayedPrice=${
