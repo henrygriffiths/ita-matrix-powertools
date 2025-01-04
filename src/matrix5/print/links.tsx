@@ -119,9 +119,11 @@ function createUrlContainerInline() {
   if (!target) return;
 
   const matCard = (
-    <mat-card class="mat-card mat-focus-indicator mat-elevation-z8 powertoolslinkinlinecontainer">
-      <h2 class={classSettings.resultpage.mcHeader}>Powertools</h2>
-      <ul id="powertoolslinkcontainer" style={{ paddingLeft: "20px" }}></ul>
+    <mat-card class="mat-mdc-card mdc-card mat-elevation-z8 powertoolslinkinlinecontainer">
+      <mat-card-content class="mat-mdc-card-content">
+        <h2 class={classSettings.resultpage.mcHeader}>Powertools</h2>
+        <ul id="powertoolslinkcontainer" style={{ paddingLeft: "20px" }}></ul>
+      </mat-card-content>
     </mat-card>
   );
   target.prepend(matCard);
