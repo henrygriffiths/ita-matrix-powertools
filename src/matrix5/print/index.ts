@@ -1,11 +1,7 @@
 import mptUserSettings from "../settings/userSettings";
 import classSettings from "../settings/itaSettings";
 import translations from "../settings/translations";
-import {
-  currentItin,
-  getCurrentSegs,
-  readItinerary,
-} from "../../matrix5/parse/itin";
+import { currentItin, getCurrentSegs, readItinerary } from "../parse/itin";
 import {
   printNotification,
   findtarget,

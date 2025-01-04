@@ -1,10 +1,13 @@
-import { printLinksContainer } from "../matrix3/print/links";
-import { createUsersettings } from "../matrix3/print/settings";
-import classSettings from "../matrix3/settings/itaSettings";
+import { printLinksContainer } from "./print/links";
+import { createUsersettings } from "./print/settings";
+import classSettings from "./settings/itaSettings";
+import { loadUserSettings } from "./settings/userSettings";
 import { unsafeHTML } from "../unsafe-policy";
 import { readItinerary } from "./parse/itin";
 
 (async () => {
+  await loadUserSettings();
+
   const appRoot = document.querySelector("app-root");
   if (!appRoot) return;
   createUsersettings(appRoot);

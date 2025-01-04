@@ -1,23 +1,79 @@
-import classSettings from "../../matrix3/settings/itaSettings";
-import {
-  readItinerary as readItinerary3,
-  currentItin as currentItin3,
-} from "../../matrix3/parse/itin";
+import classSettings from "../settings/itaSettings";
 
 const doNothing = new Promise<void>(() => {});
-const currentItin: typeof currentItin3 = {};
+
+// initialize local storage for current itin
+let currentItin: {
+  cur?: string;
+  price?: number;
+  basefares?: number;
+  taxes?: number;
+  surcharges?: number;
+  dist?: number;
+  numPax?: number;
+  carriers?: string[];
+  farebases?: string[];
+  itin?: {
+    orig: string;
+    dest: string;
+    dist?: number;
+    dep: {
+      day: number;
+      month: number;
+      year: number;
+      time: string;
+      offset?: string;
+    };
+    arr: {
+      day: number;
+      month: number;
+      year: number;
+      time: string;
+      offset?: string;
+    };
+    seg?: {
+      carrier: string;
+      orig: string;
+      dest: string;
+      dist?: number;
+      dep: {
+        day: number;
+        month: number;
+        year: number;
+        time: string;
+        time24: string;
+        timeDisplay: string;
+        offset?: string;
+      };
+      arr: {
+        day: number;
+        month: number;
+        year: number;
+        time: string;
+        time24: string;
+        timeDisplay: string;
+        offset?: string;
+      };
+      fnr: string;
+      duration: number;
+      aircraft: string;
+      cabin: number;
+      bookingclass: string;
+      codeshare: number;
+      layoverduration: number;
+      airportchange: number;
+      farebase: string;
+      farecarrier: string;
+    }[];
+  }[];
+} = {};
 
 export async function readItinerary() {
-  if (classSettings.matrixVersion == 5) {
-    Object.assign(currentItin, await readItinerary5());
-  } else {
-    readItinerary3();
-    Object.assign(currentItin, currentItin3);
-  }
+  Object.assign(currentItin, await readItinerary5());
   console.log("parsed itinerary: ", currentItin);
 }
 
-async function readItinerary5(): Promise<typeof currentItin3> {
+async function readItinerary5(): Promise<typeof currentItin> {
   const bookingDetails = await getBookingDetails();
 
   return {
