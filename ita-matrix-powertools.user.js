@@ -2,7 +2,7 @@
 // @name ITA Matrix Powertools
 // @namespace https://github.com/adamhwang/ita-matrix-powertools
 // @description Adds new features and builds fare purchase links for ITA Matrix
-// @version 0.55.15
+// @version 0.56.0
 // @icon https://raw.githubusercontent.com/adamhwang/ita-matrix-powertools/master/icons/icon32.png
 // @require https://greasemonkey.github.io/gm4-polyfill/gm4-polyfill.js
 // @grant GM.getValue
@@ -294,7 +294,87 @@ module.exports = exports.default;
 
 /***/ }),
 
-/***/ "./src/matrix3/links/index.ts":
+/***/ "./src/matrix5/index.ts":
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _print_links__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/print/links.tsx");
+/* harmony import */ var _print_settings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/print/settings.ts");
+/* harmony import */ var _settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/settings/itaSettings.ts");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _unsafe_policy__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/unsafe-policy.ts");
+/* harmony import */ var _parse_itin__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+
+
+
+
+
+
+(async () => {
+    await (0,_settings_userSettings__WEBPACK_IMPORTED_MODULE_3__.loadUserSettings)();
+    const appRoot = document.querySelector("app-root");
+    if (!appRoot)
+        return;
+    (0,_print_settings__WEBPACK_IMPORTED_MODULE_1__.createUsersettings)(appRoot);
+    injectCss();
+    const isUserscript = !(typeof GM === "undefined" || typeof GM.info === "undefined");
+    if (window.top === window.self) {
+        if (!isUserscript || document.readyState == "complete") {
+            startScript();
+        }
+        else {
+            window.addEventListener("load", () => startScript(), false);
+        }
+    }
+})();
+let oldHref;
+function startScript() {
+    pageChanged();
+    var bodyList = document.querySelector("body");
+    var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (mutation) {
+            if (oldHref != document.location.href) {
+                oldHref = document.location.href;
+                pageChanged();
+            }
+        });
+    });
+    var config = {
+        childList: true,
+        subtree: true,
+    };
+    observer.observe(bodyList, config);
+}
+function pageChanged() {
+    setTimeout(async () => {
+        const steps = document.querySelectorAll(".mat-step-header");
+        if (steps.length > 0 &&
+            steps[steps.length - 1].attributes["aria-selected"].value === "true") {
+            // if we are on the last step (Itinerary)
+            await (0,_parse_itin__WEBPACK_IMPORTED_MODULE_5__.readItinerary)();
+            (0,_print_links__WEBPACK_IMPORTED_MODULE_0__.printLinksContainer)();
+        }
+    }, 200);
+}
+function injectCss() {
+    let css = "", head = document.head || document.getElementsByTagName("head")[0], style = document.createElement("style");
+    css +=
+        ".pt-hover-menu, .pt-hover-menu-flex { position:absolute; padding: 8px; z-index: 1; background-color: #FFF; border: 1px solid #808080; display:none; }";
+    css += ".pt-hover-container:hover .pt-hover-menu { display:inline; }";
+    css += ".pt-hover-container:hover .pt-hover-menu-flex { display:flex; }";
+    css += ".pt-textlink a { text-decoration: none; color: black; }";
+    css += `.${_settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__["default"].resultpage.mcDiv}.powertoolslinkinlinecontainer { background-color: #f2f2f2; }`;
+    css +=
+        ".pt-history-item:hover .pt-history-action { visibility: visible !important; }";
+    style.appendChild(document.createTextNode((0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_4__.unsafeHTML)(css)));
+    head.appendChild(style);
+}
+
+
+/***/ }),
+
+/***/ "./src/matrix5/links/index.ts":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -305,15 +385,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   register: () => (/* binding */ register),
 /* harmony export */   validatePax: () => (/* binding */ validatePax)
 /* harmony export */ });
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/paxSettings.js");
-/* harmony import */ var _print_links__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/links.tsx");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _settings_paxSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/settings/paxSettings.js");
+/* harmony import */ var _print_links__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/print/links.tsx");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
 
 
-const req = __webpack_require__("./src/matrix3/links sync recursive .[jt]s$");
+const req = __webpack_require__("./src/matrix5/links sync recursive .[jt]s$");
 req.keys().forEach(req);
 /**
  * Registers a link
@@ -377,7 +457,7 @@ function validatePax(config) {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/priceline.ts":
+/***/ "./src/matrix5/links/otas/priceline.ts":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -386,11 +466,11 @@ __webpack_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ./node_modules/base64-js/index.js
 var base64_js = __webpack_require__("./node_modules/base64-js/index.js");
-// EXTERNAL MODULE: ./src/matrix3/utils.js
-var utils = __webpack_require__("./src/matrix3/utils.js");
-// EXTERNAL MODULE: ./src/matrix3/links/index.ts
-var links = __webpack_require__("./src/matrix3/links/index.ts");
-// EXTERNAL MODULE: ./src/matrix5/parse/itin.ts + 1 modules
+// EXTERNAL MODULE: ./src/matrix5/utils.js
+var utils = __webpack_require__("./src/matrix5/utils.js");
+// EXTERNAL MODULE: ./src/matrix5/links/index.ts
+var links = __webpack_require__("./src/matrix5/links/index.ts");
+// EXTERNAL MODULE: ./src/matrix5/parse/itin.ts
 var itin = __webpack_require__("./src/matrix5/parse/itin.ts");
 ;// CONCATENATED MODULE: ./node_modules/@protobuf-ts/runtime/build/es2015/lower-camel-case.js
 /**
@@ -3670,9 +3750,9 @@ class SignatureMessage_UnknownMessage$Type extends MessageType {
  */
 const SignatureMessage_UnknownMessage = new SignatureMessage_UnknownMessage$Type();
 
-// EXTERNAL MODULE: ./src/matrix3/settings/appSettings.ts
-var appSettings = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-;// CONCATENATED MODULE: ./src/matrix3/links/otas/priceline.ts
+// EXTERNAL MODULE: ./src/matrix5/settings/appSettings.ts
+var appSettings = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+;// CONCATENATED MODULE: ./src/matrix5/links/otas/priceline.ts
 
 
 
@@ -3775,2530 +3855,395 @@ function printPriceline() {
 
 /***/ }),
 
-/***/ "./src/matrix3/print/history.tsx":
+/***/ "./src/matrix5/parse/itin.ts":
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   currentItin: () => (/* binding */ currentItin),
+/* harmony export */   getCurrentSegs: () => (/* binding */ getCurrentSegs),
+/* harmony export */   getTripType: () => (/* binding */ getTripType),
+/* harmony export */   isMulticity: () => (/* binding */ isMulticity),
+/* harmony export */   isOneway: () => (/* binding */ isOneway),
+/* harmony export */   isRoundtrip: () => (/* binding */ isRoundtrip),
+/* harmony export */   readItinerary: () => (/* binding */ readItinerary)
+/* harmony export */ });
+/* harmony import */ var _settings_itaSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/itaSettings.ts");
+
+const doNothing = new Promise(() => { });
+// initialize local storage for current itin
+let currentItin = {};
+async function readItinerary() {
+    Object.assign(currentItin, await readItinerary5());
+    console.log("parsed itinerary: ", currentItin);
+}
+async function readItinerary5() {
+    const bookingDetails = await getBookingDetails();
+    return {
+        itin: bookingDetails.itinerary.slices.map((itin) => {
+            const fareMap = bookingDetails.tickets
+                .flatMap((t) => t.pricings.flatMap((p) => p.fares))
+                .reduce((acc, fare) => {
+                fare.bookingInfos.forEach((bi) => {
+                    acc[`${bi.segment.origin}${bi.segment.destination}${bi.bookingCode}`] = {
+                        carrier: fare.carrier,
+                        code: fare.code,
+                    };
+                });
+                return acc;
+            }, {});
+            const segments = itin.segments.flatMap((seg) => seg.legs.map((leg) => {
+                const fare = fareMap[`${seg.origin.code}${seg.destination.code}${seg.bookingInfos[0].bookingCode}`];
+                return {
+                    arr: isoToDateObj(leg.arrival),
+                    dep: isoToDateObj(leg.departure),
+                    orig: leg.origin.code,
+                    dest: leg.destination.code,
+                    carrier: seg.carrier.code,
+                    fnr: seg.flight.number,
+                    duration: seg.duration,
+                    cabin: getCabin(seg.bookingInfos[0].cabin),
+                    bookingclass: seg.bookingInfos[0].bookingCode,
+                    farebase: fare.code,
+                    farecarrier: fare.carrier,
+                };
+            }));
+            return {
+                arr: isoToDateObj(itin.arrival),
+                dep: isoToDateObj(itin.departure),
+                orig: itin.origin.code,
+                dest: itin.destination.code,
+                seg: segments,
+            };
+        }),
+        price: +bookingDetails.displayTotal.substring(3),
+        numPax: bookingDetails.passengerCount,
+        carriers: [
+            ...new Set(bookingDetails.itinerary.slices.flatMap((itin) => itin.segments.map((seg) => seg.carrier.code))),
+        ],
+        cur: bookingDetails.displayTotal.substring(0, 3),
+        farebases: [
+            ...new Set(bookingDetails.tickets.flatMap((t) => t.pricings.flatMap((p) => p.fares.code))),
+        ],
+        dist: bookingDetails.itinerary.distance.value,
+    };
+}
+function getBookingDetails() {
+    return new Promise((resolve, reject) => {
+        (function _wait() {
+            setTimeout(async () => {
+                var _a, _b, _c;
+                const copyAsJsonButton = document.querySelector(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_0__["default"].resultpage.copyAsJsonButton);
+                if (!copyAsJsonButton) {
+                    return _wait();
+                }
+                const clipboard = (_b = (_a = window === null || window === void 0 ? void 0 : window.navigator) === null || _a === void 0 ? void 0 : _a.clipboard) !== null && _b !== void 0 ? _b : (_c = unsafeWindow === null || unsafeWindow === void 0 ? void 0 : unsafeWindow.navigator) === null || _c === void 0 ? void 0 : _c.clipboard;
+                if (!clipboard) {
+                    return reject("Could not access the clipboard");
+                }
+                const _writeText = clipboard.writeText;
+                clipboard.writeText = (data) => {
+                    clipboard.writeText = _writeText;
+                    resolve(JSON.parse(data));
+                    return doNothing;
+                };
+                copyAsJsonButton.click();
+            }, 200);
+        })();
+    });
+}
+function isoToDateObj(isoDate) {
+    const time24 = isoDate.substring(11, 16);
+    let hour12 = +time24.substring(0, 2);
+    if (hour12 > 12)
+        hour12 -= 12;
+    const time = hour12 + time24.substring(2, 5);
+    return {
+        day: +isoDate.substring(8, 10),
+        month: +isoDate.substring(5, 7),
+        year: +isoDate.substring(0, 4),
+        time,
+        time24,
+    };
+}
+function getCabin(cabin) {
+    switch (cabin) {
+        case "PREMIUM-COACH":
+            return 1;
+        case "BUSINESS":
+            return 2;
+        case "FIRST":
+            return 3;
+        default:
+            return 0;
+    }
+}
+function getCurrentSegs() {
+    return currentItin.itin
+        .map(function (p) {
+        return p.seg;
+    })
+        .reduce(function (a, b) {
+        return a.concat(b);
+    }, []);
+}
+function getTripType(ow, rt, mc) {
+    return currentItin.itin.length > 1
+        ? currentItin.itin.length === 2 &&
+            currentItin.itin[0].orig === currentItin.itin[1].dest &&
+            currentItin.itin[0].dest === currentItin.itin[1].orig
+            ? rt
+            : mc
+        : ow;
+}
+function isOneway() {
+    return getTripType(true, false, false);
+}
+function isRoundtrip() {
+    return getTripType(false, true, false);
+}
+function isMulticity() {
+    return getTripType(false, false, true);
+}
+
+
+
+/***/ }),
+
+/***/ "./src/matrix5/print/links.tsx":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, {
-  removeHistory: () => (/* binding */ removeHistory),
-  renderHistory: () => (/* binding */ renderHistory)
+  printLinksContainer: () => (/* binding */ printLinksContainer),
+  registerLink: () => (/* binding */ registerLink)
 });
 
-// EXTERNAL MODULE: ./node_modules/dom-chef/index.js
-var dom_chef = __webpack_require__("./node_modules/dom-chef/index.js");
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/defaultOptions/index.js
-var defaultOptions = {};
-function getDefaultOptions() {
-  return defaultOptions;
-}
-function setDefaultOptions(newOptions) {
-  defaultOptions = newOptions;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/node_modules/@babel/runtime/helpers/esm/typeof.js
-function _typeof(o) {
-  "@babel/helpers - typeof";
+// UNUSED EXPORTS: getSidebarContainer, printImage
 
-  return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (o) {
-    return typeof o;
-  } : function (o) {
-    return o && "function" == typeof Symbol && o.constructor === Symbol && o !== Symbol.prototype ? "symbol" : typeof o;
-  }, _typeof(o);
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/requiredArgs/index.js
-function requiredArgs(required, args) {
-  if (args.length < required) {
-    throw new TypeError(required + ' argument' + (required > 1 ? 's' : '') + ' required, but only ' + args.length + ' present');
-  }
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/toDate/index.js
+;// CONCATENATED MODULE: ./node_modules/dom-chef/index.js
+var svgTagNames = [
+	"a",
+	"altGlyph",
+	"altGlyphDef",
+	"altGlyphItem",
+	"animate",
+	"animateColor",
+	"animateMotion",
+	"animateTransform",
+	"animation",
+	"audio",
+	"canvas",
+	"circle",
+	"clipPath",
+	"color-profile",
+	"cursor",
+	"defs",
+	"desc",
+	"discard",
+	"ellipse",
+	"feBlend",
+	"feColorMatrix",
+	"feComponentTransfer",
+	"feComposite",
+	"feConvolveMatrix",
+	"feDiffuseLighting",
+	"feDisplacementMap",
+	"feDistantLight",
+	"feDropShadow",
+	"feFlood",
+	"feFuncA",
+	"feFuncB",
+	"feFuncG",
+	"feFuncR",
+	"feGaussianBlur",
+	"feImage",
+	"feMerge",
+	"feMergeNode",
+	"feMorphology",
+	"feOffset",
+	"fePointLight",
+	"feSpecularLighting",
+	"feSpotLight",
+	"feTile",
+	"feTurbulence",
+	"filter",
+	"font",
+	"font-face",
+	"font-face-format",
+	"font-face-name",
+	"font-face-src",
+	"font-face-uri",
+	"foreignObject",
+	"g",
+	"glyph",
+	"glyphRef",
+	"handler",
+	"hkern",
+	"iframe",
+	"image",
+	"line",
+	"linearGradient",
+	"listener",
+	"marker",
+	"mask",
+	"metadata",
+	"missing-glyph",
+	"mpath",
+	"path",
+	"pattern",
+	"polygon",
+	"polyline",
+	"prefetch",
+	"radialGradient",
+	"rect",
+	"script",
+	"set",
+	"solidColor",
+	"stop",
+	"style",
+	"svg",
+	"switch",
+	"symbol",
+	"tbreak",
+	"text",
+	"textArea",
+	"textPath",
+	"title",
+	"tref",
+	"tspan",
+	"unknown",
+	"use",
+	"video",
+	"view",
+	"vkern"
+];
 
-
-/**
- * @name toDate
- * @category Common Helpers
- * @summary Convert the given argument to an instance of Date.
- *
- * @description
- * Convert the given argument to an instance of Date.
- *
- * If the argument is an instance of Date, the function returns its clone.
- *
- * If the argument is a number, it is treated as a timestamp.
- *
- * If the argument is none of the above, the function returns Invalid Date.
- *
- * **Note**: *all* Date arguments passed to any *date-fns* function is processed by `toDate`.
- *
- * @param {Date|Number} argument - the value to convert
- * @returns {Date} the parsed date in the local time zone
- * @throws {TypeError} 1 argument required
- *
- * @example
- * // Clone the date:
- * const result = toDate(new Date(2014, 1, 11, 11, 30, 30))
- * //=> Tue Feb 11 2014 11:30:30
- *
- * @example
- * // Convert the timestamp to date:
- * const result = toDate(1392098430000)
- * //=> Tue Feb 11 2014 11:30:30
- */
-function toDate(argument) {
-  requiredArgs(1, arguments);
-  var argStr = Object.prototype.toString.call(argument);
-
-  // Clone the date
-  if (argument instanceof Date || _typeof(argument) === 'object' && argStr === '[object Date]') {
-    // Prevent the date to lose the milliseconds when passed to new Date() in IE10
-    return new Date(argument.getTime());
-  } else if (typeof argument === 'number' || argStr === '[object Number]') {
-    return new Date(argument);
-  } else {
-    if ((typeof argument === 'string' || argStr === '[object String]') && typeof console !== 'undefined') {
-      // eslint-disable-next-line no-console
-      console.warn("Starting with v2.0.0-beta.1 date-fns doesn't accept strings as date arguments. Please use `parseISO` to parse strings. See: https://github.com/date-fns/date-fns/blob/master/docs/upgradeGuide.md#string-arguments");
-      // eslint-disable-next-line no-console
-      console.warn(new Error().stack);
-    }
-    return new Date(NaN);
-  }
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/compareAsc/index.js
-
-
-/**
- * @name compareAsc
- * @category Common Helpers
- * @summary Compare the two dates and return -1, 0 or 1.
- *
- * @description
- * Compare the two dates and return 1 if the first date is after the second,
- * -1 if the first date is before the second or 0 if dates are equal.
- *
- * @param {Date|Number} dateLeft - the first date to compare
- * @param {Date|Number} dateRight - the second date to compare
- * @returns {Number} the result of the comparison
- * @throws {TypeError} 2 arguments required
- *
- * @example
- * // Compare 11 February 1987 and 10 July 1989:
- * const result = compareAsc(new Date(1987, 1, 11), new Date(1989, 6, 10))
- * //=> -1
- *
- * @example
- * // Sort the array of dates:
- * const result = [
- *   new Date(1995, 6, 2),
- *   new Date(1987, 1, 11),
- *   new Date(1989, 6, 10)
- * ].sort(compareAsc)
- * //=> [
- * //   Wed Feb 11 1987 00:00:00,
- * //   Mon Jul 10 1989 00:00:00,
- * //   Sun Jul 02 1995 00:00:00
- * // ]
- */
-function compareAsc(dirtyDateLeft, dirtyDateRight) {
-  requiredArgs(2, arguments);
-  var dateLeft = toDate(dirtyDateLeft);
-  var dateRight = toDate(dirtyDateRight);
-  var diff = dateLeft.getTime() - dateRight.getTime();
-  if (diff < 0) {
-    return -1;
-  } else if (diff > 0) {
-    return 1;
-    // Return 0 if diff is 0; return NaN if diff is NaN
-  } else {
-    return diff;
-  }
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/differenceInCalendarMonths/index.js
-
-
-/**
- * @name differenceInCalendarMonths
- * @category Month Helpers
- * @summary Get the number of calendar months between the given dates.
- *
- * @description
- * Get the number of calendar months between the given dates.
- *
- * @param {Date|Number} dateLeft - the later date
- * @param {Date|Number} dateRight - the earlier date
- * @returns {Number} the number of calendar months
- * @throws {TypeError} 2 arguments required
- *
- * @example
- * // How many calendar months are between 31 January 2014 and 1 September 2014?
- * const result = differenceInCalendarMonths(
- *   new Date(2014, 8, 1),
- *   new Date(2014, 0, 31)
- * )
- * //=> 8
- */
-function differenceInCalendarMonths(dirtyDateLeft, dirtyDateRight) {
-  requiredArgs(2, arguments);
-  var dateLeft = toDate(dirtyDateLeft);
-  var dateRight = toDate(dirtyDateRight);
-  var yearDiff = dateLeft.getFullYear() - dateRight.getFullYear();
-  var monthDiff = dateLeft.getMonth() - dateRight.getMonth();
-  return yearDiff * 12 + monthDiff;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/endOfDay/index.js
-
-
-/**
- * @name endOfDay
- * @category Day Helpers
- * @summary Return the end of a day for the given date.
- *
- * @description
- * Return the end of a day for the given date.
- * The result will be in the local timezone.
- *
- * @param {Date|Number} date - the original date
- * @returns {Date} the end of a day
- * @throws {TypeError} 1 argument required
- *
- * @example
- * // The end of a day for 2 September 2014 11:55:00:
- * const result = endOfDay(new Date(2014, 8, 2, 11, 55, 0))
- * //=> Tue Sep 02 2014 23:59:59.999
- */
-function endOfDay(dirtyDate) {
-  requiredArgs(1, arguments);
-  var date = toDate(dirtyDate);
-  date.setHours(23, 59, 59, 999);
-  return date;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/endOfMonth/index.js
-
-
-/**
- * @name endOfMonth
- * @category Month Helpers
- * @summary Return the end of a month for the given date.
- *
- * @description
- * Return the end of a month for the given date.
- * The result will be in the local timezone.
- *
- * @param {Date|Number} date - the original date
- * @returns {Date} the end of a month
- * @throws {TypeError} 1 argument required
- *
- * @example
- * // The end of a month for 2 September 2014 11:55:00:
- * const result = endOfMonth(new Date(2014, 8, 2, 11, 55, 0))
- * //=> Tue Sep 30 2014 23:59:59.999
- */
-function endOfMonth(dirtyDate) {
-  requiredArgs(1, arguments);
-  var date = toDate(dirtyDate);
-  var month = date.getMonth();
-  date.setFullYear(date.getFullYear(), month + 1, 0);
-  date.setHours(23, 59, 59, 999);
-  return date;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/isLastDayOfMonth/index.js
-
-
-
-
-/**
- * @name isLastDayOfMonth
- * @category Month Helpers
- * @summary Is the given date the last day of a month?
- *
- * @description
- * Is the given date the last day of a month?
- *
- * @param {Date|Number} date - the date to check
- * @returns {Boolean} the date is the last day of a month
- * @throws {TypeError} 1 argument required
- *
- * @example
- * // Is 28 February 2014 the last day of a month?
- * const result = isLastDayOfMonth(new Date(2014, 1, 28))
- * //=> true
- */
-function isLastDayOfMonth(dirtyDate) {
-  requiredArgs(1, arguments);
-  var date = toDate(dirtyDate);
-  return endOfDay(date).getTime() === endOfMonth(date).getTime();
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/differenceInMonths/index.js
-
-
-
-
-
-/**
- * @name differenceInMonths
- * @category Month Helpers
- * @summary Get the number of full months between the given dates.
- *
- * @description
- * Get the number of full months between the given dates using trunc as a default rounding method.
- *
- * @param {Date|Number} dateLeft - the later date
- * @param {Date|Number} dateRight - the earlier date
- * @returns {Number} the number of full months
- * @throws {TypeError} 2 arguments required
- *
- * @example
- * // How many full months are between 31 January 2014 and 1 September 2014?
- * const result = differenceInMonths(new Date(2014, 8, 1), new Date(2014, 0, 31))
- * //=> 7
- */
-function differenceInMonths(dirtyDateLeft, dirtyDateRight) {
-  requiredArgs(2, arguments);
-  var dateLeft = toDate(dirtyDateLeft);
-  var dateRight = toDate(dirtyDateRight);
-  var sign = compareAsc(dateLeft, dateRight);
-  var difference = Math.abs(differenceInCalendarMonths(dateLeft, dateRight));
-  var result;
-
-  // Check for the difference of less than month
-  if (difference < 1) {
-    result = 0;
-  } else {
-    if (dateLeft.getMonth() === 1 && dateLeft.getDate() > 27) {
-      // This will check if the date is end of Feb and assign a higher end of month date
-      // to compare it with Jan
-      dateLeft.setDate(30);
-    }
-    dateLeft.setMonth(dateLeft.getMonth() - sign * difference);
-
-    // Math.abs(diff in full months - diff in calendar months) === 1 if last calendar month is not full
-    // If so, result must be decreased by 1 in absolute value
-    var isLastMonthNotFull = compareAsc(dateLeft, dateRight) === -sign;
-
-    // Check for cases of one full calendar month
-    if (isLastDayOfMonth(toDate(dirtyDateLeft)) && difference === 1 && compareAsc(dirtyDateLeft, dateRight) === 1) {
-      isLastMonthNotFull = false;
-    }
-    result = sign * (difference - Number(isLastMonthNotFull));
-  }
-
-  // Prevent negative zero
-  return result === 0 ? 0 : result;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/differenceInMilliseconds/index.js
-
-
-/**
- * @name differenceInMilliseconds
- * @category Millisecond Helpers
- * @summary Get the number of milliseconds between the given dates.
- *
- * @description
- * Get the number of milliseconds between the given dates.
- *
- * @param {Date|Number} dateLeft - the later date
- * @param {Date|Number} dateRight - the earlier date
- * @returns {Number} the number of milliseconds
- * @throws {TypeError} 2 arguments required
- *
- * @example
- * // How many milliseconds are between
- * // 2 July 2014 12:30:20.600 and 2 July 2014 12:30:21.700?
- * const result = differenceInMilliseconds(
- *   new Date(2014, 6, 2, 12, 30, 21, 700),
- *   new Date(2014, 6, 2, 12, 30, 20, 600)
- * )
- * //=> 1100
- */
-function differenceInMilliseconds(dateLeft, dateRight) {
-  requiredArgs(2, arguments);
-  return toDate(dateLeft).getTime() - toDate(dateRight).getTime();
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/roundingMethods/index.js
-var roundingMap = {
-  ceil: Math.ceil,
-  round: Math.round,
-  floor: Math.floor,
-  trunc: function trunc(value) {
-    return value < 0 ? Math.ceil(value) : Math.floor(value);
-  } // Math.trunc is not supported by IE
+const svgTags = new Set(svgTagNames);
+svgTags.delete('a');
+svgTags.delete('audio');
+svgTags.delete('canvas');
+svgTags.delete('iframe');
+svgTags.delete('script');
+svgTags.delete('video');
+// Copied from Preact
+const IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i;
+const isFragment = (type) => {
+    return type === DocumentFragment;
 };
-
-var defaultRoundingMethod = 'trunc';
-function getRoundingMethod(method) {
-  return method ? roundingMap[method] : roundingMap[defaultRoundingMethod];
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/differenceInSeconds/index.js
-
-
-
-/**
- * @name differenceInSeconds
- * @category Second Helpers
- * @summary Get the number of seconds between the given dates.
- *
- * @description
- * Get the number of seconds between the given dates.
- *
- * @param {Date|Number} dateLeft - the later date
- * @param {Date|Number} dateRight - the earlier date
- * @param {Object} [options] - an object with options.
- * @param {String} [options.roundingMethod='trunc'] - a rounding method (`ceil`, `floor`, `round` or `trunc`)
- * @returns {Number} the number of seconds
- * @throws {TypeError} 2 arguments required
- *
- * @example
- * // How many seconds are between
- * // 2 July 2014 12:30:07.999 and 2 July 2014 12:30:20.000?
- * const result = differenceInSeconds(
- *   new Date(2014, 6, 2, 12, 30, 20, 0),
- *   new Date(2014, 6, 2, 12, 30, 7, 999)
- * )
- * //=> 12
- */
-function differenceInSeconds(dateLeft, dateRight, options) {
-  requiredArgs(2, arguments);
-  var diff = differenceInMilliseconds(dateLeft, dateRight) / 1000;
-  return getRoundingMethod(options === null || options === void 0 ? void 0 : options.roundingMethod)(diff);
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/formatDistance/index.js
-var formatDistanceLocale = {
-  lessThanXSeconds: {
-    one: 'less than a second',
-    other: 'less than {{count}} seconds'
-  },
-  xSeconds: {
-    one: '1 second',
-    other: '{{count}} seconds'
-  },
-  halfAMinute: 'half a minute',
-  lessThanXMinutes: {
-    one: 'less than a minute',
-    other: 'less than {{count}} minutes'
-  },
-  xMinutes: {
-    one: '1 minute',
-    other: '{{count}} minutes'
-  },
-  aboutXHours: {
-    one: 'about 1 hour',
-    other: 'about {{count}} hours'
-  },
-  xHours: {
-    one: '1 hour',
-    other: '{{count}} hours'
-  },
-  xDays: {
-    one: '1 day',
-    other: '{{count}} days'
-  },
-  aboutXWeeks: {
-    one: 'about 1 week',
-    other: 'about {{count}} weeks'
-  },
-  xWeeks: {
-    one: '1 week',
-    other: '{{count}} weeks'
-  },
-  aboutXMonths: {
-    one: 'about 1 month',
-    other: 'about {{count}} months'
-  },
-  xMonths: {
-    one: '1 month',
-    other: '{{count}} months'
-  },
-  aboutXYears: {
-    one: 'about 1 year',
-    other: 'about {{count}} years'
-  },
-  xYears: {
-    one: '1 year',
-    other: '{{count}} years'
-  },
-  overXYears: {
-    one: 'over 1 year',
-    other: 'over {{count}} years'
-  },
-  almostXYears: {
-    one: 'almost 1 year',
-    other: 'almost {{count}} years'
-  }
-};
-var formatDistance = function formatDistance(token, count, options) {
-  var result;
-  var tokenValue = formatDistanceLocale[token];
-  if (typeof tokenValue === 'string') {
-    result = tokenValue;
-  } else if (count === 1) {
-    result = tokenValue.one;
-  } else {
-    result = tokenValue.other.replace('{{count}}', count.toString());
-  }
-  if (options !== null && options !== void 0 && options.addSuffix) {
-    if (options.comparison && options.comparison > 0) {
-      return 'in ' + result;
-    } else {
-      return result + ' ago';
-    }
-  }
-  return result;
-};
-/* harmony default export */ const _lib_formatDistance = (formatDistance);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/_lib/buildFormatLongFn/index.js
-function buildFormatLongFn(args) {
-  return function () {
-    var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-    // TODO: Remove String()
-    var width = options.width ? String(options.width) : args.defaultWidth;
-    var format = args.formats[width] || args.formats[args.defaultWidth];
-    return format;
-  };
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/formatLong/index.js
-
-var dateFormats = {
-  full: 'EEEE, MMMM do, y',
-  long: 'MMMM do, y',
-  medium: 'MMM d, y',
-  short: 'MM/dd/yyyy'
-};
-var timeFormats = {
-  full: 'h:mm:ss a zzzz',
-  long: 'h:mm:ss a z',
-  medium: 'h:mm:ss a',
-  short: 'h:mm a'
-};
-var dateTimeFormats = {
-  full: "{{date}} 'at' {{time}}",
-  long: "{{date}} 'at' {{time}}",
-  medium: '{{date}}, {{time}}',
-  short: '{{date}}, {{time}}'
-};
-var formatLong = {
-  date: buildFormatLongFn({
-    formats: dateFormats,
-    defaultWidth: 'full'
-  }),
-  time: buildFormatLongFn({
-    formats: timeFormats,
-    defaultWidth: 'full'
-  }),
-  dateTime: buildFormatLongFn({
-    formats: dateTimeFormats,
-    defaultWidth: 'full'
-  })
-};
-/* harmony default export */ const _lib_formatLong = (formatLong);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/formatRelative/index.js
-var formatRelativeLocale = {
-  lastWeek: "'last' eeee 'at' p",
-  yesterday: "'yesterday at' p",
-  today: "'today at' p",
-  tomorrow: "'tomorrow at' p",
-  nextWeek: "eeee 'at' p",
-  other: 'P'
-};
-var formatRelative = function formatRelative(token, _date, _baseDate, _options) {
-  return formatRelativeLocale[token];
-};
-/* harmony default export */ const _lib_formatRelative = (formatRelative);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/_lib/buildLocalizeFn/index.js
-function buildLocalizeFn(args) {
-  return function (dirtyIndex, options) {
-    var context = options !== null && options !== void 0 && options.context ? String(options.context) : 'standalone';
-    var valuesArray;
-    if (context === 'formatting' && args.formattingValues) {
-      var defaultWidth = args.defaultFormattingWidth || args.defaultWidth;
-      var width = options !== null && options !== void 0 && options.width ? String(options.width) : defaultWidth;
-      valuesArray = args.formattingValues[width] || args.formattingValues[defaultWidth];
-    } else {
-      var _defaultWidth = args.defaultWidth;
-      var _width = options !== null && options !== void 0 && options.width ? String(options.width) : args.defaultWidth;
-      valuesArray = args.values[_width] || args.values[_defaultWidth];
-    }
-    var index = args.argumentCallback ? args.argumentCallback(dirtyIndex) : dirtyIndex;
-    // @ts-ignore: For some reason TypeScript just don't want to match it, no matter how hard we try. I challenge you to try to remove it!
-    return valuesArray[index];
-  };
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/localize/index.js
-
-var eraValues = {
-  narrow: ['B', 'A'],
-  abbreviated: ['BC', 'AD'],
-  wide: ['Before Christ', 'Anno Domini']
-};
-var quarterValues = {
-  narrow: ['1', '2', '3', '4'],
-  abbreviated: ['Q1', 'Q2', 'Q3', 'Q4'],
-  wide: ['1st quarter', '2nd quarter', '3rd quarter', '4th quarter']
-};
-
-// Note: in English, the names of days of the week and months are capitalized.
-// If you are making a new locale based on this one, check if the same is true for the language you're working on.
-// Generally, formatted dates should look like they are in the middle of a sentence,
-// e.g. in Spanish language the weekdays and months should be in the lowercase.
-var monthValues = {
-  narrow: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-  abbreviated: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-  wide: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
-};
-var dayValues = {
-  narrow: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-  short: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'],
-  abbreviated: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-  wide: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-};
-var dayPeriodValues = {
-  narrow: {
-    am: 'a',
-    pm: 'p',
-    midnight: 'mi',
-    noon: 'n',
-    morning: 'morning',
-    afternoon: 'afternoon',
-    evening: 'evening',
-    night: 'night'
-  },
-  abbreviated: {
-    am: 'AM',
-    pm: 'PM',
-    midnight: 'midnight',
-    noon: 'noon',
-    morning: 'morning',
-    afternoon: 'afternoon',
-    evening: 'evening',
-    night: 'night'
-  },
-  wide: {
-    am: 'a.m.',
-    pm: 'p.m.',
-    midnight: 'midnight',
-    noon: 'noon',
-    morning: 'morning',
-    afternoon: 'afternoon',
-    evening: 'evening',
-    night: 'night'
-  }
-};
-var formattingDayPeriodValues = {
-  narrow: {
-    am: 'a',
-    pm: 'p',
-    midnight: 'mi',
-    noon: 'n',
-    morning: 'in the morning',
-    afternoon: 'in the afternoon',
-    evening: 'in the evening',
-    night: 'at night'
-  },
-  abbreviated: {
-    am: 'AM',
-    pm: 'PM',
-    midnight: 'midnight',
-    noon: 'noon',
-    morning: 'in the morning',
-    afternoon: 'in the afternoon',
-    evening: 'in the evening',
-    night: 'at night'
-  },
-  wide: {
-    am: 'a.m.',
-    pm: 'p.m.',
-    midnight: 'midnight',
-    noon: 'noon',
-    morning: 'in the morning',
-    afternoon: 'in the afternoon',
-    evening: 'in the evening',
-    night: 'at night'
-  }
-};
-var ordinalNumber = function ordinalNumber(dirtyNumber, _options) {
-  var number = Number(dirtyNumber);
-
-  // If ordinal numbers depend on context, for example,
-  // if they are different for different grammatical genders,
-  // use `options.unit`.
-  //
-  // `unit` can be 'year', 'quarter', 'month', 'week', 'date', 'dayOfYear',
-  // 'day', 'hour', 'minute', 'second'.
-
-  var rem100 = number % 100;
-  if (rem100 > 20 || rem100 < 10) {
-    switch (rem100 % 10) {
-      case 1:
-        return number + 'st';
-      case 2:
-        return number + 'nd';
-      case 3:
-        return number + 'rd';
-    }
-  }
-  return number + 'th';
-};
-var localize = {
-  ordinalNumber: ordinalNumber,
-  era: buildLocalizeFn({
-    values: eraValues,
-    defaultWidth: 'wide'
-  }),
-  quarter: buildLocalizeFn({
-    values: quarterValues,
-    defaultWidth: 'wide',
-    argumentCallback: function argumentCallback(quarter) {
-      return quarter - 1;
-    }
-  }),
-  month: buildLocalizeFn({
-    values: monthValues,
-    defaultWidth: 'wide'
-  }),
-  day: buildLocalizeFn({
-    values: dayValues,
-    defaultWidth: 'wide'
-  }),
-  dayPeriod: buildLocalizeFn({
-    values: dayPeriodValues,
-    defaultWidth: 'wide',
-    formattingValues: formattingDayPeriodValues,
-    defaultFormattingWidth: 'wide'
-  })
-};
-/* harmony default export */ const _lib_localize = (localize);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/_lib/buildMatchFn/index.js
-function buildMatchFn(args) {
-  return function (string) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var width = options.width;
-    var matchPattern = width && args.matchPatterns[width] || args.matchPatterns[args.defaultMatchWidth];
-    var matchResult = string.match(matchPattern);
-    if (!matchResult) {
-      return null;
-    }
-    var matchedString = matchResult[0];
-    var parsePatterns = width && args.parsePatterns[width] || args.parsePatterns[args.defaultParseWidth];
-    var key = Array.isArray(parsePatterns) ? findIndex(parsePatterns, function (pattern) {
-      return pattern.test(matchedString);
-    }) : findKey(parsePatterns, function (pattern) {
-      return pattern.test(matchedString);
-    });
-    var value;
-    value = args.valueCallback ? args.valueCallback(key) : key;
-    value = options.valueCallback ? options.valueCallback(value) : value;
-    var rest = string.slice(matchedString.length);
-    return {
-      value: value,
-      rest: rest
-    };
-  };
-}
-function findKey(object, predicate) {
-  for (var key in object) {
-    if (object.hasOwnProperty(key) && predicate(object[key])) {
-      return key;
-    }
-  }
-  return undefined;
-}
-function findIndex(array, predicate) {
-  for (var key = 0; key < array.length; key++) {
-    if (predicate(array[key])) {
-      return key;
-    }
-  }
-  return undefined;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/_lib/buildMatchPatternFn/index.js
-function buildMatchPatternFn(args) {
-  return function (string) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-    var matchResult = string.match(args.matchPattern);
-    if (!matchResult) return null;
-    var matchedString = matchResult[0];
-    var parseResult = string.match(args.parsePattern);
-    if (!parseResult) return null;
-    var value = args.valueCallback ? args.valueCallback(parseResult[0]) : parseResult[0];
-    value = options.valueCallback ? options.valueCallback(value) : value;
-    var rest = string.slice(matchedString.length);
-    return {
-      value: value,
-      rest: rest
-    };
-  };
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/_lib/match/index.js
-
-
-var matchOrdinalNumberPattern = /^(\d+)(th|st|nd|rd)?/i;
-var parseOrdinalNumberPattern = /\d+/i;
-var matchEraPatterns = {
-  narrow: /^(b|a)/i,
-  abbreviated: /^(b\.?\s?c\.?|b\.?\s?c\.?\s?e\.?|a\.?\s?d\.?|c\.?\s?e\.?)/i,
-  wide: /^(before christ|before common era|anno domini|common era)/i
-};
-var parseEraPatterns = {
-  any: [/^b/i, /^(a|c)/i]
-};
-var matchQuarterPatterns = {
-  narrow: /^[1234]/i,
-  abbreviated: /^q[1234]/i,
-  wide: /^[1234](th|st|nd|rd)? quarter/i
-};
-var parseQuarterPatterns = {
-  any: [/1/i, /2/i, /3/i, /4/i]
-};
-var matchMonthPatterns = {
-  narrow: /^[jfmasond]/i,
-  abbreviated: /^(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)/i,
-  wide: /^(january|february|march|april|may|june|july|august|september|october|november|december)/i
-};
-var parseMonthPatterns = {
-  narrow: [/^j/i, /^f/i, /^m/i, /^a/i, /^m/i, /^j/i, /^j/i, /^a/i, /^s/i, /^o/i, /^n/i, /^d/i],
-  any: [/^ja/i, /^f/i, /^mar/i, /^ap/i, /^may/i, /^jun/i, /^jul/i, /^au/i, /^s/i, /^o/i, /^n/i, /^d/i]
-};
-var matchDayPatterns = {
-  narrow: /^[smtwf]/i,
-  short: /^(su|mo|tu|we|th|fr|sa)/i,
-  abbreviated: /^(sun|mon|tue|wed|thu|fri|sat)/i,
-  wide: /^(sunday|monday|tuesday|wednesday|thursday|friday|saturday)/i
-};
-var parseDayPatterns = {
-  narrow: [/^s/i, /^m/i, /^t/i, /^w/i, /^t/i, /^f/i, /^s/i],
-  any: [/^su/i, /^m/i, /^tu/i, /^w/i, /^th/i, /^f/i, /^sa/i]
-};
-var matchDayPeriodPatterns = {
-  narrow: /^(a|p|mi|n|(in the|at) (morning|afternoon|evening|night))/i,
-  any: /^([ap]\.?\s?m\.?|midnight|noon|(in the|at) (morning|afternoon|evening|night))/i
-};
-var parseDayPeriodPatterns = {
-  any: {
-    am: /^a/i,
-    pm: /^p/i,
-    midnight: /^mi/i,
-    noon: /^no/i,
-    morning: /morning/i,
-    afternoon: /afternoon/i,
-    evening: /evening/i,
-    night: /night/i
-  }
-};
-var match = {
-  ordinalNumber: buildMatchPatternFn({
-    matchPattern: matchOrdinalNumberPattern,
-    parsePattern: parseOrdinalNumberPattern,
-    valueCallback: function valueCallback(value) {
-      return parseInt(value, 10);
-    }
-  }),
-  era: buildMatchFn({
-    matchPatterns: matchEraPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: parseEraPatterns,
-    defaultParseWidth: 'any'
-  }),
-  quarter: buildMatchFn({
-    matchPatterns: matchQuarterPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: parseQuarterPatterns,
-    defaultParseWidth: 'any',
-    valueCallback: function valueCallback(index) {
-      return index + 1;
-    }
-  }),
-  month: buildMatchFn({
-    matchPatterns: matchMonthPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: parseMonthPatterns,
-    defaultParseWidth: 'any'
-  }),
-  day: buildMatchFn({
-    matchPatterns: matchDayPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: parseDayPatterns,
-    defaultParseWidth: 'any'
-  }),
-  dayPeriod: buildMatchFn({
-    matchPatterns: matchDayPeriodPatterns,
-    defaultMatchWidth: 'any',
-    parsePatterns: parseDayPeriodPatterns,
-    defaultParseWidth: 'any'
-  })
-};
-/* harmony default export */ const _lib_match = (match);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/en-US/index.js
-
-
-
-
-
-/**
- * @type {Locale}
- * @category Locales
- * @summary English locale (United States).
- * @language English
- * @iso-639-2 eng
- * @author Sasha Koss [@kossnocorp]{@link https://github.com/kossnocorp}
- * @author Lesha Koss [@leshakoss]{@link https://github.com/leshakoss}
- */
-var locale = {
-  code: 'en-US',
-  formatDistance: _lib_formatDistance,
-  formatLong: _lib_formatLong,
-  formatRelative: _lib_formatRelative,
-  localize: _lib_localize,
-  match: _lib_match,
-  options: {
-    weekStartsOn: 0 /* Sunday */,
-    firstWeekContainsDate: 1
-  }
-};
-/* harmony default export */ const en_US = (locale);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/defaultLocale/index.js
-
-/* harmony default export */ const defaultLocale = (en_US);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/assign/index.js
-function assign_assign(target, object) {
-  if (target == null) {
-    throw new TypeError('assign requires that input parameter not be null or undefined');
-  }
-  for (var property in object) {
-    if (Object.prototype.hasOwnProperty.call(object, property)) {
-      ;
-      target[property] = object[property];
-    }
-  }
-  return target;
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/cloneObject/index.js
-
-function cloneObject(object) {
-  return assign_assign({}, object);
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/_lib/getTimezoneOffsetInMilliseconds/index.js
-/**
- * Google Chrome as of 67.0.3396.87 introduced timezones with offset that includes seconds.
- * They usually appear for dates that denote time before the timezones were introduced
- * (e.g. for 'Europe/Prague' timezone the offset is GMT+00:57:44 before 1 October 1891
- * and GMT+01:00:00 after that date)
- *
- * Date#getTimezoneOffset returns the offset in minutes and would return 57 for the example above,
- * which would lead to incorrect calculations.
- *
- * This function returns the timezone offset in milliseconds that takes seconds in account.
- */
-function getTimezoneOffsetInMilliseconds(date) {
-  var utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds(), date.getMilliseconds()));
-  utcDate.setUTCFullYear(date.getFullYear());
-  return date.getTime() - utcDate.getTime();
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/formatDistance/index.js
-
-
-
-
-
-
-
-
-
-
-var MINUTES_IN_DAY = 1440;
-var MINUTES_IN_ALMOST_TWO_DAYS = 2520;
-var MINUTES_IN_MONTH = 43200;
-var MINUTES_IN_TWO_MONTHS = 86400;
-
-/**
- * @name formatDistance
- * @category Common Helpers
- * @summary Return the distance between the given dates in words.
- *
- * @description
- * Return the distance between the given dates in words.
- *
- * | Distance between dates                                            | Result              |
- * |-------------------------------------------------------------------|---------------------|
- * | 0 ... 30 secs                                                     | less than a minute  |
- * | 30 secs ... 1 min 30 secs                                         | 1 minute            |
- * | 1 min 30 secs ... 44 mins 30 secs                                 | [2..44] minutes     |
- * | 44 mins ... 30 secs ... 89 mins 30 secs                           | about 1 hour        |
- * | 89 mins 30 secs ... 23 hrs 59 mins 30 secs                        | about [2..24] hours |
- * | 23 hrs 59 mins 30 secs ... 41 hrs 59 mins 30 secs                 | 1 day               |
- * | 41 hrs 59 mins 30 secs ... 29 days 23 hrs 59 mins 30 secs         | [2..30] days        |
- * | 29 days 23 hrs 59 mins 30 secs ... 44 days 23 hrs 59 mins 30 secs | about 1 month       |
- * | 44 days 23 hrs 59 mins 30 secs ... 59 days 23 hrs 59 mins 30 secs | about 2 months      |
- * | 59 days 23 hrs 59 mins 30 secs ... 1 yr                           | [2..12] months      |
- * | 1 yr ... 1 yr 3 months                                            | about 1 year        |
- * | 1 yr 3 months ... 1 yr 9 month s                                  | over 1 year         |
- * | 1 yr 9 months ... 2 yrs                                           | almost 2 years      |
- * | N yrs ... N yrs 3 months                                          | about N years       |
- * | N yrs 3 months ... N yrs 9 months                                 | over N years        |
- * | N yrs 9 months ... N+1 yrs                                        | almost N+1 years    |
- *
- * With `options.includeSeconds == true`:
- * | Distance between dates | Result               |
- * |------------------------|----------------------|
- * | 0 secs ... 5 secs      | less than 5 seconds  |
- * | 5 secs ... 10 secs     | less than 10 seconds |
- * | 10 secs ... 20 secs    | less than 20 seconds |
- * | 20 secs ... 40 secs    | half a minute        |
- * | 40 secs ... 60 secs    | less than a minute   |
- * | 60 secs ... 90 secs    | 1 minute             |
- *
- * @param {Date|Number} date - the date
- * @param {Date|Number} baseDate - the date to compare with
- * @param {Object} [options] - an object with options.
- * @param {Boolean} [options.includeSeconds=false] - distances less than a minute are more detailed
- * @param {Boolean} [options.addSuffix=false] - result indicates if the second date is earlier or later than the first
- * @param {Locale} [options.locale=defaultLocale] - the locale object. See [Locale]{@link https://date-fns.org/docs/Locale}
- * @returns {String} the distance in words
- * @throws {TypeError} 2 arguments required
- * @throws {RangeError} `date` must not be Invalid Date
- * @throws {RangeError} `baseDate` must not be Invalid Date
- * @throws {RangeError} `options.locale` must contain `formatDistance` property
- *
- * @example
- * // What is the distance between 2 July 2014 and 1 January 2015?
- * const result = formatDistance(new Date(2014, 6, 2), new Date(2015, 0, 1))
- * //=> '6 months'
- *
- * @example
- * // What is the distance between 1 January 2015 00:00:15
- * // and 1 January 2015 00:00:00, including seconds?
- * const result = formatDistance(
- *   new Date(2015, 0, 1, 0, 0, 15),
- *   new Date(2015, 0, 1, 0, 0, 0),
- *   { includeSeconds: true }
- * )
- * //=> 'less than 20 seconds'
- *
- * @example
- * // What is the distance from 1 January 2016
- * // to 1 January 2015, with a suffix?
- * const result = formatDistance(new Date(2015, 0, 1), new Date(2016, 0, 1), {
- *   addSuffix: true
- * })
- * //=> 'about 1 year ago'
- *
- * @example
- * // What is the distance between 1 August 2016 and 1 January 2015 in Esperanto?
- * import { eoLocale } from 'date-fns/locale/eo'
- * const result = formatDistance(new Date(2016, 7, 1), new Date(2015, 0, 1), {
- *   locale: eoLocale
- * })
- * //=> 'pli ol 1 jaro'
- */
-
-function formatDistance_formatDistance(dirtyDate, dirtyBaseDate, options) {
-  var _ref, _options$locale;
-  requiredArgs(2, arguments);
-  var defaultOptions = getDefaultOptions();
-  var locale = (_ref = (_options$locale = options === null || options === void 0 ? void 0 : options.locale) !== null && _options$locale !== void 0 ? _options$locale : defaultOptions.locale) !== null && _ref !== void 0 ? _ref : defaultLocale;
-  if (!locale.formatDistance) {
-    throw new RangeError('locale must contain formatDistance property');
-  }
-  var comparison = compareAsc(dirtyDate, dirtyBaseDate);
-  if (isNaN(comparison)) {
-    throw new RangeError('Invalid time value');
-  }
-  var localizeOptions = assign_assign(cloneObject(options), {
-    addSuffix: Boolean(options === null || options === void 0 ? void 0 : options.addSuffix),
-    comparison: comparison
-  });
-  var dateLeft;
-  var dateRight;
-  if (comparison > 0) {
-    dateLeft = toDate(dirtyBaseDate);
-    dateRight = toDate(dirtyDate);
-  } else {
-    dateLeft = toDate(dirtyDate);
-    dateRight = toDate(dirtyBaseDate);
-  }
-  var seconds = differenceInSeconds(dateRight, dateLeft);
-  var offsetInSeconds = (getTimezoneOffsetInMilliseconds(dateRight) - getTimezoneOffsetInMilliseconds(dateLeft)) / 1000;
-  var minutes = Math.round((seconds - offsetInSeconds) / 60);
-  var months;
-
-  // 0 up to 2 mins
-  if (minutes < 2) {
-    if (options !== null && options !== void 0 && options.includeSeconds) {
-      if (seconds < 5) {
-        return locale.formatDistance('lessThanXSeconds', 5, localizeOptions);
-      } else if (seconds < 10) {
-        return locale.formatDistance('lessThanXSeconds', 10, localizeOptions);
-      } else if (seconds < 20) {
-        return locale.formatDistance('lessThanXSeconds', 20, localizeOptions);
-      } else if (seconds < 40) {
-        return locale.formatDistance('halfAMinute', 0, localizeOptions);
-      } else if (seconds < 60) {
-        return locale.formatDistance('lessThanXMinutes', 1, localizeOptions);
-      } else {
-        return locale.formatDistance('xMinutes', 1, localizeOptions);
-      }
-    } else {
-      if (minutes === 0) {
-        return locale.formatDistance('lessThanXMinutes', 1, localizeOptions);
-      } else {
-        return locale.formatDistance('xMinutes', minutes, localizeOptions);
-      }
-    }
-
-    // 2 mins up to 0.75 hrs
-  } else if (minutes < 45) {
-    return locale.formatDistance('xMinutes', minutes, localizeOptions);
-
-    // 0.75 hrs up to 1.5 hrs
-  } else if (minutes < 90) {
-    return locale.formatDistance('aboutXHours', 1, localizeOptions);
-
-    // 1.5 hrs up to 24 hrs
-  } else if (minutes < MINUTES_IN_DAY) {
-    var hours = Math.round(minutes / 60);
-    return locale.formatDistance('aboutXHours', hours, localizeOptions);
-
-    // 1 day up to 1.75 days
-  } else if (minutes < MINUTES_IN_ALMOST_TWO_DAYS) {
-    return locale.formatDistance('xDays', 1, localizeOptions);
-
-    // 1.75 days up to 30 days
-  } else if (minutes < MINUTES_IN_MONTH) {
-    var days = Math.round(minutes / MINUTES_IN_DAY);
-    return locale.formatDistance('xDays', days, localizeOptions);
-
-    // 1 month up to 2 months
-  } else if (minutes < MINUTES_IN_TWO_MONTHS) {
-    months = Math.round(minutes / MINUTES_IN_MONTH);
-    return locale.formatDistance('aboutXMonths', months, localizeOptions);
-  }
-  months = differenceInMonths(dateRight, dateLeft);
-
-  // 2 months up to 12 months
-  if (months < 12) {
-    var nearestMonth = Math.round(minutes / MINUTES_IN_MONTH);
-    return locale.formatDistance('xMonths', nearestMonth, localizeOptions);
-
-    // 1 year up to max Date
-  } else {
-    var monthsSinceStartOfYear = months % 12;
-    var years = Math.floor(months / 12);
-
-    // N years up to 1 years 3 months
-    if (monthsSinceStartOfYear < 3) {
-      return locale.formatDistance('aboutXYears', years, localizeOptions);
-
-      // N years 3 months up to N years 9 months
-    } else if (monthsSinceStartOfYear < 9) {
-      return locale.formatDistance('overXYears', years, localizeOptions);
-
-      // N years 9 months up to N year 12 months
-    } else {
-      return locale.formatDistance('almostXYears', years + 1, localizeOptions);
-    }
-  }
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/formatDistanceToNow/index.js
-
-
-/**
- * @name formatDistanceToNow
- * @category Common Helpers
- * @summary Return the distance between the given date and now in words.
- * @pure false
- *
- * @description
- * Return the distance between the given date and now in words.
- *
- * | Distance to now                                                   | Result              |
- * |-------------------------------------------------------------------|---------------------|
- * | 0 ... 30 secs                                                     | less than a minute  |
- * | 30 secs ... 1 min 30 secs                                         | 1 minute            |
- * | 1 min 30 secs ... 44 mins 30 secs                                 | [2..44] minutes     |
- * | 44 mins ... 30 secs ... 89 mins 30 secs                           | about 1 hour        |
- * | 89 mins 30 secs ... 23 hrs 59 mins 30 secs                        | about [2..24] hours |
- * | 23 hrs 59 mins 30 secs ... 41 hrs 59 mins 30 secs                 | 1 day               |
- * | 41 hrs 59 mins 30 secs ... 29 days 23 hrs 59 mins 30 secs         | [2..30] days        |
- * | 29 days 23 hrs 59 mins 30 secs ... 44 days 23 hrs 59 mins 30 secs | about 1 month       |
- * | 44 days 23 hrs 59 mins 30 secs ... 59 days 23 hrs 59 mins 30 secs | about 2 months      |
- * | 59 days 23 hrs 59 mins 30 secs ... 1 yr                           | [2..12] months      |
- * | 1 yr ... 1 yr 3 months                                            | about 1 year        |
- * | 1 yr 3 months ... 1 yr 9 month s                                  | over 1 year         |
- * | 1 yr 9 months ... 2 yrs                                           | almost 2 years      |
- * | N yrs ... N yrs 3 months                                          | about N years       |
- * | N yrs 3 months ... N yrs 9 months                                 | over N years        |
- * | N yrs 9 months ... N+1 yrs                                        | almost N+1 years    |
- *
- * With `options.includeSeconds == true`:
- * | Distance to now     | Result               |
- * |---------------------|----------------------|
- * | 0 secs ... 5 secs   | less than 5 seconds  |
- * | 5 secs ... 10 secs  | less than 10 seconds |
- * | 10 secs ... 20 secs | less than 20 seconds |
- * | 20 secs ... 40 secs | half a minute        |
- * | 40 secs ... 60 secs | less than a minute   |
- * | 60 secs ... 90 secs | 1 minute             |
- *
- * > ⚠️ Please note that this function is not present in the FP submodule as
- * > it uses `Date.now()` internally hence impure and can't be safely curried.
- *
- * @param {Date|Number} date - the given date
- * @param {Object} [options] - the object with options
- * @param {Boolean} [options.includeSeconds=false] - distances less than a minute are more detailed
- * @param {Boolean} [options.addSuffix=false] - result specifies if now is earlier or later than the passed date
- * @param {Locale} [options.locale=defaultLocale] - the locale object. See [Locale]{@link https://date-fns.org/docs/Locale}
- * @returns {String} the distance in words
- * @throws {TypeError} 1 argument required
- * @throws {RangeError} `date` must not be Invalid Date
- * @throws {RangeError} `options.locale` must contain `formatDistance` property
- *
- * @example
- * // If today is 1 January 2015, what is the distance to 2 July 2014?
- * const result = formatDistanceToNow(
- *   new Date(2014, 6, 2)
- * )
- * //=> '6 months'
- *
- * @example
- * // If now is 1 January 2015 00:00:00,
- * // what is the distance to 1 January 2015 00:00:15, including seconds?
- * const result = formatDistanceToNow(
- *   new Date(2015, 0, 1, 0, 0, 15),
- *   {includeSeconds: true}
- * )
- * //=> 'less than 20 seconds'
- *
- * @example
- * // If today is 1 January 2015,
- * // what is the distance to 1 January 2016, with a suffix?
- * const result = formatDistanceToNow(
- *   new Date(2016, 0, 1),
- *   {addSuffix: true}
- * )
- * //=> 'in about 1 year'
- *
- * @example
- * // If today is 1 January 2015,
- * // what is the distance to 1 August 2016 in Esperanto?
- * const eoLocale = require('date-fns/locale/eo')
- * const result = formatDistanceToNow(
- *   new Date(2016, 7, 1),
- *   {locale: eoLocale}
- * )
- * //=> 'pli ol 1 jaro'
- */
-function formatDistanceToNow(dirtyDate, options) {
-  requiredArgs(1, arguments);
-  return formatDistance_formatDistance(dirtyDate, Date.now(), options);
-}
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/_lib/formatDistance/index.js
-var formatDistance_formatDistanceLocale = {
-  lessThanXSeconds: {
-    standalone: {
-      one: 'weniger als 1 Sekunde',
-      other: 'weniger als {{count}} Sekunden'
-    },
-    withPreposition: {
-      one: 'weniger als 1 Sekunde',
-      other: 'weniger als {{count}} Sekunden'
-    }
-  },
-  xSeconds: {
-    standalone: {
-      one: '1 Sekunde',
-      other: '{{count}} Sekunden'
-    },
-    withPreposition: {
-      one: '1 Sekunde',
-      other: '{{count}} Sekunden'
-    }
-  },
-  halfAMinute: {
-    standalone: 'halbe Minute',
-    withPreposition: 'halben Minute'
-  },
-  lessThanXMinutes: {
-    standalone: {
-      one: 'weniger als 1 Minute',
-      other: 'weniger als {{count}} Minuten'
-    },
-    withPreposition: {
-      one: 'weniger als 1 Minute',
-      other: 'weniger als {{count}} Minuten'
-    }
-  },
-  xMinutes: {
-    standalone: {
-      one: '1 Minute',
-      other: '{{count}} Minuten'
-    },
-    withPreposition: {
-      one: '1 Minute',
-      other: '{{count}} Minuten'
-    }
-  },
-  aboutXHours: {
-    standalone: {
-      one: 'etwa 1 Stunde',
-      other: 'etwa {{count}} Stunden'
-    },
-    withPreposition: {
-      one: 'etwa 1 Stunde',
-      other: 'etwa {{count}} Stunden'
-    }
-  },
-  xHours: {
-    standalone: {
-      one: '1 Stunde',
-      other: '{{count}} Stunden'
-    },
-    withPreposition: {
-      one: '1 Stunde',
-      other: '{{count}} Stunden'
-    }
-  },
-  xDays: {
-    standalone: {
-      one: '1 Tag',
-      other: '{{count}} Tage'
-    },
-    withPreposition: {
-      one: '1 Tag',
-      other: '{{count}} Tagen'
-    }
-  },
-  aboutXWeeks: {
-    standalone: {
-      one: 'etwa 1 Woche',
-      other: 'etwa {{count}} Wochen'
-    },
-    withPreposition: {
-      one: 'etwa 1 Woche',
-      other: 'etwa {{count}} Wochen'
-    }
-  },
-  xWeeks: {
-    standalone: {
-      one: '1 Woche',
-      other: '{{count}} Wochen'
-    },
-    withPreposition: {
-      one: '1 Woche',
-      other: '{{count}} Wochen'
-    }
-  },
-  aboutXMonths: {
-    standalone: {
-      one: 'etwa 1 Monat',
-      other: 'etwa {{count}} Monate'
-    },
-    withPreposition: {
-      one: 'etwa 1 Monat',
-      other: 'etwa {{count}} Monaten'
-    }
-  },
-  xMonths: {
-    standalone: {
-      one: '1 Monat',
-      other: '{{count}} Monate'
-    },
-    withPreposition: {
-      one: '1 Monat',
-      other: '{{count}} Monaten'
-    }
-  },
-  aboutXYears: {
-    standalone: {
-      one: 'etwa 1 Jahr',
-      other: 'etwa {{count}} Jahre'
-    },
-    withPreposition: {
-      one: 'etwa 1 Jahr',
-      other: 'etwa {{count}} Jahren'
-    }
-  },
-  xYears: {
-    standalone: {
-      one: '1 Jahr',
-      other: '{{count}} Jahre'
-    },
-    withPreposition: {
-      one: '1 Jahr',
-      other: '{{count}} Jahren'
-    }
-  },
-  overXYears: {
-    standalone: {
-      one: 'mehr als 1 Jahr',
-      other: 'mehr als {{count}} Jahre'
-    },
-    withPreposition: {
-      one: 'mehr als 1 Jahr',
-      other: 'mehr als {{count}} Jahren'
-    }
-  },
-  almostXYears: {
-    standalone: {
-      one: 'fast 1 Jahr',
-      other: 'fast {{count}} Jahre'
-    },
-    withPreposition: {
-      one: 'fast 1 Jahr',
-      other: 'fast {{count}} Jahren'
-    }
-  }
-};
-var _lib_formatDistance_formatDistance = function formatDistance(token, count, options) {
-  var result;
-  var tokenValue = options !== null && options !== void 0 && options.addSuffix ? formatDistance_formatDistanceLocale[token].withPreposition : formatDistance_formatDistanceLocale[token].standalone;
-  if (typeof tokenValue === 'string') {
-    result = tokenValue;
-  } else if (count === 1) {
-    result = tokenValue.one;
-  } else {
-    result = tokenValue.other.replace('{{count}}', String(count));
-  }
-  if (options !== null && options !== void 0 && options.addSuffix) {
-    if (options.comparison && options.comparison > 0) {
-      return 'in ' + result;
-    } else {
-      return 'vor ' + result;
-    }
-  }
-  return result;
-};
-/* harmony default export */ const de_lib_formatDistance = (_lib_formatDistance_formatDistance);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/_lib/formatLong/index.js
-
-// DIN 5008: https://de.wikipedia.org/wiki/Datumsformat#DIN_5008
-var formatLong_dateFormats = {
-  full: 'EEEE, do MMMM y',
-  // Montag, 7. Januar 2018
-  long: 'do MMMM y',
-  // 7. Januar 2018
-  medium: 'do MMM y',
-  // 7. Jan. 2018
-  short: 'dd.MM.y' // 07.01.2018
-};
-
-var formatLong_timeFormats = {
-  full: 'HH:mm:ss zzzz',
-  long: 'HH:mm:ss z',
-  medium: 'HH:mm:ss',
-  short: 'HH:mm'
-};
-var formatLong_dateTimeFormats = {
-  full: "{{date}} 'um' {{time}}",
-  long: "{{date}} 'um' {{time}}",
-  medium: '{{date}} {{time}}',
-  short: '{{date}} {{time}}'
-};
-var formatLong_formatLong = {
-  date: buildFormatLongFn({
-    formats: formatLong_dateFormats,
-    defaultWidth: 'full'
-  }),
-  time: buildFormatLongFn({
-    formats: formatLong_timeFormats,
-    defaultWidth: 'full'
-  }),
-  dateTime: buildFormatLongFn({
-    formats: formatLong_dateTimeFormats,
-    defaultWidth: 'full'
-  })
-};
-/* harmony default export */ const de_lib_formatLong = (formatLong_formatLong);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/_lib/formatRelative/index.js
-var formatRelative_formatRelativeLocale = {
-  lastWeek: "'letzten' eeee 'um' p",
-  yesterday: "'gestern um' p",
-  today: "'heute um' p",
-  tomorrow: "'morgen um' p",
-  nextWeek: "eeee 'um' p",
-  other: 'P'
-};
-var formatRelative_formatRelative = function formatRelative(token, _date, _baseDate, _options) {
-  return formatRelative_formatRelativeLocale[token];
-};
-/* harmony default export */ const de_lib_formatRelative = (formatRelative_formatRelative);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/_lib/localize/index.js
-
-var localize_eraValues = {
-  narrow: ['v.Chr.', 'n.Chr.'],
-  abbreviated: ['v.Chr.', 'n.Chr.'],
-  wide: ['vor Christus', 'nach Christus']
-};
-var localize_quarterValues = {
-  narrow: ['1', '2', '3', '4'],
-  abbreviated: ['Q1', 'Q2', 'Q3', 'Q4'],
-  wide: ['1. Quartal', '2. Quartal', '3. Quartal', '4. Quartal']
-};
-
-// Note: in German, the names of days of the week and months are capitalized.
-// If you are making a new locale based on this one, check if the same is true for the language you're working on.
-// Generally, formatted dates should look like they are in the middle of a sentence,
-// e.g. in Spanish language the weekdays and months should be in the lowercase.
-var localize_monthValues = {
-  narrow: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
-  abbreviated: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez'],
-  wide: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
-};
-
-// https://st.unicode.org/cldr-apps/v#/de/Gregorian/
-var formattingMonthValues = {
-  narrow: localize_monthValues.narrow,
-  abbreviated: ['Jan.', 'Feb.', 'März', 'Apr.', 'Mai', 'Juni', 'Juli', 'Aug.', 'Sep.', 'Okt.', 'Nov.', 'Dez.'],
-  wide: localize_monthValues.wide
-};
-var localize_dayValues = {
-  narrow: ['S', 'M', 'D', 'M', 'D', 'F', 'S'],
-  short: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
-  abbreviated: ['So.', 'Mo.', 'Di.', 'Mi.', 'Do.', 'Fr.', 'Sa.'],
-  wide: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag']
-};
-
-// https://www.unicode.org/cldr/charts/32/summary/de.html#1881
-var localize_dayPeriodValues = {
-  narrow: {
-    am: 'vm.',
-    pm: 'nm.',
-    midnight: 'Mitternacht',
-    noon: 'Mittag',
-    morning: 'Morgen',
-    afternoon: 'Nachm.',
-    evening: 'Abend',
-    night: 'Nacht'
-  },
-  abbreviated: {
-    am: 'vorm.',
-    pm: 'nachm.',
-    midnight: 'Mitternacht',
-    noon: 'Mittag',
-    morning: 'Morgen',
-    afternoon: 'Nachmittag',
-    evening: 'Abend',
-    night: 'Nacht'
-  },
-  wide: {
-    am: 'vormittags',
-    pm: 'nachmittags',
-    midnight: 'Mitternacht',
-    noon: 'Mittag',
-    morning: 'Morgen',
-    afternoon: 'Nachmittag',
-    evening: 'Abend',
-    night: 'Nacht'
-  }
-};
-var localize_formattingDayPeriodValues = {
-  narrow: {
-    am: 'vm.',
-    pm: 'nm.',
-    midnight: 'Mitternacht',
-    noon: 'Mittag',
-    morning: 'morgens',
-    afternoon: 'nachm.',
-    evening: 'abends',
-    night: 'nachts'
-  },
-  abbreviated: {
-    am: 'vorm.',
-    pm: 'nachm.',
-    midnight: 'Mitternacht',
-    noon: 'Mittag',
-    morning: 'morgens',
-    afternoon: 'nachmittags',
-    evening: 'abends',
-    night: 'nachts'
-  },
-  wide: {
-    am: 'vormittags',
-    pm: 'nachmittags',
-    midnight: 'Mitternacht',
-    noon: 'Mittag',
-    morning: 'morgens',
-    afternoon: 'nachmittags',
-    evening: 'abends',
-    night: 'nachts'
-  }
-};
-var localize_ordinalNumber = function ordinalNumber(dirtyNumber) {
-  var number = Number(dirtyNumber);
-  return number + '.';
-};
-var localize_localize = {
-  ordinalNumber: localize_ordinalNumber,
-  era: buildLocalizeFn({
-    values: localize_eraValues,
-    defaultWidth: 'wide'
-  }),
-  quarter: buildLocalizeFn({
-    values: localize_quarterValues,
-    defaultWidth: 'wide',
-    argumentCallback: function argumentCallback(quarter) {
-      return quarter - 1;
-    }
-  }),
-  month: buildLocalizeFn({
-    values: localize_monthValues,
-    formattingValues: formattingMonthValues,
-    defaultWidth: 'wide'
-  }),
-  day: buildLocalizeFn({
-    values: localize_dayValues,
-    defaultWidth: 'wide'
-  }),
-  dayPeriod: buildLocalizeFn({
-    values: localize_dayPeriodValues,
-    defaultWidth: 'wide',
-    formattingValues: localize_formattingDayPeriodValues,
-    defaultFormattingWidth: 'wide'
-  })
-};
-/* harmony default export */ const de_lib_localize = (localize_localize);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/_lib/match/index.js
-
-
-var match_matchOrdinalNumberPattern = /^(\d+)(\.)?/i;
-var match_parseOrdinalNumberPattern = /\d+/i;
-var match_matchEraPatterns = {
-  narrow: /^(v\.? ?Chr\.?|n\.? ?Chr\.?)/i,
-  abbreviated: /^(v\.? ?Chr\.?|n\.? ?Chr\.?)/i,
-  wide: /^(vor Christus|vor unserer Zeitrechnung|nach Christus|unserer Zeitrechnung)/i
-};
-var match_parseEraPatterns = {
-  any: [/^v/i, /^n/i]
-};
-var match_matchQuarterPatterns = {
-  narrow: /^[1234]/i,
-  abbreviated: /^q[1234]/i,
-  wide: /^[1234](\.)? Quartal/i
-};
-var match_parseQuarterPatterns = {
-  any: [/1/i, /2/i, /3/i, /4/i]
-};
-var match_matchMonthPatterns = {
-  narrow: /^[jfmasond]/i,
-  abbreviated: /^(j[aä]n|feb|mär[z]?|apr|mai|jun[i]?|jul[i]?|aug|sep|okt|nov|dez)\.?/i,
-  wide: /^(januar|februar|märz|april|mai|juni|juli|august|september|oktober|november|dezember)/i
-};
-var match_parseMonthPatterns = {
-  narrow: [/^j/i, /^f/i, /^m/i, /^a/i, /^m/i, /^j/i, /^j/i, /^a/i, /^s/i, /^o/i, /^n/i, /^d/i],
-  any: [/^j[aä]/i, /^f/i, /^mär/i, /^ap/i, /^mai/i, /^jun/i, /^jul/i, /^au/i, /^s/i, /^o/i, /^n/i, /^d/i]
-};
-var match_matchDayPatterns = {
-  narrow: /^[smdmf]/i,
-  short: /^(so|mo|di|mi|do|fr|sa)/i,
-  abbreviated: /^(son?|mon?|die?|mit?|don?|fre?|sam?)\.?/i,
-  wide: /^(sonntag|montag|dienstag|mittwoch|donnerstag|freitag|samstag)/i
-};
-var match_parseDayPatterns = {
-  any: [/^so/i, /^mo/i, /^di/i, /^mi/i, /^do/i, /^f/i, /^sa/i]
-};
-var match_matchDayPeriodPatterns = {
-  narrow: /^(vm\.?|nm\.?|Mitternacht|Mittag|morgens|nachm\.?|abends|nachts)/i,
-  abbreviated: /^(vorm\.?|nachm\.?|Mitternacht|Mittag|morgens|nachm\.?|abends|nachts)/i,
-  wide: /^(vormittags|nachmittags|Mitternacht|Mittag|morgens|nachmittags|abends|nachts)/i
-};
-var match_parseDayPeriodPatterns = {
-  any: {
-    am: /^v/i,
-    pm: /^n/i,
-    midnight: /^Mitte/i,
-    noon: /^Mitta/i,
-    morning: /morgens/i,
-    afternoon: /nachmittags/i,
-    // will never be matched. Afternoon is matched by `pm`
-    evening: /abends/i,
-    night: /nachts/i // will never be matched. Night is matched by `pm`
-  }
-};
-
-var match_match = {
-  ordinalNumber: buildMatchPatternFn({
-    matchPattern: match_matchOrdinalNumberPattern,
-    parsePattern: match_parseOrdinalNumberPattern,
-    valueCallback: function valueCallback(value) {
-      return parseInt(value);
-    }
-  }),
-  era: buildMatchFn({
-    matchPatterns: match_matchEraPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: match_parseEraPatterns,
-    defaultParseWidth: 'any'
-  }),
-  quarter: buildMatchFn({
-    matchPatterns: match_matchQuarterPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: match_parseQuarterPatterns,
-    defaultParseWidth: 'any',
-    valueCallback: function valueCallback(index) {
-      return index + 1;
-    }
-  }),
-  month: buildMatchFn({
-    matchPatterns: match_matchMonthPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: match_parseMonthPatterns,
-    defaultParseWidth: 'any'
-  }),
-  day: buildMatchFn({
-    matchPatterns: match_matchDayPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: match_parseDayPatterns,
-    defaultParseWidth: 'any'
-  }),
-  dayPeriod: buildMatchFn({
-    matchPatterns: match_matchDayPeriodPatterns,
-    defaultMatchWidth: 'wide',
-    parsePatterns: match_parseDayPeriodPatterns,
-    defaultParseWidth: 'any'
-  })
-};
-/* harmony default export */ const de_lib_match = (match_match);
-;// CONCATENATED MODULE: ./node_modules/date-fns/esm/locale/de/index.js
-
-
-
-
-
-/**
- * @type {Locale}
- * @category Locales
- * @summary German locale.
- * @language German
- * @iso-639-2 deu
- * @author Thomas Eilmsteiner [@DeMuu]{@link https://github.com/DeMuu}
- * @author Asia [@asia-t]{@link https://github.com/asia-t}
- * @author Van Vuong Ngo [@vanvuongngo]{@link https://github.com/vanvuongngo}
- * @author RomanErnst [@pex]{@link https://github.com/pex}
- * @author Philipp Keck [@Philipp91]{@link https://github.com/Philipp91}
- */
-var de_locale = {
-  code: 'de',
-  formatDistance: de_lib_formatDistance,
-  formatLong: de_lib_formatLong,
-  formatRelative: de_lib_formatRelative,
-  localize: de_lib_localize,
-  match: de_lib_match,
-  options: {
-    weekStartsOn: 1 /* Monday */,
-    firstWeekContainsDate: 4
-  }
-};
-/* harmony default export */ const de = (de_locale);
-// EXTERNAL MODULE: ./src/matrix3/settings/userSettings.js
-var userSettings = __webpack_require__("./src/matrix3/settings/userSettings.js");
-// EXTERNAL MODULE: ./src/matrix3/settings/appSettings.ts
-var appSettings = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-// EXTERNAL MODULE: ./src/matrix3/state/index.ts + 1 modules
-var state = __webpack_require__("./src/matrix3/state/index.ts");
-;// CONCATENATED MODULE: ./src/matrix3/print/history.tsx
-var __rest = (undefined && undefined.__rest) || function (s, e) {
-    var t = {};
-    for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p) && e.indexOf(p) < 0)
-        t[p] = s[p];
-    if (s != null && typeof Object.getOwnPropertySymbols === "function")
-        for (var i = 0, p = Object.getOwnPropertySymbols(s); i < p.length; i++) {
-            if (e.indexOf(p[i]) < 0 && Object.prototype.propertyIsEnumerable.call(s, p[i]))
-                t[p[i]] = s[p[i]];
+const setCSSProps = (element, style) => {
+    for (const [name, value] of Object.entries(style)) {
+        if (name.startsWith('-')) {
+            element.style.setProperty(name, value);
         }
-    return t;
+        else if (typeof value === 'number' && !IS_NON_DIMENSIONAL.test(name)) {
+            element.style[name] = `${value}px`;
+        }
+        else {
+            element.style[name] = value;
+        }
+    }
 };
-
-
-
-
-
-
-
-const MAX_HISTORY_LENGTH = 100;
-let container;
-function showHistory() {
-    var _a, _b;
-    return userSettings["default"].enableHistory && ((_b = (_a = window.Storage) === null || _a === void 0 ? void 0 : _a.prototype) === null || _b === void 0 ? void 0 : _b.setItem);
-}
-function renderHistory() {
-    var _a;
-    if (!showHistory())
-        return;
-    subscribeSearchChanges();
-    if ((_a = userSettings["default"].history) === null || _a === void 0 ? void 0 : _a.length) {
-        container = renderHistoryContainer();
-        (async function () {
-            await redrawHistory("pins");
-            await redrawHistory("history");
-            container.style.display = "block";
-        })();
+const create = (type) => {
+    if (typeof type === 'string') {
+        if (svgTags.has(type)) {
+            return document.createElementNS('http://www.w3.org/2000/svg', type);
+        }
+        return document.createElement(type);
     }
-}
-function removeHistory() {
-    var _a;
-    (_a = container === null || container === void 0 ? void 0 : container.parentNode) === null || _a === void 0 ? void 0 : _a.removeChild(container);
-    document.body.classList.remove("show-history");
-}
-function subscribeSearchChanges() {
-    var _setItem = window.Storage.prototype.setItem;
-    window.Storage.prototype.setItem = function (key, value) {
-        _setItem.apply(this, arguments);
-        if (key !== "savedSearch.0")
-            return;
-        const search = getSearchObject(value);
-        userSettings["default"].history = [
-            {
-                ts: new Date().toISOString(),
-                savedSearch: value,
-                url: getSearchUrl(search[1], value),
-            },
-            ...userSettings["default"].history.filter((h) => {
-                const hist = getSearchObject(h.savedSearch);
-                return JSON.stringify(hist) !== JSON.stringify(search);
-            }),
-        ].slice(0, MAX_HISTORY_LENGTH);
-        (0,userSettings.saveUserSettings)();
-    };
-}
-function getSearchObject(savedSearch) {
-    const _a = JSON.parse(savedSearch), { "12": _ } = _a, token = __rest(_a, ["12"]);
-    return token;
-}
-function renderHistoryContainer() {
-    const container = (dom_chef["default"].createElement("div", { style: {
-            position: "fixed",
-            width: "200px",
-            top: "20px",
-            left: 0,
-            bottom: "20px",
-            padding: "0 20px",
-            borderRight: "1px dashed grey",
-            overflowY: "auto",
-            display: "none",
-        } }));
-    document.body.classList.add("show-history");
-    document.body.append(container);
-    return container;
-}
-async function redrawHistory(setting) {
-    const config = {
-        pins: {
-            title: "Pinned",
-            setting: "pins",
-            showPin: false,
-            showDistanceToNow: false,
-        },
-        history: {
-            title: "History",
-            setting: "history",
-            showPin: true,
-            showDistanceToNow: true,
-        },
-    };
-    const section = config[setting];
-    const id = `pt-container-${setting}`;
-    let div = window.document.getElementById(id);
-    if (!div) {
-        div = dom_chef["default"].createElement("div", { id: id });
-        container.appendChild(div);
+    if (isFragment(type)) {
+        return document.createDocumentFragment();
     }
-    div.innerHTML = null;
-    if (!userSettings["default"][setting] || !userSettings["default"][setting].length)
-        return;
-    div.appendChild(dom_chef["default"].createElement("p", null, section.title));
-    let lastDistance;
-    await userSettings["default"][setting].reduce(async (last, h) => {
-        await last;
-        if (section.showDistanceToNow) {
-            const distance = formatDistanceToNow(new Date(h.ts), {
-                locale: userSettings["default"].language === "de" ? de : en_US,
-                addSuffix: true,
-            });
-            const label = distance !== lastDistance ? dom_chef["default"].createElement("div", null, distance) : null;
-            lastDistance = distance;
-            label && div.appendChild(label);
-        }
-        const search = getSearchObject(h.savedSearch);
-        if (!h.url)
-            h.url = getSearchUrl(search[1], h.savedSearch);
-        const linkText = `${(search[3][7] || [])
-            .map((s) => `${s[5]}-${s[3]}`)
-            .join(" ")} (${(0,appSettings.getCabinFromITA)(search[3][8])})`;
-        div.appendChild(dom_chef["default"].createElement("div", { class: "pt-history-item", style: {
-                position: "relative",
-                margin: "1em -1rem",
-                padding: "0 1rem",
-            } },
-            dom_chef["default"].createElement("a", { style: {
-                    display: "block",
-                }, onClick: (e) => changeSearch(e, search[1], h.savedSearch), href: h.url, title: linkText }, linkText),
-            section.showPin ? (dom_chef["default"].createElement("a", { class: "pt-history-action", style: {
-                    cursor: "pointer",
-                    position: "absolute",
-                    left: 0,
-                    top: 0,
-                    textDecoration: "none",
-                    visibility: "hidden",
-                }, onClick: (e) => pin(h), title: "Pin" },
-                dom_chef["default"].createElement("svg", { style: { width: ".8rem", height: ".8rem", fill: "yellow" }, xmlns: "http://www.w3.org/2000/svg", height: "512pt", width: "512pt", viewBox: "0 0 512 512" },
-                    dom_chef["default"].createElement("path", { d: "M114.594 491.14c-5.61 0-11.18-1.75-15.934-5.187a27.223 27.223 0 01-10.582-28.094l32.938-145.09L9.312 214.81a27.188 27.188 0 01-7.976-28.907 27.208 27.208 0 0123.402-18.71l147.797-13.419L230.97 17.027C235.277 6.98 245.089.492 255.992.492s20.715 6.488 25.024 16.512l58.433 136.77 147.774 13.417c10.882.98 20.054 8.344 23.425 18.711 3.372 10.368.254 21.739-7.957 28.907L390.988 312.75l32.938 145.086c2.414 10.668-1.727 21.7-10.578 28.098-8.832 6.398-20.61 6.89-29.91 1.3l-127.446-76.16-127.445 76.203c-4.309 2.559-9.11 3.864-13.953 3.864zm141.398-112.874c4.844 0 9.64 1.3 13.953 3.859l120.278 71.938-31.086-136.942a27.21 27.21 0 018.62-26.516l105.473-92.5-139.543-12.671a27.18 27.18 0 01-22.613-16.493L255.992 39.895 200.844 168.96c-3.883 9.195-12.524 15.512-22.547 16.43L38.734 198.062l105.47 92.5c7.554 6.614 10.858 16.77 8.62 26.54l-31.062 136.937 120.277-71.914c4.309-2.559 9.11-3.86 13.953-3.86zm-84.586-221.848s0 .023-.023.043zm169.13-.063l.023.043c0-.023 0-.023-.024-.043zm0 0" })))) : null,
-            dom_chef["default"].createElement("a", { class: "pt-history-action", style: {
-                    cursor: "pointer",
-                    position: "absolute",
-                    right: 0,
-                    top: 0,
-                    textDecoration: "none",
-                    visibility: "hidden",
-                }, onClick: (e) => remove(e, search), title: "Remove" },
-                dom_chef["default"].createElement("svg", { style: { width: ".8rem", height: ".8rem", fill: "red" }, xmlns: "http://www.w3.org/2000/svg", height: "512pt", width: "512pt", viewBox: "0 0 512 512" },
-                    dom_chef["default"].createElement("path", { d: "M256 512C114.836 512 0 397.164 0 256S114.836 0 256 0s256 114.836 256 256-114.836 256-256 256zm0-480C132.48 32 32 132.48 32 256s100.48 224 224 224 224-100.48 224-224S379.52 32 256 32zm-79.187 319.188c-4.098 0-8.195-1.555-11.309-4.691-6.25-6.25-6.25-16.383 0-22.633l158.398-158.402c6.254-6.25 16.387-6.25 22.637 0s6.25 16.383 0 22.637L188.137 346.496c-3.156 3.137-7.25 4.691-11.324 4.691zm0 0" }),
-                    dom_chef["default"].createElement("path", { d: "M335.188 351.188c-4.094 0-8.191-1.555-11.305-4.691L165.484 188.117a16 16 0 1 1 22.633-22.633l158.398 158.398a16 16 0 0 1 0 22.633c-3.133 3.117-7.23 4.672-11.328 4.672zm0 0" })))));
-        function pin(search) {
-            const searchObj = getSearchObject(search.savedSearch);
-            userSettings["default"].pins = [
-                search,
-                ...userSettings["default"].pins.filter((h) => {
-                    const hist = getSearchObject(h.savedSearch);
-                    return JSON.stringify(hist) !== JSON.stringify(searchObj);
-                }),
-            ];
-            (0,userSettings.saveUserSettings)();
-            redrawHistory("pins");
-        }
-        function remove(e, search) {
-            userSettings["default"][setting] = userSettings["default"][setting].filter((h) => {
-                const hist = getSearchObject(h.savedSearch);
-                return JSON.stringify(hist) !== JSON.stringify(search);
-            });
-            (0,userSettings.saveUserSettings)();
-            redrawHistory(setting);
-        }
-    }, Promise.resolve(undefined));
-}
-function getHash(key) {
-    return `#search:research=${key}`;
-}
-function changeSearch(e, key, savedSearch) {
-    if ((0,state.stateEnabled)())
-        return; // stateful URL will handle everything
-    (0,state.updateCurrentSearch)(savedSearch);
-    if (e.ctrlKey ||
-        e.shiftKey ||
-        e.metaKey || // apple
-        (e.button && e.button == 1) // middle click, >IE9 + everyone else
-    ) {
-        // https://stackoverflow.com/a/20087506/82199
+    return type(type.defaultProps);
+};
+const setAttribute = (element, name, value) => {
+    if (value === undefined || value === null) {
         return;
     }
-    e.preventDefault();
-    window.location.hash = getHash(key);
-    window.location.reload();
-}
-function getSearchUrl(key, search) {
-    if ((0,state.stateEnabled)()) {
-        return (0,state.getStateUrl)({ search }, getHash(key));
+    // Naive support for xlink namespace
+    // Full list: https://github.com/facebook/react/blob/1843f87/src/renderers/dom/shared/SVGDOMPropertyConfig.js#L258-L264
+    if (/^xlink[AHRST]/.test(name)) {
+        element.setAttributeNS('http://www.w3.org/1999/xlink', name.replace('xlink', 'xlink:').toLowerCase(), value);
     }
     else {
-        return (window.location.pathname +
-            window.location.search +
-            `#search:research=${key}`);
+        element.setAttribute(name, value);
     }
-}
-
-
-/***/ }),
-
-/***/ "./src/matrix3/print/index.ts":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   cleanUp: () => (/* binding */ cleanUp),
-/* harmony export */   render: () => (/* binding */ render)
-/* harmony export */ });
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/itaSettings.ts");
-/* harmony import */ var _settings_translations__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/translations.js");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var _links__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/print/links.tsx");
-
-
-
-
-
-
-async function render() {
-    // Editor mode?
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableEditormode == 1 &&
-        (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtargets)("editoritem").length === 0) {
-        (0,_utils__WEBPACK_IMPORTED_MODULE_5__.toggleVis)(document.getElementById("mptStartparse"), "inline-block");
-        addEditor();
-        return;
-    }
-    else if ((0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtargets)("editoritem").length > 0) {
-        (0,_utils__WEBPACK_IMPORTED_MODULE_5__.toggleVis)(document.getElementById("mptStartparse"));
-        removeEditor();
-        await (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.readItinerary)();
-    }
-    bindPageLayout();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableFarerules == 1)
-        bindRulelinks();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].timeformat == "24h")
-        bind24HourTime();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language !== "en" &&
-        _settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language].resultpage !== undefined)
-        bindTranslations("resultpage", _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language, (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.itin, 1).nextElementSibling);
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enablePricebreakdown == 1)
-        bindPriceBreakdown();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableInlineMode == 1)
-        printCPM();
-    (0,_links__WEBPACK_IMPORTED_MODULE_4__.printLinksContainer)();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableSeatguru == 1)
-        bindSeatguru();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enablePlanefinder == 1)
-        bindPlanefinder();
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableWheretocredit == 1)
-        bindWheretocredit();
-}
-function cleanUp() {
-    // empty outputcontainer
-    if (document.getElementById("powertoolslinkcontainer") != undefined) {
-        var div = document.getElementById("powertoolslinkcontainer");
-        div.innerHTML = "";
-    }
-    //  S&D powertool items
-    var elems = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtargets)("powertoolsitem");
-    for (var i = elems.length - 1; i >= 0; i--) {
-        elems[i].parentElement.removeChild(elems[i]);
-    }
-    // S&D price breakdown
-    var pbd = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)("pricebreakdown", 1);
-    if (pbd != undefined)
-        pbd.parentElement.removeChild(pbd);
-}
-function addEditor() {
-    for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin.length; i++) {
-        for (var j = 0; j < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg.length; j++) {
-            var target = findItinTarget(i + 1, j + 1, "cabin").firstElementChild;
-            var tmp = target.innerHTML;
-            var bc = tmp.substr(tmp.length - 2, 1);
-            var cabin = tmp.substr(0, tmp.length - 4);
-            var cabins = [
-                ["Economy", "Y"],
-                ["Premium Economy", "Y+"],
-                ["Business", "C"],
-                ["First", "F"],
-            ];
-            var str = '<select style="width:40px" class="editoritem">';
-            for (var k = 0; k < cabins.length; k++) {
-                str +=
-                    '<option value="' +
-                        cabins[k][0] +
-                        '"' +
-                        (cabins[k][0] === cabin ? ' selected="selected"' : "") +
-                        ">" +
-                        cabins[k][1] +
-                        "</option>";
-            }
-            str += "</select>";
-            str +=
-                ' (<input type="text" class="editoritem" value="' +
-                    bc +
-                    '" style="width:20px;text-align:center">)';
-            target.innerHTML = str;
+};
+const addChildren = (parent, children) => {
+    for (const child of children) {
+        if (child instanceof Node) {
+            parent.appendChild(child);
+        }
+        else if (Array.isArray(child)) {
+            addChildren(parent, child);
+        }
+        else if (typeof child !== 'boolean' &&
+            typeof child !== 'undefined' &&
+            child !== null) {
+            parent.appendChild(document.createTextNode(child));
         }
     }
-}
-function removeEditor() {
-    for (let i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin.length; i++) {
-        for (let j = 0; j < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg.length; j++) {
-            const target = findItinTarget(i + 1, j + 1, "cabin").firstElementChild
-                .firstElementChild;
-            const cabin = target.options[target.selectedIndex].value;
-            const bc = target.nextElementSibling.value;
-            const str = cabin + " (" + bc + ")";
-            target.innerHTML = str;
+};
+const h = (type, attributes, ...children) => {
+    var _a;
+    const element = create(type);
+    addChildren(element, children);
+    if (element instanceof DocumentFragment || !attributes) {
+        return element;
+    }
+    // Set attributes
+    for (let [name, value] of Object.entries(attributes)) {
+        if (name === 'htmlFor') {
+            name = 'for';
+        }
+        if (name === 'class' || name === 'className') {
+            const existingClassname = (_a = element.getAttribute('class')) !== null && _a !== void 0 ? _a : '';
+            setAttribute(element, 'class', (existingClassname + ' ' + String(value)).trim());
+        }
+        else if (name === 'style') {
+            setCSSProps(element, value);
+        }
+        else if (name.startsWith('on')) {
+            const eventName = name.slice(2).toLowerCase().replace(/^-/, '');
+            element.addEventListener(eventName, value);
+        }
+        else if (name === 'dangerouslySetInnerHTML' && '__html' in value) {
+            element.innerHTML = value.__html;
+        }
+        else if (name !== 'key' && value !== false) {
+            setAttribute(element, name, value === true ? '' : value);
         }
     }
-}
-function bindPageLayout() {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.milagecontainer, 1).setAttribute("rowspan", "10");
-    const target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbContainer, 1)
-        .parentElement.parentElement;
-    target.setAttribute("valign", "top");
-    target.setAttribute("height", "100%");
-}
-function bind24HourTime() {
-    // lets do the time-replacement
-    const segs = (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.getCurrentSegs)();
-    if (segs.length > 0) {
-        const target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.itin, 1).nextElementSibling;
-        for (let i = 0; i < segs.length; i++) {
-            target.innerHTML = target.innerHTML.replace(new RegExp(segs[i].dep.timeDisplay, "g"), segs[i].dep.time24);
-            target.innerHTML = target.innerHTML.replace(new RegExp(segs[i].arr.timeDisplay, "g"), segs[i].arr.time24);
-        }
-    }
-}
-function bindRulelinks() {
-    var i = 0;
-    var j = 0;
-    var t = 1;
-    let target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.rulescontainer, t);
-    if (target != undefined) {
-        do {
-            var current = Number(target.firstElementChild.innerHTML.replace(/[^\d]/gi, ""));
-            if (i > current) {
-                j++;
-                i = 0;
-            }
-            target = target.nextElementSibling.nextElementSibling.nextElementSibling;
-            var targeturl = window.location.href.replace(/view-details/, "view-rules") +
-                ";fare-key=" +
-                j +
-                "/" +
-                i;
-            var newlink = document.createElement("a");
-            newlink.setAttribute("class", "gwt-Anchor");
-            newlink.setAttribute("href", targeturl);
-            newlink.setAttribute("target", "_blank");
-            var linkText = document.createTextNode("rules");
-            newlink.appendChild(linkText);
-            target.parentElement.replaceChild(newlink, target);
-            i++;
-            t++;
-            target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.rulescontainer, t);
-        } while (target != undefined);
-    }
-}
-function bindPriceBreakdown() {
-    var basefares = 0;
-    var taxes = 0;
-    var surcharges = 0;
-    var basefound = 0;
-    var cur = "";
-    // define searchpattern to detect carrier imposed surcharges
-    var searchpatt = new RegExp("((YQ|YR))");
-    var t = 1;
-    var target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft, t);
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableInlineMode == 0) {
-        var output = "";
-        var count = 0;
-    }
-    if (target != undefined) {
-        do {
-            var type = target.firstChild.firstChild.nodeType;
-            if (type == 1) {
-                basefound = 1;
-                //it's a basefare
-                var price = Number(target.nextElementSibling.firstElementChild.innerHTML.replace(/[^\d\.]/gi, ""));
-                if (cur == "")
-                    cur = target.nextElementSibling.firstElementChild.innerHTML.replace(/[\d,.]/g, "");
-                basefares += price;
-            }
-            else if (basefound == 1 && type == 3) {
-                //its a pricenode
-                var name = target.firstElementChild.innerHTML;
-                var price = Number(target.nextElementSibling.firstElementChild.innerHTML.replace(/[^\d\.]/gi, ""));
-                if ((0,_utils__WEBPACK_IMPORTED_MODULE_5__.hasClass)(target.nextElementSibling, _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbGreyBorder)) {
-                    //we are done for this container
-                    var sum = basefares + taxes + surcharges;
-                    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableInlineMode == 1) {
-                        var newtr = document.createElement("tr");
-                        newtr.innerHTML =
-                            '<td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft +
-                                '"><div class="gwt-Label">Basefare per passenger (' +
-                                ((basefares / sum) * 100).toFixed(2).toString() +
-                                '%)</div></td><td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbGreyBorder +
-                                '"><div class="gwt-Label">' +
-                                cur +
-                                basefares
-                                    .toFixed(2)
-                                    .toString()
-                                    .replace(/\d(?=(\d{3})+\.)/g, "$&,") +
-                                "</div></td>";
-                        target.parentElement.parentElement.insertBefore(newtr, target.parentElement);
-                        var newtr = document.createElement("tr");
-                        newtr.innerHTML =
-                            '<td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft +
-                                '"><div class="gwt-Label">Taxes per passenger (' +
-                                ((taxes / sum) * 100).toFixed(2).toString() +
-                                '%)</div></td><td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbRight +
-                                '"><div class="gwt-Label">' +
-                                cur +
-                                taxes
-                                    .toFixed(2)
-                                    .toString()
-                                    .replace(/\d(?=(\d{3})+\.)/g, "$&,") +
-                                "</div></td>";
-                        target.parentElement.parentElement.insertBefore(newtr, target.parentElement);
-                        var newtr = document.createElement("tr");
-                        newtr.innerHTML =
-                            '<td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft +
-                                '"><div class="gwt-Label">Surcharges per passenger (' +
-                                ((surcharges / sum) * 100).toFixed(2).toString() +
-                                '%)</div></td><td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbRight +
-                                '"><div class="gwt-Label">' +
-                                cur +
-                                surcharges
-                                    .toFixed(2)
-                                    .toString()
-                                    .replace(/\d(?=(\d{3})+\.)/g, "$&,") +
-                                "</div></td>";
-                        target.parentElement.parentElement.insertBefore(newtr, target.parentElement);
-                        var newtr = document.createElement("tr");
-                        newtr.innerHTML =
-                            '<td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft +
-                                '"><div class="gwt-Label">Basefare + Taxes per passenger (' +
-                                (((basefares + taxes) / sum) * 100).toFixed(2).toString() +
-                                '%)</div></td><td class="' +
-                                _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbGreyBorder +
-                                '"><div class="gwt-Label">' +
-                                cur +
-                                (basefares + taxes)
-                                    .toFixed(2)
-                                    .toString()
-                                    .replace(/\d(?=(\d{3})+\.)/g, "$&,") +
-                                "</div></td>";
-                        target.parentElement.parentElement.insertBefore(newtr, target.parentElement);
-                    }
-                    else {
-                        count++;
-                        output += '<table style="float:left; margin-right:15px;"><tbody>';
-                        output +=
-                            '<tr><td colspan=3 style="text-align:center;">Price breakdown ' +
-                                count +
-                                ": </td></tr>";
-                        output +=
-                            "<tr><td>" +
-                                cur +
-                                ' per mile</td><td colspan=2 style="text-align:center;">' +
-                                (sum / _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.dist / 100).toFixed(4).toString() +
-                                "</td></tr>";
-                        output +=
-                            '<tr><td>Basefare</td><td style="padding:0px 3px;text-align:right;">' +
-                                ((basefares / sum) * 100).toFixed(1).toString() +
-                                '%</td><td style="text-align:right;">' +
-                                cur +
-                                basefares
-                                    .toFixed(2)
-                                    .toString()
-                                    .replace(/\d(?=(\d{3})+\.)/g, "$&,") +
-                                "</td></tr>";
-                        output +=
-                            '<tr><td>Tax</td><td style="padding:0px 3px;text-align:right;">' +
-                                ((taxes / sum) * 100).toFixed(1).toString() +
-                                '%</td><td style="text-align:right;">' +
-                                cur +
-                                taxes
-                                    .toFixed(2)
-                                    .toString()
-                                    .replace(/\d(?=(\d{3})+\.)/g, "$&,") +
-                                "</td></tr>";
-                        output +=
-                            '<tr><td>Surcharges</td><td style="padding:0px 3px;text-align:right;">' +
-                                ((surcharges / sum) * 100).toFixed(1).toString() +
-                                '%</td><td style="text-align:right;">' +
-                                cur +
-                                surcharges
-                                    .toFixed(2)
-                                    .toString()
-                                    .replace(/\d(?=(\d{3})+\.)/g, "$&,") +
-                                "</td></tr>";
-                        output +=
-                            '<tr><td style="border-top: 1px solid #878787;padding:2px 0">Bf+Tax</td><td style="border-top: 1px solid #878787;padding:2px 3px;text-align:right;">' +
-                                (((basefares + taxes) / sum) * 100).toFixed(1).toString() +
-                                '%</td><td style="border-top: 1px solid #878787;padding:2px 0; text-align:right;">' +
-                                cur +
-                                (basefares + taxes)
-                                    .toFixed(2)
-                                    .toString()
-                                    .replace(/\d(?=(\d{3})+\.)/g, "$&,") +
-                                "</td></tr>";
-                        output += "</tbody></table>";
-                    }
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.basefares = +basefares.toFixed(2);
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.taxes = +taxes.toFixed(2);
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.surcharges = +surcharges.toFixed(2);
-                    // reset var
-                    basefound = 0;
-                    basefares = 0;
-                    taxes = 0;
-                    surcharges = 0;
-                }
-                else {
-                    //Carrier surcharge?
-                    if (searchpatt.test(name) === true) {
-                        surcharges += price;
-                    }
-                    else {
-                        taxes += price;
-                    }
-                }
-            }
-            t++;
-            target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbLeft, t);
-        } while (target != undefined);
-    }
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].enableInlineMode == 0) {
-        var printtarget = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.htbContainer, 1)
-            .parentElement.parentElement.parentElement;
-        var newtr = document.createElement("tr");
-        newtr.setAttribute("class", "pricebreakdown");
-        newtr.innerHTML = "<td><div>" + output + "</div></td>";
-        printtarget.parentElement.insertBefore(newtr, printtarget);
-    }
-}
-function bindTranslations(page, lang, target) {
-    if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][lang] === undefined) {
-        (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Translation " + lang + " not found");
-        return false;
-    }
-    if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][lang][page] === undefined) {
-        (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Translation " + lang + " not found for page " + page);
-        return false;
-    }
-    for (let i in _settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][lang][page]) {
-        const re = new RegExp(i, "g");
-        target.innerHTML = target.innerHTML.replace(re, _settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][lang][page][i]);
-    }
-}
-function printCPM() {
-    document
-        .querySelector(".KIR33AB-y-c:nth-of-type(1)")
-        .insertAdjacentHTML("beforeend", `<li class="powertoolsitem">${(Number(_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.price) / Number(_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.dist)).toFixed(4)} cpm</li>`);
-}
-function bindSeatguru() {
-    for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin.length; i++) {
-        // walks each leg
-        for (var j = 0; j < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg.length; j++) {
-            //walks each segment of leg
-            var k = 0;
-            // lets have a look if we need to skip segments - Flightnumber has to be the same and it must be just a layover
-            while (j + k < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg.length - 1) {
-                if (_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j + k].fnr !=
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j + k + 1].fnr ||
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j + k].layoverduration >= 1440)
-                    break;
-                k++;
-            }
-            // build the search to identify flight:
-            var target = findItinTarget(i + 1, j + 1, "plane");
-            if (!target) {
-                (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Could not find target in bindSeatguru");
-                return false;
-            }
-            else {
-                var url = "http://www.seatguru.com/findseatmap/findseatmap.php?carrier=" +
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].carrier +
-                    "&flightno=" +
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].fnr +
-                    "&date=" +
-                    ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].dep.month).slice(-2) +
-                    "%2F" +
-                    ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].dep.day).slice(-2) +
-                    "%2F" +
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].dep.year +
-                    "&to=&from=" +
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].orig;
-                target.children[0].classList.add("pt-textlink");
-                target.children[0].innerHTML =
-                    '<a href="' +
-                        url +
-                        '" target="_blank">' +
-                        target.children[0].innerHTML +
-                        "</a>";
-            }
-            j += k;
-        }
-    }
-}
-function bindPlanefinder() {
-    for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin.length; i++) {
-        // walks each leg
-        for (var j = 0; j < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg.length; j++) {
-            //walks each segment of leg
-            var k = 0;
-            // lets have a look if we need to skip segments - Flightnumber has to be the same and it must be just a layover
-            while (j + k < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg.length - 1) {
-                if (_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j + k].fnr !=
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j + k + 1].fnr ||
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j + k].layoverduration >= 1440)
-                    break;
-                k++;
-            }
-            // build the search to identify flight:
-            var target = findItinTarget(i + 1, j + 1, "flight");
-            if (!target) {
-                (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Could not find target in bindPlanefinder");
-                return false;
-            }
-            else {
-                var url = "http://www.planefinder.net/data/flight/" +
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].carrier +
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].fnr;
-                target.children[0].classList.add("pt-textlink");
-                target.children[0].innerHTML =
-                    '<a href="' +
-                        url +
-                        '" target="_blank">' +
-                        target.children[0].innerHTML +
-                        "</a>";
-            }
-            j += k;
-        }
-    }
-}
-function bindWheretocredit() {
-    for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin.length; i++) {
-        // walks each leg
-        for (var j = 0; j < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg.length; j++) {
-            //walks each segment of leg
-            var target = findItinTarget(i + 1, j + 1, "cabin");
-            if (!target) {
-                (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Could not find target in bindWheretocredit");
-                return false;
-            }
-            else {
-                var url = "http://www.wheretocredit.com/" +
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].carrier.toLowerCase() +
-                    "/" +
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].bookingclass.toLowerCase();
-                target.children[0].classList.add("pt-textlink");
-                target.children[0].innerHTML = target.children[0].innerHTML
-                    .replace(/<a.*?\/a>/, "(" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].bookingclass + ")")
-                    .replace("(" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].bookingclass + ")", '<a href="' +
-                    url +
-                    '" target="_blank">(' +
-                    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin[i].seg[j].bookingclass +
-                    ")</a>");
-            }
-        }
-    }
-}
-function findItinTarget(leg, seg, tcell) {
-    var target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.itin, 1);
-    if (!target) {
-        (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Itin not found in findItinTarget-function");
-        return;
-    }
-    // go to leg
-    var targetLeg = target.nextElementSibling.children[leg - 1];
-    if (targetLeg === undefined) {
-        (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Leg not found in findItinTarget-function");
-        return;
-    }
-    // go to segments of leg
-    var targetSeg = targetLeg.children[1].children;
-    if (targetSeg.length >= 2) {
-        // go to desired segment
-        var index = 0;
-        var j = 0;
-        let i = 0;
-        for (i = 0; i < targetSeg.length; i++) {
-            if ((0,_utils__WEBPACK_IMPORTED_MODULE_5__.hasClass)(targetSeg[i], _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].resultpage.itinRow)) {
-                j++;
-                if (j >= seg) {
-                    index = i;
-                    //special handling for one-seg-legs here
-                    if (targetSeg.length === 2 || targetSeg.length === 3) {
-                        // 1. Headline 2. Flight-details 3. arrival next day..
-                        index--;
-                    }
-                    break;
-                }
-            }
-        } // end-for
-        if (i == targetSeg.length) {
-            //target not found
-            (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Call to unreachable Segment in Leg " +
-                leg +
-                " in findItinTarget-function");
-            return;
-        }
-        var rowoffset = 0;
-        var columnoffset = 0;
-        switch (tcell) {
-            case "headline":
-                // special case here allways first row... even in one-seg-legs
-                rowoffset = index * -1;
-                columnoffset = 1;
-                break;
-            case "logo":
-                rowoffset = 0;
-                columnoffset = 0;
-                break;
-            case "airportsdate":
-                rowoffset = 0;
-                columnoffset = 1;
-                break;
-            case "flight":
-                rowoffset = 1;
-                columnoffset = 0;
-                break;
-            case "deptime":
-                rowoffset = 1;
-                columnoffset = 1;
-                break;
-            case "arrtime":
-                rowoffset = 1;
-                columnoffset = 2;
-                break;
-            case "duration":
-                rowoffset = 1;
-                columnoffset = 2;
-                break;
-            case "plane":
-                rowoffset = 1;
-                columnoffset = 4;
-                break;
-            case "cabin":
-                rowoffset = 1;
-                columnoffset = 5;
-                break;
-            default:
-                (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Unknown Target in findItinTarget-function");
-                return;
-        }
-        return targetSeg[index + rowoffset].children[columnoffset];
-    }
-    else {
-        (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Unknown error in findItinTarget-function");
-        return;
-    }
-}
+    return element;
+};
+// Improve TypeScript support for DocumentFragment
+// https://github.com/Microsoft/TypeScript/issues/20469
+const React = {
+    createElement: h,
+    Fragment: typeof DocumentFragment === 'function' ? DocumentFragment : () => { }
+};
+
+/* harmony default export */ const dom_chef = (React);
 
 
-/***/ }),
-
-/***/ "./src/matrix3/print/links.tsx":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   printLinksContainer: () => (/* binding */ printLinksContainer),
-/* harmony export */   registerLink: () => (/* binding */ registerLink)
-/* harmony export */ });
-/* unused harmony exports printImage, getSidebarContainer */
-/* harmony import */ var dom_chef__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./node_modules/dom-chef/index.js");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/itaSettings.ts");
-/* harmony import */ var _settings_translations__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/settings/translations.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var _unsafe_policy__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/unsafe-policy.ts");
-
+// EXTERNAL MODULE: ./src/matrix5/settings/userSettings.js
+var userSettings = __webpack_require__("./src/matrix5/settings/userSettings.js");
+// EXTERNAL MODULE: ./src/matrix5/settings/itaSettings.ts
+var itaSettings = __webpack_require__("./src/matrix5/settings/itaSettings.ts");
+// EXTERNAL MODULE: ./src/matrix5/utils.js
+var utils = __webpack_require__("./src/matrix5/utils.js");
+// EXTERNAL MODULE: ./src/unsafe-policy.ts
+var unsafe_policy = __webpack_require__("./src/unsafe-policy.ts");
+;// CONCATENATED MODULE: ./src/matrix5/print/links.tsx
 
 
 
 
 
 const links = {};
-__webpack_require__("./src/matrix3/links/index.ts");
+__webpack_require__("./src/matrix5/links/index.ts");
 /**
  * Registers a link
  */
@@ -6309,16 +4254,16 @@ function registerLink(type, factory) {
 }
 function printLinksContainer() {
     // do nothing if editor mode is active
-    if ((0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtargets)("editoritem").length > 0) {
+    if ((0,utils.findtargets)("editoritem").length > 0) {
         return;
     }
     // empty outputcontainer
     const div = getSidebarContainer();
     if (!div)
         return;
-    div.innerHTML = (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_4__.unsafeHTML)("");
+    div.innerHTML = (0,unsafe_policy.unsafeHTML)("");
     //  S&D powertool items
-    const elems = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtargets)("powertoolsitem");
+    const elems = (0,utils.findtargets)("powertoolsitem");
     for (let i = elems.length - 1; i >= 1; i--) {
         elems[i].parentElement.removeChild(elems[i]);
     }
@@ -6335,82 +4280,61 @@ function printLinksContainer() {
             if (link.img) {
                 printImage(link);
             }
-            else if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].enableInlineMode !== 0) {
+            else {
                 printUrlInline(link);
             }
-            else {
-                printUrl(link);
-            }
         });
-        _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].enableDeviders !== 0 &&
-            links[group].length &&
-            i != groups.length - 1 &&
-            printSeperator();
+        links[group].length && i != groups.length - 1 && printSeperator();
     });
 }
 // Inline Stuff
 function printUrlInline(link) {
-    const item = dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("li", { class: "powertoolsitem" }, printLink(link));
+    const item = dom_chef.createElement("li", { class: "powertoolsitem" }, printLink(link));
     const container = getSidebarContainer();
     container && container.appendChild(item);
 }
 function printImage(link) {
     const container = getSidebarContainer();
-    let item = (dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("img", { src: link.img, style: { marginTop: "10px" }, class: !link.url ? "powertoolsitem" : "" }));
+    let item = (dom_chef.createElement("img", { src: link.img, style: { marginTop: "10px" }, class: !link.url ? "powertoolsitem" : "" }));
     if (link.url) {
-        item = (dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("a", { href: link.url, target: "_blank", class: "powertoolsitem" }, item));
+        item = (dom_chef.createElement("a", { href: link.url, target: "_blank", class: "powertoolsitem" }, item));
     }
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].enableIMGautoload == 1) {
+    if (userSettings["default"].enableIMGautoload == 1) {
         container && container.appendChild(item);
     }
     else {
         const id = Math.random().toString();
         container &&
-            container.appendChild(dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("div", { id: id, class: "powertoolsitem powertoolsimage", onClick: () => {
+            container.appendChild(dom_chef.createElement("div", { id: id, class: "powertoolsitem powertoolsimage", onClick: () => {
                     this.outerHTML = item;
                 } },
-                dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("span", null, link.title)));
+                dom_chef.createElement("span", null, link.title)));
     }
 }
 function getSidebarContainer() {
     return (document.getElementById("powertoolslinkcontainer") ||
-        (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].enableInlineMode !== 0 || _settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__["default"].matrixVersion == 5
-            ? createUrlContainerInline()
-            : createUrlContainer()));
+        createUrlContainerInline());
 }
 function createUrlContainerInline() {
-    const target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__["default"].resultpage.mcDiv, 1);
+    const target = (0,utils.findtarget)(itaSettings["default"].resultpage.mcDiv, 1);
     if (!target)
         return;
-    if (_settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__["default"].matrixVersion == 5) {
-        const matCard = (dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("mat-card", { class: "mat-card mat-focus-indicator mat-elevation-z8 powertoolslinkinlinecontainer" },
-            dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("h2", { class: _settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__["default"].resultpage.mcHeader }, "Powertools"),
-            dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("ul", { id: "powertoolslinkcontainer", style: { paddingLeft: "20px" } })));
-        target.prepend(matCard);
-    }
-    else {
-        const newdiv = (dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("div", { class: `${_settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__["default"].resultpage.mcDiv} powertoolslinkinlinecontainer` },
-            dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("div", { class: _settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__["default"].resultpage.mcHeader }, "Powertools"),
-            dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("ul", { id: "powertoolslinkcontainer", class: _settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__["default"].resultpage.mcLinkList })));
-        target.parentElement.appendChild(newdiv);
-    }
+    const matCard = (dom_chef.createElement("mat-card", { class: "mat-mdc-card mdc-card mat-elevation-z8 powertoolslinkinlinecontainer" },
+        dom_chef.createElement("mat-card-content", { class: "mat-mdc-card-content" },
+            dom_chef.createElement("h2", { class: itaSettings["default"].resultpage.mcHeader }, "Powertools"),
+            dom_chef.createElement("ul", { id: "powertoolslinkcontainer", style: { paddingLeft: "20px" } }))));
+    target.prepend(matCard);
     return document.getElementById("powertoolslinkcontainer");
-}
-// Printing Stuff
-function printUrl(link) {
-    const item = (dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("div", { class: "powertoolsitem", style: { margin: "5px 0px 10px 0px" } }, printLink(link)));
-    const container = getSidebarContainer();
-    container && container.appendChild(item);
 }
 function printLink(link) {
     const extra = document.createElement("div");
-    link.extra && extra.insertAdjacentHTML("beforeend", (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_4__.unsafeHTML)(link.extra));
-    return (dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("div", null,
-        dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("label", { style: { fontSize: `${Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].linkFontsize)}%` } },
-            dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("a", { href: link.url, target: "_blank", onClick: (e) => {
+    link.extra && extra.insertAdjacentHTML("beforeend", (0,unsafe_policy.unsafeHTML)(link.extra));
+    return (dom_chef.createElement("div", null,
+        dom_chef.createElement("label", { style: { fontSize: `${Number(userSettings["default"].linkFontsize)}%` } },
+            dom_chef.createElement("a", { href: link.url, target: "_blank", onClick: (e) => {
                     var _a;
                     (_a = link.onclick) === null || _a === void 0 ? void 0 : _a.apply(this, e);
-                    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].enableAffiliates !== 0) {
+                    if (userSettings["default"].enableAffiliates !== 0) {
                         e.preventDefault();
                         window.open(`https://go.skimresources.com/?id=${!!location.hostname.match(/^old/i)
                             ? "122783X1686784"
@@ -6419,51 +4343,71 @@ function printLink(link) {
                     }
                     return true;
                 } },
-                (_settings_translations__WEBPACK_IMPORTED_MODULE_3__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language] &&
-                    _settings_translations__WEBPACK_IMPORTED_MODULE_3__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language]["use"]) ||
-                    "Use ",
-                " ",
+                "Use ",
                 link.title)),
         (extra === null || extra === void 0 ? void 0 : extra.childNodes) && Array.from(extra.childNodes),
-        link.desc && (dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement(dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].Fragment, null,
-            dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("br", null),
-            dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("label", { style: {
-                    fontSize: `${Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].linkFontsize) - 15}%`,
+        link.desc && (dom_chef.createElement(dom_chef.Fragment, null,
+            dom_chef.createElement("br", null),
+            dom_chef.createElement("label", { style: {
+                    fontSize: `${Number(userSettings["default"].linkFontsize) - 15}%`,
                 } }, link.desc)))));
-}
-function createUrlContainer() {
-    const target = (0,_utils__WEBPACK_IMPORTED_MODULE_5__.findtarget)(_settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__["default"].resultpage.milagecontainer, 1);
-    if (!target)
-        return;
-    const newdiv = (dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("div", { id: "powertoolslinkcontainer", style: { margin: "15px 0px 0px 10px" } }));
-    return target.appendChild(newdiv);
 }
 function printSeperator() {
     const container = getSidebarContainer();
-    container &&
-        container.appendChild(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].enableInlineMode ? dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("hr", { class: "powertoolsitem" }) : dom_chef__WEBPACK_IMPORTED_MODULE_0__["default"].createElement("hr", null));
+    container && container.appendChild(dom_chef.createElement("hr", { class: "powertoolsitem" }));
 }
 
 
 /***/ }),
 
-/***/ "./src/matrix3/print/settings.ts":
+/***/ "./src/matrix5/print/settings.ts":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   createUsersettings: () => (/* binding */ createUsersettings),
-/* harmony export */   processPassengers: () => (/* binding */ processPassengers)
-/* harmony export */ });
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/itaSettings.ts");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/settings/paxSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/print/index.ts");
-/* harmony import */ var _links__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("./src/matrix3/print/links.tsx");
-/* harmony import */ var _unsafe_policy__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__("./src/unsafe-policy.ts");
 
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, {
+  createUsersettings: () => (/* binding */ createUsersettings)
+});
+
+// UNUSED EXPORTS: processPassengers
+
+// EXTERNAL MODULE: ./src/matrix5/settings/appSettings.ts
+var appSettings = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+// EXTERNAL MODULE: ./src/matrix5/settings/userSettings.js
+var userSettings = __webpack_require__("./src/matrix5/settings/userSettings.js");
+// EXTERNAL MODULE: ./src/matrix5/settings/paxSettings.js
+var paxSettings = __webpack_require__("./src/matrix5/settings/paxSettings.js");
+// EXTERNAL MODULE: ./src/matrix5/utils.js
+var utils = __webpack_require__("./src/matrix5/utils.js");
+// EXTERNAL MODULE: ./src/matrix5/print/links.tsx + 1 modules
+var links = __webpack_require__("./src/matrix5/print/links.tsx");
+;// CONCATENATED MODULE: ./src/matrix5/print/index.ts
+
+
+async function render() {
+    (0,links.printLinksContainer)();
+}
+function cleanUp() {
+    // empty outputcontainer
+    if (document.getElementById("powertoolslinkcontainer") != undefined) {
+        var div = document.getElementById("powertoolslinkcontainer");
+        div.innerHTML = "";
+    }
+    //  S&D powertool items
+    var elems = findtargets("powertoolsitem");
+    for (var i = elems.length - 1; i >= 0; i--) {
+        elems[i].parentElement.removeChild(elems[i]);
+    }
+    // S&D price breakdown
+    var pbd = findtarget("pricebreakdown", 1);
+    if (pbd != undefined)
+        pbd.parentElement.removeChild(pbd);
+}
+
+// EXTERNAL MODULE: ./src/unsafe-policy.ts
+var unsafe_policy = __webpack_require__("./src/unsafe-policy.ts");
+;// CONCATENATED MODULE: ./src/matrix5/print/settings.ts
 
 
 
@@ -6477,16 +4421,15 @@ function createUsersettings(target) {
     var settingscontainer = document.createElement("div");
     settingscontainer.setAttribute("id", "mptSettingsContainer");
     settingscontainer.setAttribute("style", "border-bottom: 1px dashed grey;");
-    settingscontainer.innerHTML = (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_6__.unsafeHTML)('<div style="display:inline-block;float:left;cursor:pointer;" id="passengerVisToggler">Passengers (<label id="mtpPaxCount">1a</label>)</div><div id="mptStartparse" class="invis" style="margin-left:20px;display:none;cursor:pointer">Editor-Mode:Parse!</div><div id="mtpNotification" style="margin-left:50px;display:inline-block;"></div><div style="display:inline-block;float:right;"><div id="settingsVisToggler" style="display:inline-block;cursor:pointer;">Settings</div> (v' +
-        _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].version +
-        (_settings_itaSettings__WEBPACK_IMPORTED_MODULE_1__["default"].matrixVersion == 5 ? " **Matrix 5 BETA**" : "") +
+    settingscontainer.innerHTML = (0,unsafe_policy.unsafeHTML)('<div style="display:inline-block;float:left;cursor:pointer;" id="passengerVisToggler">Passengers (<label id="mtpPaxCount">1a</label>)</div><div id="mptStartparse" class="invis" style="margin-left:20px;display:none;cursor:pointer">Editor-Mode:Parse!</div><div id="mtpNotification" style="margin-left:50px;display:inline-block;"></div><div style="display:inline-block;float:right;"><div id="settingsVisToggler" style="display:inline-block;cursor:pointer;">Settings</div> (v' +
+        appSettings["default"].version +
         ') <div id="mptCabintoggler" style="display:inline-block;">(Cabin: <span id="mptcabin"><label style="width:30px;text-align:center;cursor:pointer;display:inline-block">Auto</label></span>)</div></div><div id="mptSettings" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div id="mptPassengers" class="invis" style="display:none;border-top: 1px dotted grey;"></div><div style="clear:both;"></div>');
     target.parentElement.insertBefore(settingscontainer, target);
     document.getElementById("settingsVisToggler").onclick = function () {
-        (0,_utils__WEBPACK_IMPORTED_MODULE_7__.toggleVis)(document.getElementById("mptSettings"));
+        (0,utils.toggleVis)(document.getElementById("mptSettings"));
     };
     document.getElementById("passengerVisToggler").onclick = function () {
-        (0,_utils__WEBPACK_IMPORTED_MODULE_7__.toggleVis)(document.getElementById("mptPassengers"));
+        (0,utils.toggleVis)(document.getElementById("mptPassengers"));
     };
     // Build settings
     target = document.getElementById("mptSettings");
@@ -6495,81 +4438,24 @@ function createUsersettings(target) {
     str +=
         '<div style="text-align:center;font-weight:bold">**** Display Settings: ****</div>';
     str += '<div style="margin:5px 0;"><div style="float:left;width:33%">';
-    str +=
-        '<div id="mptenableDarkmode">Dark mode: <label style="cursor:pointer;">' +
-            printSettingsvalue("enableDarkmode") +
-            "</label></div>";
-    str +=
-        '<div id="mpttimeformat">Time Format: <label style="cursor:pointer;">' +
-            printSettingsvalue("timeformat") +
-            "</label></div>";
-    str +=
-        '<div id="mptlanguage">Language: <label style="cursor:pointer;">' +
-            printSettingsvalue("language") +
-            "</label></div>";
-    str +=
-        '<div id="mptenableFarerules">Open rules in new window: <label style="cursor:pointer;">' +
-            printSettingsvalue("enableFarerules") +
-            "</label></div>";
     str += '</div><div style="float:left;width:33%">';
-    str +=
-        '<div id="mptenableInlineMode">Inline Mode: <label style="cursor:pointer;">' +
-            printSettingsvalue("enableInlineMode") +
-            "</label></div>";
     str +=
         '<div id="mptenableIMGautoload">Images autoload: <label style="cursor:pointer;">' +
             printSettingsvalue("enableIMGautoload") +
             "</label></div>";
     str +=
-        '<div id="mptenablePricebreakdown">Price breakdown: <label style="cursor:pointer;">' +
-            printSettingsvalue("enablePricebreakdown") +
+        '<div id="mptshowAllAirlines">Show all airline links: <label style="cursor:pointer;">' +
+            printSettingsvalue("showAllAirlines") +
             "</label></div>";
     str += '</div><div style="float:left;width:33%">';
-    str +=
-        '<div id="mptenableDeviders">Enable link dividers: <label style="cursor:pointer;">' +
-            printSettingsvalue("enableDeviders") +
-            "</label></div>";
     str +=
         '<div id="mptlinkFontsize">Link font size: <label style="cursor:pointer;">' +
             printSettingsvalue("linkFontsize") +
             "</label>%</div>";
-    str +=
-        '<div id="mptshowAllAirlines">Show all airline links: <label style="cursor:pointer;">' +
-            printSettingsvalue("showAllAirlines") +
-            "</label></div>";
-    str += '</div><div style="clear:both"></div></div>';
-    str +=
-        '<div style="text-align:center;font-weight:bold">**** Feature Settings: ****</div>';
-    str += '<div style="margin:5px 0"><div style="float:left;width:33%">';
-    str +=
-        '<div id="mptenableEditormode">Editor mode: <label style="cursor:pointer;">' +
-            printSettingsvalue("enableEditormode") +
-            "</label></div>";
-    str +=
-        '<div id="mptenableMultiSearch">Multi-search & share (experimental): <label style="cursor:pointer;">' +
-            printSettingsvalue("enableMultiSearch") +
-            "</label></div>";
     str += '</div><div style="float:left;width:33%">';
     str +=
         '<div id="mptenableAffiliates" title="Enables affiliate links to support the development of ITA Matrix Powertools">Support this tool: <label style="cursor:pointer;">' +
             printSettingsvalue("enableAffiliates") +
-            "</label></div>";
-    str +=
-        '<div id="mptenableHistory">Search history (experimental): <label style="cursor:pointer;">' +
-            printSettingsvalue("enableHistory") +
-            "</label></div>";
-    str += '</div><div style="float:left;width:33%">';
-    str +=
-        '<div id="mptenableWheretocredit">Enable WhereToCredit: <label style="cursor:pointer;">' +
-            printSettingsvalue("enableWheretocredit") +
-            "</label></div>";
-    str +=
-        '<div id="mptenablePlanefinder">Enable Planefinder: <label style="cursor:pointer;">' +
-            printSettingsvalue("enablePlanefinder") +
-            "</label></div>";
-    str +=
-        '<div id="mptenableSeatguru">Enable Seatguru: <label style="cursor:pointer;">' +
-            printSettingsvalue("enableSeatguru") +
             "</label></div>";
     str += '</div><div style="clear:both"></div></div>';
     str +=
@@ -6577,64 +4463,25 @@ function createUsersettings(target) {
     str +=
         '<div style="text-align:center;font-style:italic;">Disclosure: Some of these links are affiliate links</div>';
     str += '<div style="margin:5px 0">';
-    Object.keys(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings).forEach((setting) => {
-        str += `<div id="mpt${setting}" style="width:33%;float:left;">${_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[setting].name}: <label style="cursor:pointer;">${printSettingsvalue(setting)}</label></div>`;
+    Object.keys(userSettings.registeredSettings).forEach((setting) => {
+        str += `<div id="mpt${setting}" style="width:33%;float:left;">${userSettings.registeredSettings[setting].name}: <label style="cursor:pointer;">${printSettingsvalue(setting)}</label></div>`;
     });
     str += '<div style="clear:both"></div></div>';
     str +=
         '<div style="text-align:center;font-weight:bold"><label id="configcloser" style="cursor:pointer;text-decoration:underline;">Close</label><div>';
-    target.innerHTML = (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_6__.unsafeHTML)(str);
+    target.innerHTML = (0,unsafe_policy.unsafeHTML)(str);
     // these onClick event handlers need only be added once:
     document.getElementById("mptrestoredefault").onclick = function () {
         restoreDefaultSettings();
     };
-    document.getElementById("mptenableDarkmode").onclick = function () {
-        toggleSettings("enableDarkmode");
-    };
-    document.getElementById("mpttimeformat").onclick = function () {
-        toggleSettings("timeformat");
-    };
-    document.getElementById("mptlanguage").onclick = function () {
-        toggleSettings("language");
-    };
-    document.getElementById("mptenableDeviders").onclick = function () {
-        toggleSettings("enableDeviders");
-    };
-    document.getElementById("mptenableInlineMode").onclick = function () {
-        toggleSettings("enableInlineMode");
-    };
-    document.getElementById("mptenableEditormode").onclick = function () {
-        toggleSettings("enableEditormode");
-    };
-    document.getElementById("mptenableMultiSearch").onclick = function () {
-        toggleSettings("enableMultiSearch");
-    };
-    document.getElementById("mptenableHistory").onclick = function () {
-        toggleSettings("enableHistory");
-    };
     document.getElementById("mptenableIMGautoload").onclick = function () {
         toggleSettings("enableIMGautoload");
-    };
-    document.getElementById("mptenableFarerules").onclick = function () {
-        toggleSettings("enableFarerules");
-    };
-    document.getElementById("mptenablePricebreakdown").onclick = function () {
-        toggleSettings("enablePricebreakdown");
     };
     document.getElementById("mptlinkFontsize").onclick = function () {
         toggleSettings("linkFontsize");
     };
     document.getElementById("mptshowAllAirlines").onclick = function () {
         toggleSettings("showAllAirlines");
-    };
-    document.getElementById("mptenablePlanefinder").onclick = function () {
-        toggleSettings("enablePlanefinder");
-    };
-    document.getElementById("mptenableSeatguru").onclick = function () {
-        toggleSettings("enableSeatguru");
-    };
-    document.getElementById("mptenableWheretocredit").onclick = function () {
-        toggleSettings("enableWheretocredit");
     };
     document.getElementById("mptenableAffiliates").onclick = function () {
         toggleSettings("enableAffiliates");
@@ -6643,14 +4490,14 @@ function createUsersettings(target) {
         toggleSettings("cabin");
     };
     document.getElementById("configcloser").onclick = function () {
-        (0,_utils__WEBPACK_IMPORTED_MODULE_7__.toggleVis)(document.getElementById("mptSettings"));
+        (0,utils.toggleVis)(document.getElementById("mptSettings"));
     };
     document.getElementById("mptStartparse").onclick = function () {
         setTimeout(async function () {
-            await (0,___WEBPACK_IMPORTED_MODULE_4__.render)();
+            await render();
         }, 50);
     };
-    Object.keys(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings).forEach((setting) => {
+    Object.keys(userSettings.registeredSettings).forEach((setting) => {
         document.getElementById("mpt" + setting).onclick = function () {
             toggleSettings(setting);
         };
@@ -6727,15 +4574,15 @@ function createUsersettings(target) {
     str +=
         '<div style="width:150px;margin:2px 0"><div id="mtpConfirmPax" style="float:left;width:50%;text-align:center;cursor:pointer;font-weight:bold">Confirm</div><div id="mtpCancelPax" style="float:left;width:50%;text-align:center;cursor:pointer;font-weight:bold">Cancel</div></div>';
     str += '</div><div style="clear:both;"></div>';
-    target.innerHTML = (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_6__.unsafeHTML)(str);
+    target.innerHTML = (0,unsafe_policy.unsafeHTML)(str);
     document.getElementById("mtpCancelPax").onclick = function () {
-        (0,_utils__WEBPACK_IMPORTED_MODULE_7__.toggleVis)(document.getElementById("mptPassengers"));
+        (0,utils.toggleVis)(document.getElementById("mptPassengers"));
     };
     document.getElementById("mtpConfirmPax").onclick = function () {
         processPassengers();
-        (0,_utils__WEBPACK_IMPORTED_MODULE_7__.toggleVis)(document.getElementById("mptPassengers"));
+        (0,utils.toggleVis)(document.getElementById("mptPassengers"));
         // reload links
-        (0,_links__WEBPACK_IMPORTED_MODULE_5__.printLinksContainer)();
+        (0,links.printLinksContainer)();
     };
 }
 function restoreDefaultSettings() {
@@ -6743,7 +4590,7 @@ function restoreDefaultSettings() {
     if (window.confirm("Are you sure you want to reset any saved settings to the default values? The page will automatically reload to complete the reset.")) {
         (async () => {
             if (typeof GM === "undefined" || typeof GM.info != "undefined") {
-                await (0,_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.saveUserSettings)(null);
+                await (0,userSettings.saveUserSettings)(null);
             }
             // Reload the current page:
             window.location.reload();
@@ -6752,120 +4599,100 @@ function restoreDefaultSettings() {
 }
 function toggleSettings(target) {
     console.log("toggleSettings called. target=" + target);
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target] && _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values) {
-        const pos = findPositionForValue(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target], _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values);
-        if (pos >= _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values.length - 1 || pos === -1) {
-            _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target] = _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values[0].value;
+    if (userSettings.registeredSettings[target] && userSettings.registeredSettings[target].values) {
+        const pos = findPositionForValue(userSettings["default"][target], userSettings.registeredSettings[target].values);
+        if (pos >= userSettings.registeredSettings[target].values.length - 1 || pos === -1) {
+            userSettings["default"][target] = userSettings.registeredSettings[target].values[0].value;
         }
         else {
-            _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target] =
-                _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values[pos + 1].value;
+            userSettings["default"][target] =
+                userSettings.registeredSettings[target].values[pos + 1].value;
         }
     }
     else {
         switch (target) {
-            case "timeformat":
-                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].timeformat == "12h") {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].timeformat = "24h";
-                }
-                else {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].timeformat = "12h";
-                }
-                break;
-            case "language":
-                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].language == "de") {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].language = "en";
-                }
-                else {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].language = "de";
-                }
-                break;
             case "linkFontsize":
-                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].linkFontsize <= 190 &&
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].linkFontsize >= 50) {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].linkFontsize += 10;
+                if (userSettings["default"].linkFontsize <= 190 &&
+                    userSettings["default"].linkFontsize >= 50) {
+                    userSettings["default"].linkFontsize += 10;
                 }
                 else {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].linkFontsize = 50;
+                    userSettings["default"].linkFontsize = 50;
                 }
                 break;
             case "cabin":
-                if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Auto") {
-                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin = "Y";
+                if (appSettings["default"].cabin === "Auto") {
+                    appSettings["default"].cabin = "Y";
                 }
-                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Y") {
-                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin = "Y+";
+                else if (appSettings["default"].cabin === "Y") {
+                    appSettings["default"].cabin = "Y+";
                 }
-                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "Y+") {
-                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin = "C";
+                else if (appSettings["default"].cabin === "Y+") {
+                    appSettings["default"].cabin = "C";
                 }
-                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "C") {
-                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin = "F";
+                else if (appSettings["default"].cabin === "C") {
+                    appSettings["default"].cabin = "F";
                 }
-                else if (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin === "F") {
-                    _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin = "Auto";
+                else if (appSettings["default"].cabin === "F") {
+                    appSettings["default"].cabin = "Auto";
                 }
                 // refresh links
-                (0,_links__WEBPACK_IMPORTED_MODULE_5__.printLinksContainer)();
+                (0,links.printLinksContainer)();
                 break;
             default:
-                if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target] == 1) {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target] = 0;
+                if (userSettings["default"][target] == 1) {
+                    userSettings["default"][target] = 0;
                 }
                 else {
-                    _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target] = 1;
+                    userSettings["default"][target] = 1;
                 }
         }
     }
     document.getElementById("mpt" + target).firstElementChild.innerHTML =
-        (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_6__.unsafeHTML)(printSettingsvalue(target));
-    (0,_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.saveUserSettings)();
+        (0,unsafe_policy.unsafeHTML)(printSettingsvalue(target));
+    (0,userSettings.saveUserSettings)();
 }
 function processPassengers() {
     let e = document.getElementById("numAdults");
-    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].adults = Number(e.options[e.selectedIndex].value);
+    paxSettings["default"].adults = Number(e.options[e.selectedIndex].value);
     e = document.getElementById("numInfantsLap");
-    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsLap = Number(e.options[e.selectedIndex].value);
+    paxSettings["default"].infantsLap = Number(e.options[e.selectedIndex].value);
     e = document.getElementById("numInfantsSeat");
-    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsSeat = Number(e.options[e.selectedIndex].value);
-    _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].cAges = new Array();
+    paxSettings["default"].infantsSeat = Number(e.options[e.selectedIndex].value);
+    paxSettings["default"].cAges = new Array();
     for (let i = 1; i <= 8; i++) {
         processChild("child" + i + "age");
     }
-    const paxText = _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].adults +
+    const paxText = paxSettings["default"].adults +
         "a" +
-        (_settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].cAges.length > 0
-            ? " " + _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].cAges.length + "c"
+        (paxSettings["default"].cAges.length > 0
+            ? " " + paxSettings["default"].cAges.length + "c"
             : "") +
-        (_settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsLap + _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsSeat > 0
+        (paxSettings["default"].infantsLap + paxSettings["default"].infantsSeat > 0
             ? " " +
-                (_settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsLap + _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].infantsSeat) +
+                (paxSettings["default"].infantsLap + paxSettings["default"].infantsSeat) +
                 "i"
             : "");
-    document.getElementById("mtpPaxCount").innerHTML = (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_6__.unsafeHTML)(paxText);
+    document.getElementById("mtpPaxCount").innerHTML = (0,unsafe_policy.unsafeHTML)(paxText);
 }
 function processChild(target) {
     const e = document.getElementById(target);
     const tmp = Number(e.options[e.selectedIndex].value);
     if (tmp >= 2) {
-        _settings_paxSettings__WEBPACK_IMPORTED_MODULE_3__["default"].cAges.push(tmp);
+        paxSettings["default"].cAges.push(tmp);
     }
 }
 function printSettingsvalue(target) {
-    if (_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target]) {
-        return findNameForValue(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target], _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__.registeredSettings[target].values);
+    if (userSettings.registeredSettings[target]) {
+        return findNameForValue(userSettings["default"][target], userSettings.registeredSettings[target].values);
     }
     switch (target) {
-        case "timeformat":
-            return _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].timeformat;
-        case "language":
-            return _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].language;
         case "linkFontsize":
-            return _settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"].linkFontsize.toString();
+            return userSettings["default"].linkFontsize.toString();
         case "cabin":
-            return _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].cabin;
+            return appSettings["default"].cabin;
         default:
-            return boolToEnabled(_settings_userSettings__WEBPACK_IMPORTED_MODULE_2__["default"][target]);
+            return boolToEnabled(userSettings["default"][target]);
     }
 }
 function findNameForValue(needle, haystack) {
@@ -6892,28 +4719,24 @@ function boolToEnabled(value) {
 
 /***/ }),
 
-/***/ "./src/matrix3/settings/appSettings.ts":
+/***/ "./src/matrix5/settings/appSettings.ts":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
 /* harmony export */   getCabin: () => (/* binding */ getCabin),
-/* harmony export */   getCabinFromITA: () => (/* binding */ getCabinFromITA),
-/* harmony export */   getForcedCabin: () => (/* binding */ getForcedCabin),
-/* harmony export */   reset: () => (/* binding */ reset)
+/* harmony export */   getForcedCabin: () => (/* binding */ getForcedCabin)
 /* harmony export */ });
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var _print_settings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/print/settings.ts");
-/* harmony import */ var _print_history__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/print/history.tsx");
-
+/* unused harmony exports reset, getCabinFromITA */
+/* harmony import */ var _print_settings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/print/settings.ts");
 
 
 // General settings
 const appSettings = {
     isUserscript: !(typeof GM === "undefined" || typeof GM.info === "undefined"),
     itaLanguage: "en",
-    version: "0.55.15",
+    version: "0.56.0",
     retrycount: 1,
     laststatus: "",
     scriptrunning: 1,
@@ -6921,7 +4744,7 @@ const appSettings = {
 };
 function reset() {
     // reset Notification due to pagechange
-    (0,_utils__WEBPACK_IMPORTED_MODULE_2__.clearNotification)();
+    clearNotification();
     // reset Editor Mode
     document.getElementById("mptStartparse").setAttribute("class", "invis");
     document.getElementById("mptStartparse").style.display = "none";
@@ -6954,8 +4777,7 @@ function reset() {
         e = document.getElementById("child" + i + "age");
         e.value = ages[i - 1] || -1;
     }
-    (0,_print_settings__WEBPACK_IMPORTED_MODULE_0__.processPassengers)();
-    (0,_print_history__WEBPACK_IMPORTED_MODULE_1__.removeHistory)();
+    processPassengers();
 }
 function getCabinFromITA(itaCabin) {
     switch (itaCabin) {
@@ -6991,15 +4813,14 @@ function getForcedCabin() {
 
 /***/ }),
 
-/***/ "./src/matrix3/settings/itaSettings.ts":
+/***/ "./src/matrix5/settings/itaSettings.ts":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__),
-/* harmony export */   findTargetSetVersion: () => (/* binding */ findTargetSetVersion)
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/utils.js");
+/* unused harmony export findTargetSetVersion */
 
 // ITA Matrix CSS class definitions:
 const itaSettings = [
@@ -7014,56 +4835,12 @@ const itaSettings = [
             copyAsJsonButton: "button.share-button:nth-child(4)",
         },
     },
-    {
-        matrixVersion: 3,
-        startpage: {
-            maindiv: "KIR33AB-w-d",
-            tabBarItem: "gwt-TabBarItem-wrapper", // Round trip, One-way and Multi-city tab wrapper class
-        },
-        resultpage: {
-            itin: "KIR33AB-v-d",
-            itinRow: "KIR33AB-j-i",
-            milagecontainer: "KIR33AB-v-e",
-            rulescontainer: "KIR33AB-k-d",
-            htbContainer: "KIR33AB-k-k",
-            htbLeft: "KIR33AB-k-g",
-            htbRight: "KIR33AB-k-f",
-            htbGreyBorder: "KIR33AB-k-l",
-            //inline
-            mcDiv: "KIR33AB-y-d",
-            mcHeader: "KIR33AB-y-b",
-            mcLinkList: "KIR33AB-y-c", // Right menu ul list class (immediately following header)
-        },
-    },
-    {
-        matrixVersion: 3,
-        startpage: {
-            maindiv: "IR6M2QD-w-d",
-            tabBarItem: "gwt-TabBarItem-wrapper", // Round trip, One-way and Multi-city tab wrapper class
-        },
-        resultpage: {
-            itin: "IR6M2QD-v-d",
-            itinRow: "IR6M2QD-j-i",
-            milagecontainer: "IR6M2QD-v-e",
-            rulescontainer: "IR6M2QD-k-d",
-            htbContainer: "IR6M2QD-k-k",
-            htbLeft: "IR6M2QD-k-g",
-            htbRight: "IR6M2QD-k-f",
-            htbGreyBorder: "IR6M2QD-k-l",
-            //inline
-            mcDiv: "IR6M2QD-y-d",
-            mcHeader: "IR6M2QD-y-b",
-            mcLinkList: "IR6M2QD-y-c", // Right menu ul list class (immediately following header)
-        },
-    },
 ];
-const classSettings = itaSettings.filter((setting) => window.location.host === "oldmatrix.itasoftware.com"
-    ? setting.matrixVersion === 3
-    : true)[0];
+const classSettings = itaSettings[0];
 function findTargetSetVersion(classSelector, nth) {
     for (let setting of itaSettings) {
         const className = classSelector(setting);
-        const target = (0,_utils__WEBPACK_IMPORTED_MODULE_0__.findtarget)(className, nth);
+        const target = findtarget(className, nth);
         if (target) {
             console.log(`ITA Version detected: ${className}`);
             Object.assign(classSettings, setting);
@@ -7072,900 +4849,6 @@ function findTargetSetVersion(classSelector, nth) {
     }
 }
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (classSettings);
-
-
-/***/ }),
-
-/***/ "./src/matrix3/state/index.ts":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  getStateUrl: () => (/* binding */ getStateUrl),
-  manageState: () => (/* binding */ manageState),
-  stateEnabled: () => (/* binding */ stateEnabled),
-  updateCurrentSearch: () => (/* binding */ updateCurrentSearch)
-});
-
-;// CONCATENATED MODULE: ./node_modules/JSONCrush/JSONCrush.js
-/////////////////////////////////////////////////////////////////////// 
-// JSONCrush by Frank Force [MIT] https://github.com/KilledByAPixel/JSONCrush
-/////////////////////////////////////////////////////////////////////// 
-
-
-
-const JSONCrush=(string, maxSubstringLength)=>
-{
-    maxSubstringLength = maxSubstringLength || 50; // speed it up by limiting max length
-    const delimiter = '\u0001'; // used to split parts of crushed string
-        
-    const JSCrush=(string, replaceCharacters)=>
-    {
-        // JSCrush Algorithm (repleace repeated substrings with single characters)
-        let replaceCharacterPos = replaceCharacters.length;
-        let splitString = '';
-        
-        const ByteLength =(string)=>encodeURI(encodeURIComponent(string)).replace(/%../g,'i').length;
-        const HasUnmatchedSurrogate =(string)=>
-        {
-            // check ends of string for unmatched surrogate pairs
-            let c1 = string.charCodeAt(0);
-            let c2 = string.charCodeAt(string.length-1);
-            return (c1 >= 0xDC00 && c1 <= 0xDFFF) || (c2 >= 0xD800 && c2 <= 0xDBFF);
-        }
-        
-        // count instances of substrings
-        let substringCount = {};
-        for (let substringLength = 2; substringLength < maxSubstringLength; substringLength++)
-        for (let i = 0; i < string.length - substringLength; ++i)
-        {
-            let substring = string.substr(i, substringLength);
-
-            // don't recount if already in list
-            if (substringCount[substring])
-                continue;
-
-            // prevent breaking up unmatched surrogates
-            if (HasUnmatchedSurrogate(substring))
-                continue;
-
-            // count how many times the substring appears
-            let count = 1;
-            for (let substringPos = string.indexOf(substring, i+substringLength); substringPos >= 0; ++count)
-                substringPos = string.indexOf(substring, substringPos + substringLength);
-                
-            // add to list if it appears multiple times
-            if (count > 1)
-                substringCount[substring] = count;
-        }
-        
-        while(true) // loop while string can be crushed more
-        {
-            // get the next character that is not in the string
-            for (;replaceCharacterPos-- && string.includes(replaceCharacters[replaceCharacterPos]);){}
-            if (replaceCharacterPos < 0)
-                break; // ran out of replacement characters
-            let replaceCharacter = replaceCharacters[replaceCharacterPos];
-            
-            // find the longest substring to replace
-            let bestSubstring;  
-            let bestLengthDelta = 0;  
-            let replaceByteLength = ByteLength(replaceCharacter);
-            for (let substring in substringCount) 
-            {
-                // calculate change in length of string if it substring was replaced
-                let count = substringCount[substring];
-                let lengthDelta = (count-1)*ByteLength(substring) - (count+1)*replaceByteLength;
-                if (!splitString.length)
-                    lengthDelta -= ByteLength(delimiter); // include the delimiter length 
-                if (lengthDelta <= 0)
-                    delete substringCount[substring]
-                else if (lengthDelta > bestLengthDelta)
-                {
-                    bestSubstring = substring
-                    bestLengthDelta = lengthDelta;
-                }
-            }
-            if (!bestSubstring)
-                break; // string can't be compressed further
-                
-            // create new string with the split character
-            string = string.split(bestSubstring).join(replaceCharacter) + replaceCharacter + bestSubstring;
-            splitString = replaceCharacter + splitString;
-            
-            // update substring count list after the replacement
-            let newSubstringCount = {};
-            for (let substring in substringCount)
-            {
-                // make a new substring with the replacement
-                let newSubstring = substring.split(bestSubstring).join(replaceCharacter);
-                
-                // count how many times the new substring appears
-                let count = 0;
-                for (let i = string.indexOf(newSubstring); i >= 0; ++count)
-                    i = string.indexOf(newSubstring, i + newSubstring.length);
-                    
-                // add to list if it appears multiple times
-                if (count > 1)
-                    newSubstringCount[newSubstring] = count;
-                
-            }
-            substringCount = newSubstringCount;
-        }
-
-        return {a:string, b:splitString};
-    }
-    
-    // create a string of replacement characters
-    let characters = [];
-    
-    // prefer replacing with characters that will not be escaped by encodeURIComponent
-    const unescapedCharacters = `-_.!~*'()`;
-    for (let i=127; --i;)
-    {
-        if 
-        (
-            (i>=48 && i<=57) || // 0-9
-            (i>=65 && i<=90) || // A-Z
-            (i>=97 && i<=122)|| // a-z
-            unescapedCharacters.includes(String.fromCharCode(i))
-        )
-            characters.push(String.fromCharCode(i));
-    }
-    
-    // pick from extended set last
-    for (let i=32; i<255; ++i)
-    {
-        let c = String.fromCharCode(i);
-        if (c!='\\' && !characters.includes(c))
-            characters.unshift(c);
-    }
-
-    // remove delimiter if it is found in the string
-    string = string.replace(new RegExp(delimiter,'g'),'');
-    
-    // swap out common json characters
-    string = JSONCrushSwap(string);
-    
-    // crush with JS crush
-    const crushed = JSCrush(string, characters);
-    
-    // insert delimiter between JSCrush parts
-    let crushedString = crushed.a;
-    if (crushed.b.length)
-        crushedString += delimiter + crushed.b;
-    
-    // fix issues with some links not being recognized properly
-    crushedString += '_'
-    
-    // encode URI
-    return encodeURIComponent(crushedString);
-}
-
-const JSONUncrush=(string)=>
-{
-    // string must be a decoded URI component, searchParams.get() does this automatically
-    
-    // remove last character
-    string = string.substring(0, string.length - 1);
-
-    // unsplit the string using the delimiter
-    const stringParts = string.split('\u0001');
-    
-    // JSUncrush algorithm
-    let uncrushedString = stringParts[0];
-    if (stringParts.length > 1)
-    {
-        let splitString = stringParts[1];
-        for (let character of splitString)
-        {
-            // split the string using the current splitCharacter
-            let splitArray = uncrushedString.split(character);
-
-            // rejoin the string with the last element from the split
-            uncrushedString = splitArray.join(splitArray.pop());
-        }
-    }
-    
-    // unswap the json characters in reverse direction
-    return JSONCrushSwap(uncrushedString, 0);
-}
-
-const JSONCrushSwap=(string, forward=1)=>
-{
-    // swap out characters for lesser used ones that wont get escaped
-    const swapGroups = 
-    [
-        ['"', "'"],
-        ["':", "!"],
-        [",'", "~"],
-        ['}', ")", '\\', '\\'],
-        ['{', "(", '\\', '\\'],
-    ];
-    
-    const Swap=(string, g)=>
-    {
-        let regex = new RegExp(`${(g[2]?g[2]:'')+g[0]}|${(g[3]?g[3]:'')+g[1]}`,'g');
-        return string.replace(regex, $1 => ($1 === g[0] ? g[1] : g[0]));
-    }
-
-    // need to be able to swap characters in reverse direction for uncrush
-    if (forward)
-        for (let i = 0; i < swapGroups.length; ++i)
-            string = Swap(string, swapGroups[i]);
-    else
-        for (let i = swapGroups.length; i--;)
-            string = Swap(string, swapGroups[i]);
-
-    return string;
-}
-/*** EXPORTS FROM exports-loader ***/
-
-
-// EXTERNAL MODULE: ./src/matrix3/settings/userSettings.js
-var userSettings = __webpack_require__("./src/matrix3/settings/userSettings.js");
-;// CONCATENATED MODULE: ./src/matrix3/state/index.ts
-
-
-function stateEnabled() {
-    var _a, _b;
-    return (userSettings["default"].enableMultiSearch &&
-        window.localStorage &&
-        window.history &&
-        ((_b = (_a = window.XMLHttpRequest) === null || _a === void 0 ? void 0 : _a.prototype) === null || _b === void 0 ? void 0 : _b.open));
-}
-function manageState() {
-    if (!stateEnabled())
-        return;
-    loadState();
-    window.addEventListener("click", loadState, false);
-    // window.history.replaceState does not trigger hashchange so we need to dispatch it manually
-    window.addEventListener("popstate", dispatchHashChange, false);
-    // save session after searches
-    const originalOpen = XMLHttpRequest.prototype.open;
-    XMLHttpRequest.prototype.open = function (method, url) {
-        if ((url || "").toLowerCase().endsWith("/search")) {
-            const search = JSON.parse(window.localStorage["savedSearch.0"]);
-            saveStateToUrl({ search });
-            this.addEventListener("load", () => saveStateToUrl({
-                search,
-                sessionState: JSON.parse(window.localStorage["savedSessionState"]),
-            }));
-        }
-        originalOpen.apply(this, arguments);
-    };
-}
-function dispatchHashChange() {
-    if (window.location.hash)
-        window.dispatchEvent(new HashChangeEvent("hashchange"));
-}
-function loadState() {
-    const search = new URLSearchParams(window.location.search.slice(1));
-    const savedState = search && search.get("mpt:state");
-    if (savedState) {
-        const { search, sessionState } = JSON.parse(JSONUncrush(savedState));
-        if (search)
-            updateCurrentSearch(typeof search === "string" ? search : JSON.stringify(search));
-        if (sessionState)
-            window.localStorage["savedSessionState"] =
-                typeof sessionState === "string"
-                    ? sessionState
-                    : JSON.stringify(sessionState);
-    }
-}
-function updateCurrentSearch(search) {
-    const len = 6;
-    let searches = [];
-    for (let i = 0; i < len; i++) {
-        const savedSearch = window.localStorage[`savedSearch.${i}`];
-        if (savedSearch)
-            searches.push(savedSearch);
-    }
-    searches = [search, ...searches.filter((s) => s !== search)];
-    for (let i = 0; i < Math.min(len, searches.length); i++) {
-        window.localStorage[`savedSearch.${i}`] = searches[i];
-    }
-}
-function getStateUrl(state, hash) {
-    const search = new URLSearchParams(window.location.search.slice(1));
-    if (state) {
-        // JSONCrush maxSubstringLength ~ 10 appeared to be optimal
-        // https://github.com/KilledByAPixel/JSONCrush/pull/9
-        search.set("mpt:state", JSONCrush(JSON.stringify(state), 10));
-    }
-    else
-        search.delete("mpt:state");
-    return decodeURIComponent(`${window.location.pathname}?${search}` + (hash || ""));
-}
-function saveStateToUrl(currentState) {
-    const url = getStateUrl(currentState, window.location.hash);
-    window.history.replaceState({}, "", url);
-}
-
-
-/***/ }),
-
-/***/ "./src/matrix5/index.ts":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _matrix3_print_links__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/print/links.tsx");
-/* harmony import */ var _matrix3_print_settings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/print/settings.ts");
-/* harmony import */ var _matrix3_settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/itaSettings.ts");
-/* harmony import */ var _unsafe_policy__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/unsafe-policy.ts");
-/* harmony import */ var _parse_itin__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-
-
-
-
-
-(async () => {
-    const appRoot = document.querySelector("app-root");
-    if (!appRoot)
-        return;
-    (0,_matrix3_print_settings__WEBPACK_IMPORTED_MODULE_1__.createUsersettings)(appRoot);
-    injectCss();
-    const isUserscript = !(typeof GM === "undefined" || typeof GM.info === "undefined");
-    if (window.top === window.self) {
-        if (!isUserscript || document.readyState == "complete") {
-            startScript();
-        }
-        else {
-            window.addEventListener("load", () => startScript(), false);
-        }
-    }
-})();
-let oldHref;
-function startScript() {
-    pageChanged();
-    var bodyList = document.querySelector("body");
-    var observer = new MutationObserver(function (mutations) {
-        mutations.forEach(function (mutation) {
-            if (oldHref != document.location.href) {
-                oldHref = document.location.href;
-                pageChanged();
-            }
-        });
-    });
-    var config = {
-        childList: true,
-        subtree: true,
-    };
-    observer.observe(bodyList, config);
-}
-function pageChanged() {
-    setTimeout(async () => {
-        const steps = document.querySelectorAll(".mat-step-header");
-        if (steps.length > 0 &&
-            steps[steps.length - 1].attributes["aria-selected"].value === "true") {
-            // if we are on the last step (Itinerary)
-            await (0,_parse_itin__WEBPACK_IMPORTED_MODULE_4__.readItinerary)();
-            (0,_matrix3_print_links__WEBPACK_IMPORTED_MODULE_0__.printLinksContainer)();
-        }
-    }, 200);
-}
-function injectCss() {
-    let css = "", head = document.head || document.getElementsByTagName("head")[0], style = document.createElement("style");
-    css +=
-        ".pt-hover-menu, .pt-hover-menu-flex { position:absolute; padding: 8px; z-index: 1; background-color: #FFF; border: 1px solid #808080; display:none; }";
-    css += ".pt-hover-container:hover .pt-hover-menu { display:inline; }";
-    css += ".pt-hover-container:hover .pt-hover-menu-flex { display:flex; }";
-    css += ".pt-textlink a { text-decoration: none; color: black; }";
-    css += `.${_matrix3_settings_itaSettings__WEBPACK_IMPORTED_MODULE_2__["default"].resultpage.mcDiv}.powertoolslinkinlinecontainer { background-color: #f2f2f2; }`;
-    css +=
-        ".pt-history-item:hover .pt-history-action { visibility: visible !important; }";
-    style.appendChild(document.createTextNode((0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_3__.unsafeHTML)(css)));
-    head.appendChild(style);
-}
-
-
-/***/ }),
-
-/***/ "./src/matrix5/parse/itin.ts":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, {
-  currentItin: () => (/* binding */ itin_currentItin),
-  getCurrentSegs: () => (/* binding */ getCurrentSegs),
-  getTripType: () => (/* binding */ getTripType),
-  isMulticity: () => (/* binding */ isMulticity),
-  isOneway: () => (/* binding */ isOneway),
-  isRoundtrip: () => (/* binding */ isRoundtrip),
-  readItinerary: () => (/* binding */ itin_readItinerary)
-});
-
-// EXTERNAL MODULE: ./src/matrix3/settings/itaSettings.ts
-var itaSettings = __webpack_require__("./src/matrix3/settings/itaSettings.ts");
-// EXTERNAL MODULE: ./src/matrix3/utils.js
-var utils = __webpack_require__("./src/matrix3/utils.js");
-;// CONCATENATED MODULE: ./src/matrix3/parse/itin.js
-
-
-// initialize local storage for current itin
-/** @type {{ cur?: string; price?: number; basefares?: number; taxes?: number; surcharges?: number; dist?: number; numPax?: number; carriers?: string[]; farebases?: string[]; itin?: { orig: string; dest: string; dist?: number; dep: { day: number; month: number; year: number; time: string; offset?: string; }; arr: { day: number; month: number; year: number; time: string; offset?: string; }; seg?: { carrier: string; orig: string; dest: string; dist?: number; dep: { day: number; month: number; year: number; time: string; time24: string; timeDisplay: string; offset?: string; }; arr: { day: number; month: number; year: number; time: string; time24: string; timeDisplay: string; offset?: string; }; fnr: string; duration: number; aircraft: string; cabin: number; bookingclass: string; codeshare: number; layoverduration: number; airportchange: number; farebase: string; farecarrier: string; }[]}[]}} */
-let currentItin = new Object();
-
-const matrixCurrencies = [
-  { p: /US\$/, c: "USD" },
-  { p: /\€/, c: "EUR" },
-  { p: /\£/, c: "GBP" },
-  { p: /CA\$/, c: "CAD" },
-  { p: /RS\./, c: "INR" },
-  { p: /\₩/, c: "KRW" },
-];
-
-function readItinerary() {
-  // the magical part! :-)
-  var itin = new Array(),
-    carrieruarray = new Array(),
-    farebases = new Array(),
-    dirtyFare = new Array();
-  var itinCur = "";
-  var html = document.getElementById("contentwrapper").innerHTML;
-  var re = /colspan\=\"5\"[^\(]+\(([\w]{3})[^\(]+\(([\w]{3})/g;
-  var legs = (0,utils.exRE)(html, re);
-  // Got our outer legs now:
-  for (i = 0; i < legs.length; i += 2) {
-    var legobj = {};
-    // prepare all elements but fill later
-    legobj.arr = {};
-    legobj.dep = {};
-    legobj.orig = legs[i];
-    legobj.dest = legs[i + 1];
-    legobj.seg = new Array();
-    itin.push(legobj);
-  }
-  // extract basefares
-  var re = /Carrier\s([\w]{2})\s([\w]+).*?Covers\s([\w\(\)\s\-,]+)/g;
-  var bfs = (0,utils.exRE)(html, re);
-  var bf = { c: "", f: "", l: new Array() };
-  for (i = 0; i < bfs.length; i += 3) {
-    bf.c = bfs[i];
-    bf.f = bfs[i + 1];
-    farebases.push(bf.f);
-    bf.l = (0,utils.exRE)(bfs[i + 2], /(\w\w\w\-\w\w\w)/g);
-    for (j = 0; j < bf.l.length; j++) {
-      dirtyFare.push(bf.l[j] + "-" + bf.f + "-" + bf.c);
-    }
-  }
-  var segs = new Array();
-  var re =
-    /35px\/(\w{2}).png[^\(]+\(([A-Z]{3})[^\(]+\(([A-Z]{3})[^\,]*\,\s*([a-zA-Z]{3})\s*([0-9]{1,2}).*?gwt-Label.*?([0-9]*)\<.*?Dep:[^0-9]+(.*?)\<.*?Arr:[^0-9]+(.*?)\<.*?([0-9]{1,2})h\s([0-9]{1,2})m.*?gwt-Label.*?\>(.*?)\<.*?gwt-Label\"\>(\w).*?\((\w)\).*?\<.*?tr(.*?)(table|airline_logos)/g;
-  segs = (0,utils.exRE)(html, re);
-  // used massive regex to get all our segment-info in one extraction
-  var legnr = 0;
-  var segnr = 0;
-  for (i = 0; i < segs.length; i += 15) {
-    const dep12 = return12htime(segs[i + 6]);
-    const dep24 = (dep12.length == 4 ? "0" : "") + dep12;
-    const arr12 = return12htime(segs[i + 7]);
-    const arr24 = (arr12.length == 4 ? "0" : "") + arr12;
-    const addinformations = parseAddInfo(segs[i + 13]);
-    const day = parseInt(segs[i + 4]);
-    const month = (0,utils.monthnameToNumber)(segs[i + 3]);
-    const year = getFlightYear(day, month);
-    let seg = {
-      carrier: segs[i],
-      orig: segs[i + 1],
-      dest: segs[i + 2],
-      dep: {
-        day,
-        month,
-        year,
-        timeDisplay: segs[i + 6],
-        time: dep12,
-        time24: dep24,
-      },
-      arr: {
-        day: addinformations.arrDate ? addinformations.arrDate.day : day,
-        month: addinformations.arrDate ? addinformations.arrDate.month : month,
-        year: addinformations.arrDate ? addinformations.arrDate.year : year,
-        timeDisplay: segs[i + 7],
-        time: arr12,
-        time24: arr24,
-      },
-      fnr: segs[i + 5],
-      duration: parseInt(segs[i + 8]) * 60 + parseInt(segs[i + 9]),
-      aircraft: segs[i + 10],
-      cabin: getcabincode(segs[i + 11]),
-      bookingclass: segs[i + 12],
-      codeshare: addinformations.codeshare,
-      layoverduration: addinformations.layoverduration,
-      airportchange: addinformations.airportchange,
-      farebase: "",
-      farecarrier: "",
-    };
-
-    // find farecode for leg
-    for (var j = 0; j < dirtyFare.length; j++) {
-      if (dirtyFare[j].indexOf(seg.orig + "-" + seg.dest + "-") != -1) {
-        //found farebase of this segment
-        var tmp = dirtyFare[j].split("-");
-        seg.farebase = tmp[2];
-        seg.farecarrier = tmp[3];
-        dirtyFare[j] = seg.farebase; // avoid reuse
-        j = dirtyFare.length;
-      }
-    }
-    if (itin[legnr] === undefined) itin[legnr] = new Object();
-    if (itin[legnr].seg === undefined) itin[legnr].seg = new Array();
-    itin[legnr].seg.push(seg);
-    // push carrier
-    if (!carrieruarray.some((cxr) => cxr === seg.carrier)) {
-      carrieruarray.push(seg.carrier);
-    }
-    // push dates and times into leg-array
-    if (segnr == 0) {
-      if (itin[legnr].dep === undefined) itin[legnr].dep = new Object();
-      itin[legnr].dep.day = seg.dep.day;
-      itin[legnr].dep.month = seg.dep.month;
-      itin[legnr].dep.year = seg.dep.year;
-      itin[legnr].dep.time = seg.dep.time;
-    }
-    if (itin[legnr].arr === undefined) itin[legnr].arr = new Object();
-    itin[legnr].arr.day = seg.arr.day;
-    itin[legnr].arr.month = seg.arr.month;
-    itin[legnr].arr.year = seg.arr.year;
-    itin[legnr].arr.time = seg.arr.time;
-    segnr++;
-    // check for legchange
-    if (segs[i + 14] == "table") {
-      legnr++;
-      segnr = 0;
-    }
-  }
-  // We need to apply remaining fares (Not nonstop - but direct flights)
-  for (var i = 0; i < dirtyFare.length; i++) {
-    var curfare = dirtyFare[i].split("-");
-    if (curfare.length > 1) {
-      var l = 0;
-      //currently unused so walk through itin to find flights
-      for (var legnr = 0; legnr < itin.length; legnr++) {
-        for (var segnr = 0; segnr < itin[legnr].seg.length; segnr++) {
-          if (
-            itin[legnr].seg[segnr].orig == curfare[0] &&
-            itin[legnr].seg[segnr].dest == curfare[1] &&
-            itin[legnr].seg[segnr].farebase == ""
-          ) {
-            // found seg for fare
-            itin[legnr].seg[segnr].farebase = curfare[2];
-            itin[legnr].seg[segnr].farecarrier = curfare[3];
-            dirtyFare[i] = curfare[2];
-            segnr = itin[legnr].seg.length;
-            l = 1;
-          } else if (
-            itin[legnr].seg[segnr].orig == curfare[0] &&
-            itin[legnr].seg[segnr].dest != curfare[1] &&
-            itin[legnr].seg[segnr].farebase == ""
-          ) {
-            // found start but multiple segs -> find end
-            for (var j = segnr + 1; j < itin[legnr].seg.length; j++) {
-              if (
-                itin[legnr].seg[j].dest == curfare[1] &&
-                itin[legnr].seg[j].farebase == ""
-              ) {
-                //found end attach fares
-                for (var k = segnr; k <= j; k++) {
-                  itin[legnr].seg[k].farebase = curfare[2];
-                  itin[legnr].seg[k].farecarrier = curfare[3];
-                  dirtyFare[i] = curfare[2];
-                }
-                j = itin[legnr].seg.length;
-                segnr = itin[legnr].seg.length;
-                l = 1;
-              } else if (itin[legnr].seg[segnr + j].farebase != "") {
-                //farebase attached - skip
-                j = itin[legnr].seg.length;
-              }
-            }
-          }
-        }
-        if (l == 1) {
-          legnr = itin.length;
-        }
-      }
-      if (l == 0) {
-        (0,utils.printNotification)("Unused fare:" + dirtyFare[i]);
-      }
-    }
-  }
-  // Combine technical stops into a single segment
-  itin.forEach((itin) => {
-    if (itin.seg) itin.seg = combineTechnicalStops(itin.seg);
-  });
-  // extract mileage paxcount and total price
-  var milepaxprice = new Array();
-  var re =
-    /Mileage.*?([0-9,]+)\stotal\smiles.*?Total\scost\sfor\s([0-9])\spassenger.*?<div.*?>(.*?([1-9][0-9,.]+)[^\<]*)/g;
-  milepaxprice = (0,utils.exRE)(html, re);
-  // detect currency
-  for (i = 0; i < matrixCurrencies.length; i++) {
-    if (matrixCurrencies[i].p.test(milepaxprice[2]) === true) {
-      itinCur = matrixCurrencies[i].c;
-      i = matrixCurrencies.length;
-    }
-  }
-  currentItin = {
-    itin: itin,
-    price: Number(milepaxprice[3].replace(/[^\d\.]/g, "")),
-    numPax: Number(milepaxprice[1]),
-    carriers: carrieruarray,
-    cur: itinCur,
-    farebases: farebases,
-    dist: Number(milepaxprice[0].replace(/\,/, "")),
-  };
-  console.log("parsed itinerary: ", currentItin);
-}
-
-function parseAddInfo(info) {
-  var ret = {
-    codeshare: 0,
-    layoverduration: 0,
-    airportchange: 0,
-    arrDate: null,
-  };
-  var re = /contains\s*airport\s*changes/g;
-  if (re.test(info) === true) {
-    ret.airportchange = 1;
-  }
-  var re = /OPERATED\s*BY/g;
-  if (re.test(info) === true) {
-    ret.codeshare = 1;
-  }
-  var temp = new Array();
-  var re = /\,\s*([a-zA-Z]{3})\s*([0-9]{1,2})/g;
-  temp = (0,utils.exRE)(info, re);
-  if (temp.length == 2) {
-    // Got datechange
-    const month = (0,utils.monthnameToNumber)(temp[0]);
-    const day = parseInt(temp[1]);
-    ret.arrDate = {
-      month,
-      day,
-      year: getFlightYear(day, month),
-    };
-  }
-  var temp = new Array();
-  var re = /([0-9]{1,2})h\s([0-9]{1,2})m/g;
-  temp = (0,utils.exRE)(info, re);
-  if (temp.length == 2) {
-    // Got layover
-    ret.layoverduration = parseInt(temp[0]) * 60 + parseInt(temp[1]);
-  }
-  return ret;
-}
-
-function combineTechnicalStops(allSegs) {
-  if (allSegs.length <= 1) return allSegs;
-
-  const segs = [];
-
-  for (let i = 0; i < allSegs.length; i++) {
-    const currSeg = allSegs[i];
-    const nextSeg = allSegs[i + 1];
-
-    if (
-      nextSeg &&
-      nextSeg.fnr === currSeg.fnr &&
-      nextSeg.orig === currSeg.dest
-    ) {
-      segs.push({
-        ...currSeg,
-        dest: nextSeg.dest,
-        arr: nextSeg.arr,
-      });
-      i++;
-    } else {
-      segs.push(currSeg);
-    }
-  }
-
-  return segs;
-}
-
-/**************************************** General Functions *****************************************/
-function getcabincode(cabin) {
-  switch (cabin) {
-    case "E":
-      cabin = 0;
-      break;
-    case "P":
-      cabin = 1;
-      break;
-    case "B":
-      cabin = 2;
-      break;
-    case "F":
-      cabin = 3;
-      break;
-    default:
-      cabin = 0;
-  }
-  return cabin;
-}
-
-function getFlightYear(day, month) {
-  //Do date magic
-  var d = new Date();
-  var cmonth = d.getMonth();
-  var cday = d.getDate();
-  var cyear = d.getFullYear();
-  // make sure to handle the 0-11 issue of getMonth()
-  if (cmonth > month - 1 || (cmonth == month - 1 && day < cday)) {
-    cyear += 1; // The flight is next year
-  }
-  return cyear;
-}
-
-function return12htime(match) {
-  var regex = /([01]?\d)(:\d{2})(AM|PM|am|pm| AM| PM| am| pm)/g;
-  match = regex.exec(match);
-  var offset = 0;
-  match[3] = trimStr(match[3]);
-  if ((match[3] == "AM" || match[3] == "am") && match[1] == "12") {
-    offset = -12;
-  } else if ((match[3] == "PM" || match[3] == "pm") && match[1] != "12") {
-    offset = 12;
-  }
-  return +match[1] + offset + match[2];
-}
-
-function trimStr(x) {
-  return x.replace(/^\s+|\s+$/gm, "");
-}
-
-
-
-;// CONCATENATED MODULE: ./src/matrix5/parse/itin.ts
-
-
-const doNothing = new Promise(() => { });
-const itin_currentItin = {};
-async function itin_readItinerary() {
-    if (itaSettings["default"].matrixVersion == 5) {
-        Object.assign(itin_currentItin, await readItinerary5());
-    }
-    else {
-        readItinerary();
-        Object.assign(itin_currentItin, currentItin);
-    }
-    console.log("parsed itinerary: ", itin_currentItin);
-}
-async function readItinerary5() {
-    const bookingDetails = await getBookingDetails();
-    return {
-        itin: bookingDetails.itinerary.slices.map((itin) => {
-            const fareMap = bookingDetails.tickets
-                .flatMap((t) => t.pricings.flatMap((p) => p.fares))
-                .reduce((acc, fare) => {
-                fare.bookingInfos.forEach((bi) => {
-                    acc[`${bi.segment.origin}${bi.segment.destination}${bi.bookingCode}`] = {
-                        carrier: fare.carrier,
-                        code: fare.code,
-                    };
-                });
-                return acc;
-            }, {});
-            const segments = itin.segments.flatMap((seg) => seg.legs.map((leg) => {
-                const fare = fareMap[`${seg.origin.code}${seg.destination.code}${seg.bookingInfos[0].bookingCode}`];
-                return {
-                    arr: isoToDateObj(leg.arrival),
-                    dep: isoToDateObj(leg.departure),
-                    orig: leg.origin.code,
-                    dest: leg.destination.code,
-                    carrier: seg.carrier.code,
-                    fnr: seg.flight.number,
-                    duration: seg.duration,
-                    cabin: getCabin(seg.bookingInfos[0].cabin),
-                    bookingclass: seg.bookingInfos[0].bookingCode,
-                    farebase: fare.code,
-                    farecarrier: fare.carrier,
-                };
-            }));
-            return {
-                arr: isoToDateObj(itin.arrival),
-                dep: isoToDateObj(itin.departure),
-                orig: itin.origin.code,
-                dest: itin.destination.code,
-                seg: segments,
-            };
-        }),
-        price: +bookingDetails.displayTotal.substring(3),
-        numPax: bookingDetails.passengerCount,
-        carriers: [
-            ...new Set(bookingDetails.itinerary.slices.flatMap((itin) => itin.segments.map((seg) => seg.carrier.code))),
-        ],
-        cur: bookingDetails.displayTotal.substring(0, 3),
-        farebases: [
-            ...new Set(bookingDetails.tickets.flatMap((t) => t.pricings.flatMap((p) => p.fares.code))),
-        ],
-        dist: bookingDetails.itinerary.distance.value,
-    };
-}
-function getBookingDetails() {
-    return new Promise((resolve, reject) => {
-        (function _wait() {
-            setTimeout(async () => {
-                var _a, _b, _c;
-                const copyAsJsonButton = document.querySelector(itaSettings["default"].resultpage.copyAsJsonButton);
-                if (!copyAsJsonButton) {
-                    return _wait();
-                }
-                const clipboard = (_b = (_a = window === null || window === void 0 ? void 0 : window.navigator) === null || _a === void 0 ? void 0 : _a.clipboard) !== null && _b !== void 0 ? _b : (_c = unsafeWindow === null || unsafeWindow === void 0 ? void 0 : unsafeWindow.navigator) === null || _c === void 0 ? void 0 : _c.clipboard;
-                if (!clipboard) {
-                    return reject("Could not access the clipboard");
-                }
-                const _writeText = clipboard.writeText;
-                clipboard.writeText = (data) => {
-                    clipboard.writeText = _writeText;
-                    resolve(JSON.parse(data));
-                    return doNothing;
-                };
-                copyAsJsonButton.click();
-            }, 200);
-        })();
-    });
-}
-function isoToDateObj(isoDate) {
-    const time24 = isoDate.substring(11, 16);
-    let hour12 = +time24.substring(0, 2);
-    if (hour12 > 12)
-        hour12 -= 12;
-    const time = hour12 + time24.substring(2, 5);
-    return {
-        day: +isoDate.substring(8, 10),
-        month: +isoDate.substring(5, 7),
-        year: +isoDate.substring(0, 4),
-        time,
-        time24,
-    };
-}
-function getCabin(cabin) {
-    switch (cabin) {
-        case "PREMIUM-COACH":
-            return 1;
-        case "BUSINESS":
-            return 2;
-        case "FIRST":
-            return 3;
-        default:
-            return 0;
-    }
-}
-function getCurrentSegs() {
-    return itin_currentItin.itin
-        .map(function (p) {
-        return p.seg;
-    })
-        .reduce(function (a, b) {
-        return a.concat(b);
-    }, []);
-}
-function getTripType(ow, rt, mc) {
-    return itin_currentItin.itin.length > 1
-        ? itin_currentItin.itin.length === 2 &&
-            itin_currentItin.itin[0].orig === itin_currentItin.itin[1].dest &&
-            itin_currentItin.itin[0].dest === itin_currentItin.itin[1].orig
-            ? rt
-            : mc
-        : ow;
-}
-function isOneway() {
-    return getTripType(true, false, false);
-}
-function isRoundtrip() {
-    return getTripType(false, true, false);
-}
-function isMulticity() {
-    return getTripType(false, false, true);
-}
-
 
 
 /***/ }),
@@ -7994,290 +4877,14 @@ const unsafeScript = (string) => unsafePolicy ? unsafePolicy.createScript(string
 
 /***/ }),
 
-/***/ "./src/matrix3/index.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-// ESM COMPAT FLAG
-__webpack_require__.r(__webpack_exports__);
-
-// EXTERNAL MODULE: ./src/matrix3/settings/appSettings.ts
-var appSettings = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-// EXTERNAL MODULE: ./src/matrix3/settings/userSettings.js
-var userSettings = __webpack_require__("./src/matrix3/settings/userSettings.js");
-// EXTERNAL MODULE: ./src/matrix3/settings/itaSettings.ts
-var itaSettings = __webpack_require__("./src/matrix3/settings/itaSettings.ts");
-// EXTERNAL MODULE: ./src/matrix3/utils.js
-var utils = __webpack_require__("./src/matrix3/utils.js");
-// EXTERNAL MODULE: ./src/matrix5/parse/itin.ts + 1 modules
-var parse_itin = __webpack_require__("./src/matrix5/parse/itin.ts");
-// EXTERNAL MODULE: ./src/matrix3/print/index.ts
-var print = __webpack_require__("./src/matrix3/print/index.ts");
-// EXTERNAL MODULE: ./src/matrix3/print/settings.ts
-var settings = __webpack_require__("./src/matrix3/print/settings.ts");
-;// CONCATENATED MODULE: ./src/matrix3/print/darkmode.js
-
-
-const tokens = {
-  "#1e1e1e": "#f5f5f5", // dark gray text
-  "#e2f2f9": "#1f1f1f", // light blue box background
-  "#155fa9": "#85daff", // blue
-  "#145EA9": "#85daff", // blue (tab text)
-  "#0062AB": "#8ec6ec", // blue (visited link)
-  "#3275b5": "#9ecbe6", // blue (box border)
-  "#4e8bc1": "#9ecbe6", // blue (box border)
-  "#185ea8": "#f8b85b", // blue (calendar) -> orange
-  "#fff8bd": "#242424", // light yellow
-  "#f0f0dc": "#242424", // light yellow
-  "#ba0000": "#f39691", // red
-  white: "#121212", // white
-  "#ffffff": "#121212", // white
-  "#fff": "#121212", // white
-  "#121212-": "white-", // fix for "white-space", etc
-  black: "#f5f5f5", // black
-  "#000000": "#f5f5f5", // black
-  "#000": "#f5f5f5", // black
-  "#f7f7f7": "#232323", // light gray
-  "#f0f0f0": "#232323", // light gray
-  "rgba\\(255,255,255,0.6\\)": "#232323", // light gray
-  "#c2e0ff": "rgba(194,224,255,.1)", // light blue
-};
-
-let headObserver;
-
-function bindDarkmode() {
-  if (userSettings["default"].enableDarkmode && window.MutationObserver) {
-    document.body.classList.add("dark-mode");
-    if (!headObserver) {
-      document.head.querySelectorAll("style").forEach(transformCss);
-
-      headObserver = new window.MutationObserver((mutations, observer) =>
-        mutations.forEach((m) => m.addedNodes.forEach(transformCss)),
-      );
-      headObserver.observe(document.head, { childList: true });
-    }
-  }
-}
-
-const transformCss = (node) => {
-  if (
-    node.nodeName.toUpperCase() === "STYLE" &&
-    node.textContent.indexOf("dark-mode") === -1
-  ) {
-    const old = node.textContent;
-    node.textContent = Object.keys(tokens).reduce(
-      (css, token) => css.replace(new RegExp(token, "gi"), tokens[token]),
-      node.textContent,
-    );
-    if (old == node.textContent) alert("no changes");
-  }
-};
-
-// EXTERNAL MODULE: ./src/matrix3/state/index.ts + 1 modules
-var state = __webpack_require__("./src/matrix3/state/index.ts");
-// EXTERNAL MODULE: ./src/matrix3/print/history.tsx + 35 modules
-var print_history = __webpack_require__("./src/matrix3/print/history.tsx");
-// EXTERNAL MODULE: ./src/unsafe-policy.ts
-var unsafe_policy = __webpack_require__("./src/unsafe-policy.ts");
-;// CONCATENATED MODULE: ./src/matrix3/index.js
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**************************************** Start Script *****************************************/
-
-// *** DO NOT CHANGE BELOW THIS LINE***/
-(async () => {
-  await (0,userSettings.loadUserSettings)();
-  const wrapper = document.getElementById("contentwrapper");
-  if (!wrapper) return;
-  (0,settings.createUsersettings)(wrapper);
-  (0,state.manageState)();
-  injectCss();
-  bindDarkmode();
-
-  if (window.top === window.self) {
-    if (!appSettings["default"].isUserscript || document.readyState == "complete") {
-      startScript();
-    } else {
-      window.addEventListener("load", () => startScript(), false);
-    }
-  }
-})(); // end async for GM4
-
-function startScript() {
-  pageChanged();
-  window.addEventListener(
-    "hashchange",
-    () => {
-      if (window.location.hash !== appSettings["default"].laststatus) {
-        pageChanged();
-      }
-    },
-    false,
-  );
-}
-
-function pageChanged() {
-  (0,appSettings.reset)();
-  (0,print.cleanUp)();
-  setTimeout(function () {
-    getPage();
-  }, 200);
-  appSettings["default"].laststatus = window.location.hash;
-}
-
-/********************************************* Get page ***********************************************/
-function getPage() {
-  if (window.location.href.indexOf("view-details") != -1) {
-    resultPage();
-  } else if (
-    window.location.href.indexOf("#search:") != -1 ||
-    window.location.href == "https://matrix.itasoftware.com/" ||
-    window.location.href == "https://oldmatrix.itasoftware.com/" ||
-    !window.location.hash
-  ) {
-    startPage();
-  }
-}
-/********************************************* Start page *********************************************/
-function startPage() {
-  // try to get content
-  if (!(0,itaSettings.findTargetSetVersion)((settings) => settings.startpage.maindiv, 1)) {
-    (0,utils.printNotification)("Error: Unable to find content on start page.");
-    return false;
-  } else {
-    (0,print_history.renderHistory)();
-    fixSearchTab();
-    // apply style-fix
-    const target = (0,utils.findtarget)(itaSettings["default"].startpage.maindiv, 1);
-    target.children[0].children[0].children[0].children[0].setAttribute(
-      "valign",
-      "top",
-    );
-  }
-}
-
-function fixSearchTab() {
-  // ITA doesn't always set the correct search tab on hash nav
-  if (!window.location.hash.startsWith("#search:research=")) return;
-
-  const search = JSON.parse(localStorage["savedSearch.0"]);
-  if (!window.location.hash.endsWith(search[1])) return;
-
-  const searchIndexes = {
-    MULTI_CITY: 2,
-    ONE_WAY: 1,
-    ROUND_TRIP: 0, // default - can ignore
-  };
-  const searchIndex = searchIndexes[search[2]];
-  if (!searchIndex) return;
-
-  const tabBarItems = window.document.querySelectorAll(
-    `.${itaSettings["default"].startpage.tabBarItem}`,
-  );
-  tabBarItems[searchIndex] &&
-    tabBarItems[searchIndex].firstElementChild &&
-    tabBarItems[searchIndex].firstElementChild.click();
-}
-/********************************************* Result page *********************************************/
-
-//Primary function for extracting flight data from ITA/Matrix
-function resultPage() {
-  // try to get content
-  const itin = (0,itaSettings.findTargetSetVersion)((settings) => settings.resultpage.itin, 1);
-  if (!itin) {
-    (0,utils.printNotification)("Error: Unable to find Content on result page.");
-    return false;
-  }
-  // retry if itin not loaded
-  if (itin.parentElement.previousElementSibling.style.display != "none") {
-    appSettings["default"].retrycount++;
-    if (appSettings["default"].retrycount > 50) {
-      (0,utils.printNotification)(
-        "Error: Timeout on result page. Content not found after 10s.",
-      );
-      return false;
-    }
-    setTimeout(function () {
-      resultPage();
-    }, 200);
-    return false;
-  }
-  // do some self-testing to prevent crashing on class-changes
-  for (let i in itaSettings["default"].resultpage) {
-    if ((0,utils.findtarget)(itaSettings["default"].resultpage[i], 1) === undefined) {
-      (0,utils.printNotification)(
-        "Error: Unable to find class " +
-          itaSettings["default"].resultpage[i] +
-          " for " +
-          i +
-          ".",
-      );
-      return false;
-    }
-  }
-
-  (0,parse_itin.readItinerary)().then(() => {
-    (0,print.render)();
-  });
-}
-
-function injectCss() {
-  let css = "",
-    head = document.head || document.getElementsByTagName("head")[0],
-    style = document.createElement("style");
-  style.type = "text/css";
-
-  css += `@media only screen and (max-width: ${
-    984 + 261 * 2
-  }px) { body.show-history { padding-left: 261px; } }`; // max-width + history-width * 2 for centered content
-  css += `body.dark-mode, body.dark-mode input[type='text'], body.dark-mode input[type='radio'], body.dark-mode textarea, body.dark-mode select, body.dark-mode button, body.dark-mode .powertoolsimage, body.dark-mode .pt-hover-menu, body.dark-mode .pt-hover-menu-flex { background-color: #121212; color: #f5f5f5; }`;
-  css += `body.dark-mode .${itaSettings["default"].resultpage.mcDiv}.powertoolslinkinlinecontainer { background-color: #1f1f1f; }`;
-  css +=
-    "body.dark-mode img.logo, body.dark-mode img[src^='data'] { filter: hue-rotate(180deg) brightness(.93) invert(1); }";
-  css += "body.dark-mode img[src^='http'] { opacity: 0.75 }";
-  css +=
-    "body.dark-mode a, body.dark-mode a:link, body.dark-mode a:hover, body.dark-mode a:active, body.dark-mode .linked { color: #85daff; }";
-  css += "body.dark-mode a:visited { color: #8ec6ec; }";
-  css +=
-    "body.dark-mode .pt-textlink a { text-decoration: none; color: #f5f5f5; }";
-  css +=
-    ".pt-hover-menu, .pt-hover-menu-flex { position:absolute; padding: 8px; z-index: 1; background-color: #FFF; border: 1px solid #808080; display:none; }";
-  css += ".pt-hover-container:hover .pt-hover-menu { display:inline; }";
-  css += ".pt-hover-container:hover .pt-hover-menu-flex { display:flex; }";
-  css += ".pt-textlink a { text-decoration: none; color: black; }";
-  css += `.${itaSettings["default"].resultpage.mcDiv}.powertoolslinkinlinecontainer { background-color: #f2f2f2; }`;
-  css +=
-    ".powertoolsimage { width: 184px; height: 100px; background-color: white; border: 1px solid #808080; cursor: pointer; text-align: center; margin-top: 10px; padding-top: 84px; }";
-  css +=
-    ".pt-history-item:hover .pt-history-action { visibility: visible !important; }";
-  style.appendChild(document.createTextNode(css));
-
-  head.appendChild(style);
-}
-
-
-/***/ }),
-
-/***/ "./src/matrix3/links/airlines/aa.js":
+/***/ "./src/matrix5/links/airlines/aa.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -8461,20 +5068,20 @@ function printAA() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/aaSabre.js":
+/***/ "./src/matrix5/links/airlines/aaSabre.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
 
-// EXTERNAL MODULE: ./src/matrix3/settings/userSettings.js
-var userSettings = __webpack_require__("./src/matrix3/settings/userSettings.js");
-// EXTERNAL MODULE: ./src/matrix3/utils.js
-var utils = __webpack_require__("./src/matrix3/utils.js");
-// EXTERNAL MODULE: ./src/matrix3/links/index.ts
-var links = __webpack_require__("./src/matrix3/links/index.ts");
-// EXTERNAL MODULE: ./src/matrix5/parse/itin.ts + 1 modules
+// EXTERNAL MODULE: ./src/matrix5/settings/userSettings.js
+var userSettings = __webpack_require__("./src/matrix5/settings/userSettings.js");
+// EXTERNAL MODULE: ./src/matrix5/utils.js
+var utils = __webpack_require__("./src/matrix5/utils.js");
+// EXTERNAL MODULE: ./src/matrix5/links/index.ts
+var links = __webpack_require__("./src/matrix5/links/index.ts");
+// EXTERNAL MODULE: ./src/matrix5/parse/itin.ts
 var itin = __webpack_require__("./src/matrix5/parse/itin.ts");
 // EXTERNAL MODULE: ./node_modules/date-fns/_lib/cloneObject/index.js
 var cloneObject = __webpack_require__("./node_modules/date-fns/_lib/cloneObject/index.js");
@@ -9253,9 +5860,9 @@ function zonedTimeToUtc(date, timeZone, options) {
   return new Date(utc + offsetMilliseconds)
 }
 
-;// CONCATENATED MODULE: ./src/matrix3/json/timezones.json
+;// CONCATENATED MODULE: ./src/matrix5/json/timezones.json
 const timezones_namespaceObject = JSON.parse('{"AAA":"Pacific/Tahiti","AAB":"Australia/Brisbane","AAC":"Africa/Cairo","AAD":"Africa/Mogadishu","AAE":"Africa/Algiers","AAF":"America/New_York","AAG":"America/Sao_Paulo","AAH":"Europe/Berlin","AAI":"America/Belem","AAJ":"America/Paramaribo","AAK":"Pacific/Tarawa","AAL":"Europe/Copenhagen","AAM":"Africa/Johannesburg","AAN":"Asia/Dubai","AAO":"America/Caracas","AAP":"Asia/Makassar","AAQ":"Europe/Moscow","AAR":"Europe/Copenhagen","AAS":"Asia/Jayapura","AAT":"Asia/Shanghai","AAU":"Pacific/Apia","AAV":"Asia/Manila","AAW":"Asia/Karachi","AAX":"America/Sao_Paulo","AAY":"Asia/Aden","ABA":"Asia/Krasnoyarsk","ABB":"Africa/Lagos","ABC":"Europe/Madrid","ABD":"Asia/Tehran","ABE":"America/New_York","ABF":"Pacific/Tarawa","ABG":"Australia/Brisbane","ABH":"Australia/Brisbane","ABI":"America/Chicago","ABJ":"Africa/Abidjan","ABK":"Africa/Addis_Ababa","ABL":"America/Anchorage","ABM":"Australia/Brisbane","ABN":"America/Paramaribo","ABO":"Africa/Abidjan","ABP":"Pacific/Port_Moresby","ABQ":"America/Denver","ABR":"America/Chicago","ABS":"Africa/Cairo","ABT":"Asia/Riyadh","ABU":"Asia/Makassar","ABV":"Africa/Lagos","ABW":"Pacific/Port_Moresby","ABX":"Australia/Sydney","ABY":"America/New_York","ABZ":"Europe/London","ACA":"America/Mexico_City","ACB":"America/New_York","ACC":"Africa/Accra","ACD":"America/Bogota","ACE":"Atlantic/Canary","ACH":"Europe/Zurich","ACI":"Europe/London","ACJ":"Asia/Colombo","ACK":"America/New_York","ACL":"America/Bogota","ACM":"America/Bogota","ACN":"America/Matamoros","ACO":"Europe/Zurich","ACP":"Asia/Tehran","ACR":"America/Bogota","ACS":"Asia/Krasnoyarsk","ACT":"America/Chicago","ACU":"America/Panama","ACV":"America/Los_Angeles","ACX":"Asia/Shanghai","ACY":"America/New_York","ACZ":"Asia/Tehran","ADA":"Europe/Istanbul","ADB":"Europe/Istanbul","ADC":"Pacific/Port_Moresby","ADD":"Africa/Addis_Ababa","ADE":"Asia/Aden","ADF":"Europe/Istanbul","ADG":"America/New_York","ADH":"Asia/Yakutsk","ADI":"Africa/Windhoek","ADJ":"Asia/Amman","ADK":"America/Adak","ADL":"Australia/Adelaide","ADM":"America/Chicago","ADN":"America/Bogota","ADO":"Australia/Adelaide","ADP":"Asia/Colombo","ADQ":"America/Anchorage","ADR":"America/New_York","ADS":"America/Chicago","ADT":"America/Chicago","ADU":"Asia/Tehran","ADV":"Africa/Khartoum","ADW":"America/New_York","ADX":"Europe/London","ADY":"Africa/Johannesburg","ADZ":"America/Bogota","AEA":"Pacific/Tarawa","AEB":"Asia/Shanghai","AED":"America/Anchorage","AEE":"Africa/Juba","AEG":"Asia/Jakarta","AEH":"Africa/Ndjamena","AEI":"Europe/Madrid","AEK":"Pacific/Port_Moresby","AEL":"America/Chicago","AEM":"Asia/Vladivostok","AEO":"Africa/Nouakchott","AEP":"America/Argentina/Buenos_Aires","AEQ":"Asia/Shanghai","AER":"Europe/Moscow","AES":"Europe/Oslo","AET":"America/Anchorage","AEU":"Asia/Tehran","AEX":"America/Chicago","AEY":"Atlantic/Reykjavik","AFA":"America/Argentina/Buenos_Aires","AFD":"Africa/Johannesburg","AFF":"America/Denver","AFI":"America/Bogota","AFL":"America/Campo_Grande","AFN":"America/New_York","AFO":"America/Denver","AFR":"Pacific/Port_Moresby","AFS":"Asia/Tashkent","AFT":"Pacific/Guadalcanal","AFW":"America/Chicago","AFY":"Europe/Istanbul","AFZ":"Asia/Tehran","AGA":"Africa/Casablanca","AGB":"Europe/Berlin","AGC":"America/New_York","AGD":"Asia/Jayapura","AGE":"Europe/Berlin","AGF":"Europe/Paris","AGG":"Pacific/Port_Moresby","AGH":"Europe/Stockholm","AGI":"America/Paramaribo","AGJ":"Asia/Tokyo","AGK":"Pacific/Port_Moresby","AGL":"Pacific/Port_Moresby","AGM":"America/Godthab","AGN":"America/Anchorage","AGO":"America/Chicago","AGP":"Europe/Madrid","AGQ":"Europe/Athens","AGR":"Asia/Kolkata","AGS":"America/New_York","AGT":"America/Asuncion","AGU":"America/Mexico_City","AGV":"America/Caracas","AGW":"Australia/Brisbane","AGX":"Asia/Kolkata","AGY":"Australia/Perth","AGZ":"Africa/Johannesburg","AHA":"Asia/Tokyo","AHB":"Asia/Riyadh","AHC":"America/Los_Angeles","AHD":"America/Chicago","AHE":"Pacific/Tahiti","AHF":"America/Chicago","AHH":"America/Chicago","AHI":"Asia/Jayapura","AHJ":"Asia/Shanghai","AHL":"America/Guyana","AHN":"America/New_York","AHO":"Europe/Rome","AHS":"America/Tegucigalpa","AHT":"America/Adak","AHU":"Africa/Casablanca","AHY":"Indian/Antananarivo","AHZ":"Europe/Paris","AIA":"America/Denver","AIB":"America/Anchorage","AIC":"Pacific/Majuro","AID":"America/Indiana/Indianapolis","AIE":"Pacific/Port_Moresby","AIF":"America/Sao_Paulo","AIG":"Africa/Bangui","AIH":"Pacific/Port_Moresby","AII":"Africa/Djibouti","AIK":"America/New_York","AIL":"America/Panama","AIM":"Pacific/Majuro","AIN":"America/Anchorage","AIO":"America/Chicago","AIP":"Asia/Kolkata","AIR":"America/Campo_Grande","AIS":"Pacific/Tarawa","AIT":"Pacific/Rarotonga","AIU":"Pacific/Rarotonga","AIV":"America/Chicago","AIW":"Africa/Windhoek","AIY":"America/New_York","AIZ":"America/Chicago","AJA":"Europe/Paris","AJF":"Asia/Riyadh","AJI":"Europe/Istanbul","AJJ":"Africa/Nouakchott","AJK":"Asia/Tehran","AJL":"Asia/Kolkata","AJN":"Indian/Comoro","AJO":"Asia/Aden","AJR":"Europe/Stockholm","AJS":"America/Tijuana","AJU":"America/Belem","AJY":"Africa/Niamey","AKA":"Asia/Shanghai","AKB":"America/Adak","AKC":"America/New_York","AKD":"Asia/Kolkata","AKE":"Africa/Libreville","AKF":"Africa/Tripoli","AKG":"Pacific/Port_Moresby","AKH":"Asia/Riyadh","AKI":"America/Anchorage","AKJ":"Asia/Tokyo","AKK":"America/Anchorage","AKL":"Pacific/Auckland","AKM":"Africa/Ndjamena","AKN":"America/Anchorage","AKO":"America/Denver","AKP":"America/Anchorage","AKQ":"Asia/Jakarta","AKR":"Africa/Lagos","AKS":"Pacific/Guadalcanal","AKT":"Asia/Nicosia","AKU":"Asia/Shanghai","AKV":"America/Toronto","AKW":"Asia/Tehran","AKX":"Asia/Aqtobe","AKY":"Asia/Yangon","ALA":"Asia/Almaty","ALB":"America/New_York","ALC":"Europe/Madrid","ALD":"America/Lima","ALE":"America/Chicago","ALF":"Europe/Oslo","ALG":"Africa/Algiers","ALH":"Australia/Perth","ALI":"America/Chicago","ALJ":"Africa/Johannesburg","ALK":"Africa/Addis_Ababa","ALL":"Europe/Rome","ALM":"America/Denver","ALN":"America/Chicago","ALO":"America/Chicago","ALP":"Asia/Damascus","ALQ":"America/Sao_Paulo","ALR":"Pacific/Auckland","ALS":"America/Denver","ALT":"America/Porto_Velho","ALU":"Africa/Mogadishu","ALV":"Europe/Andorra","ALW":"America/Los_Angeles","ALX":"America/Chicago","ALY":"Africa/Cairo","ALZ":"America/Anchorage","AMA":"America/Chicago","AMB":"Indian/Antananarivo","AMC":"Africa/Ndjamena","AMD":"Asia/Kolkata","AME":"Africa/Maputo","AMF":"Pacific/Port_Moresby","AMG":"Pacific/Port_Moresby","AMH":"Africa/Addis_Ababa","AMI":"Asia/Makassar","AMJ":"America/Sao_Paulo","AMK":"America/Denver","AML":"America/Panama","AMM":"Asia/Amman","AMN":"America/New_York","AMO":"Africa/Ndjamena","AMP":"Indian/Antananarivo","AMQ":"Asia/Jayapura","AMR":"Europe/Madrid","AMS":"Europe/Amsterdam","AMT":"Australia/Darwin","AMU":"Pacific/Port_Moresby","AMV":"Europe/Moscow","AMW":"America/Chicago","AMX":"Australia/Darwin","AMY":"Indian/Antananarivo","AMZ":"Pacific/Auckland","ANA":"Africa/Nairobi","ANB":"America/Chicago","ANC":"America/Anchorage","AND":"America/New_York","ANE":"Europe/Paris","ANF":"America/Santiago","ANG":"Europe/Paris","ANH":"Pacific/Guadalcanal","ANI":"America/Anchorage","ANJ":"Africa/Brazzaville","ANK":"Europe/Istanbul","ANL":"Africa/Luanda","ANM":"Indian/Antananarivo","ANN":"America/Anchorage","ANO":"Africa/Maputo","ANP":"America/New_York","ANQ":"America/Indiana/Indianapolis","ANR":"Europe/Brussels","ANS":"America/Lima","ANT":"Europe/Vienna","ANU":"America/Antigua","ANV":"America/Anchorage","ANW":"America/Chicago","ANX":"Europe/Oslo","ANY":"America/Chicago","ANZ":"Australia/Darwin","AOA":"Pacific/Port_Moresby","AOB":"Pacific/Port_Moresby","AOC":"Europe/Berlin","AOD":"Africa/Ndjamena","AOE":"Europe/Istanbul","AOG":"Asia/Shanghai","AOH":"America/New_York","AOI":"Europe/Rome","AOJ":"Asia/Tokyo","AOK":"Europe/Athens","AOL":"America/Argentina/Buenos_Aires","AOM":"Asia/Muscat","AON":"Pacific/Port_Moresby","AOO":"America/New_York","AOP":"America/Lima","AOQ":"America/Godthab","AOR":"Asia/Kuala_Lumpur","AOS":"America/Anchorage","AOT":"Europe/Rome","AOU":"Asia/Vientiane","AOY":"Asia/Tehran","APA":"America/Denver","APB":"America/La_Paz","APC":"America/Los_Angeles","APE":"America/Lima","APF":"America/New_York","APG":"America/New_York","APH":"America/New_York","API":"America/Bogota","APK":"Pacific/Tahiti","APL":"Africa/Maputo","APN":"America/New_York","APO":"America/Bogota","APP":"Pacific/Port_Moresby","APQ":"America/Belem","APR":"Pacific/Port_Moresby","APS":"America/Sao_Paulo","APT":"America/Chicago","APU":"America/Sao_Paulo","APV":"America/Los_Angeles","APW":"Pacific/Apia","APX":"America/Sao_Paulo","APY":"America/Belem","APZ":"America/Argentina/Buenos_Aires","AQA":"America/Sao_Paulo","AQG":"Asia/Shanghai","AQI":"Asia/Riyadh","AQJ":"Asia/Amman","AQM":"America/Porto_Velho","AQP":"America/Lima","AQS":"Pacific/Fiji","AQY":"America/Anchorage","ARA":"America/Chicago","ARB":"America/New_York","ARC":"America/Anchorage","ARD":"Asia/Makassar","ARE":"America/Puerto_Rico","ARF":"America/Bogota","ARG":"America/Chicago","ARH":"Europe/Moscow","ARI":"America/Santiago","ARJ":"Asia/Jayapura","ARK":"Africa/Dar_es_Salaam","ARL":"Africa/Ouagadougou","ARM":"Australia/Sydney","ARN":"Europe/Stockholm","ARO":"America/Bogota","ARP":"Pacific/Port_Moresby","ARQ":"America/Bogota","ARR":"America/Argentina/Buenos_Aires","ARS":"America/Sao_Paulo","ART":"America/New_York","ARU":"America/Sao_Paulo","ARV":"America/Chicago","ARW":"Europe/Bucharest","ARX":"America/Belem","ARY":"Australia/Sydney","ARZ":"Africa/Luanda","ASA":"Africa/Asmara","ASB":"Asia/Ashgabat","ASC":"America/La_Paz","ASD":"America/Nassau","ASE":"America/Denver","ASF":"Europe/Samara","ASG":"Pacific/Auckland","ASH":"America/New_York","ASI":"Atlantic/St_Helena","ASJ":"Asia/Tokyo","ASK":"Africa/Abidjan","ASL":"America/Chicago","ASM":"Africa/Asmara","ASN":"America/Chicago","ASO":"Africa/Addis_Ababa","ASP":"Australia/Darwin","ASQ":"America/Los_Angeles","ASR":"Europe/Istanbul","ASS":"Africa/Johannesburg","AST":"America/Los_Angeles","ASU":"America/Asuncion","ASV":"Africa/Nairobi","ASW":"Africa/Cairo","ASX":"America/Chicago","ASY":"America/Chicago","ASZ":"Pacific/Port_Moresby","ATA":"America/Lima","ATB":"Africa/Khartoum","ATC":"America/Nassau","ATD":"Pacific/Guadalcanal","ATE":"America/Chicago","ATF":"America/Guayaquil","ATG":"Asia/Karachi","ATH":"Europe/Athens","ATI":"America/Montevideo","ATJ":"Indian/Antananarivo","ATK":"America/Anchorage","ATL":"America/New_York","ATM":"America/Belem","ATN":"Pacific/Port_Moresby","ATO":"America/New_York","ATP":"Pacific/Port_Moresby","ATQ":"Asia/Kolkata","ATR":"Africa/Nouakchott","ATS":"America/Denver","ATT":"America/Anchorage","ATU":"America/Adak","ATV":"Africa/Ndjamena","ATW":"America/Chicago","ATX":"Asia/Almaty","ATY":"America/Chicago","ATZ":"Africa/Cairo","AUA":"America/Aruba","AUB":"America/Campo_Grande","AUC":"America/Bogota","AUD":"Australia/Brisbane","AUE":"Africa/Cairo","AUF":"Europe/Paris","AUG":"America/New_York","AUH":"Asia/Dubai","AUI":"Pacific/Port_Moresby","AUJ":"Pacific/Port_Moresby","AUK":"America/Anchorage","AUL":"Pacific/Majuro","AUM":"America/Chicago","AUN":"America/Los_Angeles","AUO":"America/Chicago","AUP":"Pacific/Port_Moresby","AUQ":"Pacific/Marquesas","AUR":"Europe/Paris","AUS":"America/Chicago","AUT":"Asia/Jayapura","AUU":"Australia/Brisbane","AUV":"Pacific/Port_Moresby","AUW":"America/Chicago","AUX":"America/Belem","AUY":"Pacific/Efate","AUZ":"America/Chicago","AVA":"Asia/Shanghai","AVB":"Europe/Rome","AVF":"Europe/Paris","AVG":"Australia/Darwin","AVI":"America/Havana","AVK":"Asia/Ulaanbaatar","AVL":"America/New_York","AVN":"Europe/Paris","AVO":"America/New_York","AVP":"America/New_York","AVR":"Europe/Lisbon","AVU":"Pacific/Guadalcanal","AVV":"Australia/Sydney","AVW":"America/Phoenix","AVX":"America/Los_Angeles","AWA":"Africa/Addis_Ababa","AWB":"Pacific/Port_Moresby","AWD":"Pacific/Efate","AWE":"Africa/Libreville","AWH":"Africa/Addis_Ababa","AWK":"Pacific/Wake","AWM":"America/Chicago","AWN":"Australia/Adelaide","AWP":"Australia/Darwin","AWR":"Pacific/Port_Moresby","AWT":"Asia/Kolkata","AWZ":"Asia/Tehran","AXA":"America/Anguilla","AXB":"America/New_York","AXC":"Australia/Brisbane","AXD":"Europe/Athens","AXE":"America/Sao_Paulo","AXF":"Asia/Shanghai","AXG":"America/Chicago","AXJ":"Asia/Tokyo","AXK":"Asia/Aden","AXL":"Australia/Darwin","AXM":"America/Bogota","AXN":"America/Chicago","AXP":"America/Nassau","AXR":"Pacific/Tahiti","AXS":"America/Chicago","AXT":"Asia/Tokyo","AXU":"Africa/Addis_Ababa","AXV":"America/New_York","AXX":"America/Denver","AYA":"America/Bogota","AYC":"America/Bogota","AYD":"Australia/Darwin","AYE":"America/New_York","AYG":"America/Bogota","AYH":"Europe/London","AYI":"America/Bogota","AYK":"Asia/Qostanay","AYL":"Australia/Darwin","AYN":"Asia/Shanghai","AYO":"America/Asuncion","AYP":"America/Lima","AYQ":"Australia/Darwin","AYR":"Australia/Brisbane","AYS":"America/New_York","AYT":"Europe/Istanbul","AYU":"Pacific/Port_Moresby","AYW":"Asia/Jayapura","AYX":"America/Lima","AYZ":"America/New_York","AZA":"America/Phoenix","AZB":"Pacific/Port_Moresby","AZD":"Asia/Tehran","AZG":"America/Mexico_City","AZI":"Asia/Dubai","AZN":"Asia/Tashkent","AZO":"America/New_York","AZP":"America/Mexico_City","AZR":"Africa/Algiers","AZS":"America/Santo_Domingo","AZT":"America/Bogota","AZZ":"Africa/Luanda","BAA":"Pacific/Port_Moresby","BAB":"America/Los_Angeles","BAC":"America/Bogota","BAD":"America/Chicago","BAE":"Europe/Paris","BAF":"America/New_York","BAG":"Asia/Manila","BAH":"Asia/Bahrain","BAI":"America/Costa_Rica","BAJ":"Pacific/Port_Moresby","BAK":"Asia/Baku","BAL":"Europe/Istanbul","BAM":"America/Los_Angeles","BAN":"Africa/Lubumbashi","BAP":"Pacific/Port_Moresby","BAQ":"America/Bogota","BAR":"Asia/Shanghai","BAS":"Pacific/Guadalcanal","BAT":"America/Sao_Paulo","BAV":"Asia/Shanghai","BAW":"Africa/Libreville","BAX":"Asia/Krasnoyarsk","BAY":"Europe/Bucharest","BAZ":"America/Porto_Velho","BBA":"America/Santiago","BBB":"America/Chicago","BBC":"America/Chicago","BBD":"America/Chicago","BBE":"Australia/Perth","BBF":"America/New_York","BBG":"Pacific/Tarawa","BBH":"Europe/Berlin","BBI":"Asia/Kolkata","BBJ":"Europe/Berlin","BBK":"Africa/Gaborone","BBL":"Australia/Brisbane","BBM":"Asia/Phnom_Penh","BBN":"Asia/Kuala_Lumpur","BBO":"Africa/Mogadishu","BBP":"Europe/London","BBQ":"America/Antigua","BBR":"America/Guadeloupe","BBS":"Europe/London","BBT":"Africa/Bangui","BBU":"Europe/Bucharest","BBV":"Africa/Abidjan","BBW":"America/Chicago","BBX":"America/New_York","BBY":"Africa/Bangui","BBZ":"Africa/Lusaka","BCA":"America/Havana","BCB":"America/New_York","BCC":"America/Anchorage","BCD":"Asia/Manila","BCE":"America/Denver","BCF":"Africa/Bangui","BCG":"America/Guyana","BCH":"Asia/Jayapura","BCI":"Australia/Brisbane","BCJ":"America/Denver","BCK":"Australia/Brisbane","BCL":"America/Costa_Rica","BCM":"Europe/Bucharest","BCN":"Europe/Madrid","BCO":"Africa/Addis_Ababa","BCP":"Pacific/Port_Moresby","BCQ":"Africa/Tripoli","BCR":"America/Porto_Velho","BCS":"America/Chicago","BCT":"America/New_York","BCU":"Africa/Lagos","BCV":"America/Belize","BCW":"Africa/Maputo","BCX":"Asia/Yekaterinburg","BCY":"Africa/Addis_Ababa","BCZ":"Australia/Darwin","BDA":"Atlantic/Bermuda","BDB":"Australia/Brisbane","BDC":"America/Belem","BDD":"Australia/Brisbane","BDE":"America/Chicago","BDF":"America/Chicago","BDG":"America/Denver","BDH":"Asia/Tehran","BDI":"Indian/Mahe","BDJ":"Asia/Makassar","BDK":"Africa/Abidjan","BDL":"America/New_York","BDM":"Europe/Istanbul","BDN":"Asia/Karachi","BDO":"Asia/Jakarta","BDP":"Asia/Kathmandu","BDQ":"Asia/Kolkata","BDR":"America/New_York","BDS":"Europe/Rome","BDT":"Africa/Kinshasa","BDU":"Europe/Oslo","BDV":"Africa/Lubumbashi","BDW":"Australia/Perth","BDX":"America/Denver","BDY":"America/Los_Angeles","BDZ":"Pacific/Port_Moresby","BEA":"Pacific/Port_Moresby","BEB":"Europe/London","BEC":"America/Chicago","BED":"America/New_York","BEE":"Australia/Perth","BEF":"America/Managua","BEG":"Europe/Belgrade","BEH":"America/New_York","BEI":"Africa/Addis_Ababa","BEJ":"Asia/Makassar","BEK":"Asia/Kolkata","BEL":"America/Belem","BEM":"Africa/Casablanca","BEN":"Africa/Tripoli","BEO":"Australia/Sydney","BEP":"Asia/Kolkata","BEQ":"Europe/London","BES":"Europe/Paris","BET":"America/Anchorage","BEU":"Australia/Brisbane","BEV":"Asia/Jerusalem","BEW":"Africa/Maputo","BEX":"Europe/London","BEY":"Asia/Beirut","BEZ":"Pacific/Tarawa","BFA":"America/Asuncion","BFB":"America/Anchorage","BFC":"Australia/Brisbane","BFD":"America/New_York","BFE":"Europe/Berlin","BFF":"America/Denver","BFG":"America/Denver","BFH":"America/Sao_Paulo","BFI":"America/Los_Angeles","BFJ":"Asia/Shanghai","BFK":"America/Denver","BFL":"America/Los_Angeles","BFM":"America/Chicago","BFN":"Africa/Johannesburg","BFO":"Africa/Harare","BFP":"America/New_York","BFQ":"America/Panama","BFR":"America/Indiana/Indianapolis","BFS":"Europe/London","BFT":"America/New_York","BFU":"Asia/Shanghai","BFV":"Asia/Bangkok","BFW":"Africa/Algiers","BFX":"Africa/Douala","BGA":"America/Bogota","BGB":"Africa/Libreville","BGC":"Europe/Lisbon","BGD":"America/Chicago","BGE":"America/New_York","BGF":"Africa/Bangui","BGG":"Europe/Istanbul","BGH":"Africa/Nouakchott","BGI":"America/Barbados","BGJ":"Atlantic/Reykjavik","BGK":"America/Belize","BGL":"Asia/Kathmandu","BGM":"America/New_York","BGN":"Asia/Magadan","BGO":"Europe/Oslo","BGP":"Africa/Libreville","BGQ":"America/Anchorage","BGR":"America/New_York","BGS":"America/Chicago","BGT":"America/Phoenix","BGU":"Africa/Bangui","BGV":"America/Sao_Paulo","BGW":"Asia/Baghdad","BGX":"America/Sao_Paulo","BGY":"Europe/Rome","BGZ":"Europe/Lisbon","BHA":"America/Guayaquil","BHB":"America/New_York","BHC":"Asia/Karachi","BHD":"Europe/London","BHE":"Pacific/Auckland","BHF":"America/Bogota","BHG":"America/Tegucigalpa","BHH":"Asia/Riyadh","BHI":"America/Argentina/Buenos_Aires","BHJ":"Asia/Kolkata","BHK":"Asia/Tashkent","BHL":"America/Tijuana","BHM":"America/Chicago","BHN":"Asia/Aden","BHO":"Asia/Kolkata","BHP":"Asia/Kathmandu","BHQ":"Australia/Adelaide","BHR":"Asia/Kathmandu","BHS":"Australia/Sydney","BHT":"Australia/Brisbane","BHU":"Asia/Kolkata","BHV":"Asia/Karachi","BHW":"Asia/Karachi","BHX":"Europe/London","BHY":"Asia/Shanghai","BIA":"Europe/Paris","BIB":"Africa/Mogadishu","BIC":"America/Anchorage","BID":"America/New_York","BIE":"America/Chicago","BIF":"America/Denver","BIG":"America/Anchorage","BIH":"America/Los_Angeles","BII":"Pacific/Majuro","BIJ":"Pacific/Port_Moresby","BIK":"Asia/Jayapura","BIL":"America/Denver","BIM":"America/Nassau","BIN":"Asia/Kabul","BIO":"Europe/Madrid","BIP":"Australia/Brisbane","BIQ":"Europe/Paris","BIR":"Asia/Kathmandu","BIS":"America/Chicago","BIT":"Asia/Kathmandu","BIU":"Atlantic/Reykjavik","BIV":"Africa/Bangui","BIW":"Australia/Perth","BIX":"America/Chicago","BIY":"Africa/Johannesburg","BIZ":"Pacific/Port_Moresby","BJA":"Africa/Algiers","BJB":"Asia/Tehran","BJC":"America/Denver","BJD":"Atlantic/Reykjavik","BJE":"Africa/Khartoum","BJF":"Europe/Oslo","BJG":"Asia/Makassar","BJH":"Asia/Kathmandu","BJI":"America/Chicago","BJJ":"America/New_York","BJK":"Asia/Jayapura","BJL":"Africa/Banjul","BJM":"Africa/Bujumbura","BJN":"Africa/Maputo","BJO":"America/La_Paz","BJP":"America/Sao_Paulo","BJQ":"Asia/Muscat","BJR":"Africa/Addis_Ababa","BJT":"Asia/Colombo","BJU":"Asia/Kathmandu","BJV":"Europe/Istanbul","BJW":"Asia/Makassar","BJX":"America/Mexico_City","BJY":"Europe/Belgrade","BJZ":"Europe/Madrid","BKB":"Asia/Kolkata","BKC":"America/Anchorage","BKD":"America/Chicago","BKE":"America/Los_Angeles","BKF":"America/Anchorage","BKG":"America/Chicago","BKH":"Pacific/Honolulu","BKI":"Asia/Kuala_Lumpur","BKJ":"Africa/Conakry","BKK":"Asia/Bangkok","BKL":"America/New_York","BKM":"Asia/Kuala_Lumpur","BKN":"Asia/Ashgabat","BKO":"Africa/Bamako","BKP":"Australia/Brisbane","BKQ":"Australia/Brisbane","BKR":"Africa/Ndjamena","BKS":"Asia/Jakarta","BKT":"America/New_York","BKU":"Indian/Antananarivo","BKV":"Asia/Shanghai","BKW":"America/New_York","BKX":"America/Chicago","BKY":"Africa/Lubumbashi","BKZ":"Africa/Dar_es_Salaam","BLA":"America/Caracas","BLB":"America/Panama","BLC":"Africa/Douala","BLD":"America/Los_Angeles","BLE":"Europe/Stockholm","BLF":"America/New_York","BLG":"Asia/Kuala_Lumpur","BLH":"America/Los_Angeles","BLI":"America/Los_Angeles","BLJ":"Africa/Algiers","BLK":"Europe/London","BLL":"Europe/Copenhagen","BLM":"America/New_York","BLN":"Australia/Sydney","BLO":"Atlantic/Reykjavik","BLP":"America/Lima","BLQ":"Europe/Rome","BLR":"Asia/Kolkata","BLS":"Australia/Brisbane","BLT":"Australia/Brisbane","BLU":"America/Los_Angeles","BLV":"America/Chicago","BLW":"Africa/Mogadishu","BLX":"Europe/Rome","BLY":"Europe/Dublin","BLZ":"Africa/Blantyre","BMA":"Europe/Stockholm","BMB":"Africa/Kinshasa","BMC":"America/Denver","BMD":"Indian/Antananarivo","BME":"Australia/Perth","BMF":"Africa/Bangui","BMG":"America/Indiana/Indianapolis","BMH":"Pacific/Port_Moresby","BMI":"America/Chicago","BMJ":"America/Guyana","BMK":"Europe/Berlin","BML":"America/New_York","BMM":"Africa/Libreville","BMN":"Asia/Baghdad","BMO":"Asia/Yangon","BMP":"Australia/Brisbane","BMQ":"Africa/Nairobi","BMR":"Europe/Berlin","BMS":"America/Belem","BMT":"America/Chicago","BMU":"Asia/Makassar","BMV":"Asia/Ho_Chi_Minh","BMW":"Africa/Algiers","BMX":"America/Anchorage","BMY":"Pacific/Noumea","BMZ":"Pacific/Port_Moresby","BNA":"America/Chicago","BNB":"Africa/Kinshasa","BNC":"Africa/Lubumbashi","BND":"Asia/Tehran","BNE":"Australia/Brisbane","BNF":"America/Anchorage","BNG":"America/Los_Angeles","BNH":"America/New_York","BNI":"Africa/Lagos","BNK":"Australia/Sydney","BNL":"America/New_York","BNM":"Pacific/Port_Moresby","BNN":"Europe/Oslo","BNO":"America/Los_Angeles","BNP":"Asia/Karachi","BNQ":"Asia/Manila","BNR":"Africa/Ouagadougou","BNS":"America/Caracas","BNT":"Pacific/Port_Moresby","BNU":"America/Sao_Paulo","BNV":"Pacific/Port_Moresby","BNW":"America/Chicago","BNX":"Europe/Sarajevo","BNY":"Pacific/Guadalcanal","BNZ":"Pacific/Port_Moresby","BOA":"Africa/Kinshasa","BOB":"Pacific/Tahiti","BOC":"America/Panama","BOD":"Europe/Paris","BOE":"Africa/Brazzaville","BOF":"America/New_York","BOG":"America/Bogota","BOH":"Europe/London","BOI":"America/Denver","BOJ":"Europe/Sofia","BOK":"America/Los_Angeles","BOL":"Europe/London","BOM":"Asia/Kolkata","BON":"America/Curacao","BOO":"Europe/Oslo","BOP":"Africa/Bangui","BOQ":"Pacific/Port_Moresby","BOR":"Europe/Paris","BOS":"America/New_York","BOT":"Pacific/Port_Moresby","BOU":"Europe/Paris","BOV":"Pacific/Port_Moresby","BOW":"America/New_York","BOX":"Australia/Darwin","BOY":"Africa/Ouagadougou","BOZ":"Africa/Bangui","BPA":"America/New_York","BPB":"Pacific/Port_Moresby","BPC":"Africa/Douala","BPD":"Pacific/Port_Moresby","BPE":"Asia/Shanghai","BPF":"Pacific/Guadalcanal","BPG":"America/Campo_Grande","BPH":"Asia/Manila","BPI":"America/Denver","BPK":"Pacific/Port_Moresby","BPL":"Asia/Shanghai","BPN":"Asia/Makassar","BPS":"America/Belem","BPT":"America/Chicago","BPU":"Asia/Tokyo","BPX":"Asia/Shanghai","BPY":"Indian/Antananarivo","BQA":"Asia/Manila","BQB":"Australia/Perth","BQE":"Africa/Bissau","BQG":"Asia/Vladivostok","BQH":"Europe/London","BQI":"Africa/Windhoek","BQJ":"Asia/Vladivostok","BQK":"America/New_York","BQL":"Australia/Brisbane","BQN":"America/Puerto_Rico","BQO":"Africa/Abidjan","BQQ":"America/Belem","BQS":"Asia/Yakutsk","BQT":"Europe/Minsk","BQU":"America/St_Vincent","BQV":"America/Anchorage","BQW":"Australia/Perth","BRA":"America/Belem","BRB":"America/Belem","BRC":"America/Argentina/Buenos_Aires","BRD":"America/Chicago","BRE":"Europe/Berlin","BRG":"America/New_York","BRH":"Pacific/Port_Moresby","BRI":"Europe/Rome","BRJ":"Australia/Sydney","BRK":"Australia/Sydney","BRL":"America/Chicago","BRM":"America/Caracas","BRN":"Europe/Zurich","BRO":"America/Chicago","BRP":"Pacific/Port_Moresby","BRQ":"Europe/Prague","BRR":"Europe/London","BRS":"Europe/London","BRT":"Australia/Darwin","BRU":"Europe/Brussels","BRV":"Europe/Berlin","BRW":"America/Anchorage","BRX":"America/Santo_Domingo","BRY":"America/New_York","BSA":"Africa/Mogadishu","BSB":"America/Sao_Paulo","BSC":"America/Bogota","BSD":"Asia/Shanghai","BSE":"Asia/Kuala_Lumpur","BSF":"Pacific/Honolulu","BSG":"Africa/Malabo","BSH":"Europe/London","BSI":"Asia/Manila","BSJ":"Australia/Sydney","BSK":"Africa/Algiers","BSL":"Europe/Paris","BSM":"Asia/Tehran","BSN":"Africa/Bangui","BSO":"Asia/Manila","BSP":"Pacific/Port_Moresby","BSQ":"America/Phoenix","BSR":"Asia/Baghdad","BSS":"America/Belem","BST":"Asia/Kabul","BSU":"Africa/Kinshasa","BSV":"Indian/Antananarivo","BSW":"America/Anchorage","BSX":"Asia/Yangon","BSY":"Africa/Mogadishu","BSZ":"America/Anchorage","BTA":"Africa/Douala","BTB":"Africa/Brazzaville","BTC":"Asia/Colombo","BTD":"Australia/Darwin","BTE":"Africa/Freetown","BTF":"America/Denver","BTG":"Africa/Bangui","BTH":"Asia/Jakarta","BTI":"America/Anchorage","BTJ":"Asia/Jakarta","BTK":"Asia/Irkutsk","BTL":"America/New_York","BTM":"America/Denver","BTN":"America/New_York","BTO":"America/Paramaribo","BTP":"America/New_York","BTQ":"Africa/Kigali","BTR":"America/Chicago","BTS":"Europe/Bratislava","BTT":"America/Anchorage","BTU":"Asia/Kuala_Lumpur","BTV":"America/New_York","BTW":"Asia/Makassar","BTX":"Australia/Brisbane","BTY":"America/Los_Angeles","BUA":"Pacific/Bougainville","BUB":"America/Chicago","BUC":"Australia/Brisbane","BUD":"Europe/Budapest","BUF":"America/New_York","BUG":"Africa/Luanda","BUI":"Asia/Jayapura","BUJ":"Africa/Algiers","BUK":"Asia/Aden","BUL":"Pacific/Port_Moresby","BUM":"America/Chicago","BUN":"America/Bogota","BUO":"Africa/Mogadishu","BUP":"Asia/Kolkata","BUQ":"Africa/Harare","BUR":"America/Los_Angeles","BUS":"Asia/Tbilisi","BUT":"Asia/Thimphu","BUU":"Asia/Jakarta","BUV":"America/Montevideo","BUW":"Asia/Makassar","BUX":"Africa/Lubumbashi","BUY":"Australia/Perth","BUZ":"Asia/Tehran","BVA":"Europe/Paris","BVB":"America/Porto_Velho","BVC":"Atlantic/Cape_Verde","BVD":"America/Anchorage","BVE":"Europe/Paris","BVF":"Pacific/Fiji","BVG":"Europe/Oslo","BVH":"America/Porto_Velho","BVI":"Australia/Brisbane","BVJ":"Asia/Yekaterinburg","BVK":"America/La_Paz","BVL":"America/La_Paz","BVM":"America/Belem","BVO":"America/Chicago","BVP":"Pacific/Port_Moresby","BVR":"Atlantic/Cape_Verde","BVS":"America/Belem","BVU":"America/Anchorage","BVV":"Asia/Magadan","BVW":"Australia/Brisbane","BVX":"America/Chicago","BVY":"America/New_York","BVZ":"Australia/Perth","BWA":"Asia/Kathmandu","BWB":"Australia/Perth","BWC":"America/Los_Angeles","BWD":"America/Chicago","BWE":"Europe/Berlin","BWF":"Europe/London","BWG":"America/Chicago","BWH":"Asia/Kuala_Lumpur","BWI":"America/New_York","BWJ":"Pacific/Port_Moresby","BWK":"Europe/Zagreb","BWL":"America/Chicago","BWM":"America/Denver","BWN":"Asia/Brunei","BWO":"Europe/Saratov","BWP":"Pacific/Port_Moresby","BWQ":"Australia/Sydney","BWS":"America/Los_Angeles","BWT":"Australia/Hobart","BWU":"Australia/Sydney","BWX":"Asia/Jakarta","BWY":"Europe/London","BXA":"America/Chicago","BXB":"Asia/Jayapura","BXC":"America/New_York","BXD":"Asia/Jayapura","BXE":"Africa/Dakar","BXF":"Australia/Perth","BXG":"Australia/Sydney","BXH":"Asia/Almaty","BXI":"Africa/Abidjan","BXJ":"Asia/Almaty","BXK":"America/Phoenix","BXL":"Pacific/Fiji","BXM":"Asia/Jayapura","BXN":"Europe/Istanbul","BXO":"Europe/Zurich","BXR":"Asia/Tehran","BXS":"America/Los_Angeles","BXT":"Asia/Makassar","BXU":"Asia/Manila","BXV":"Atlantic/Reykjavik","BXX":"Africa/Mogadishu","BXY":"Asia/Qyzylorda","BXZ":"Pacific/Port_Moresby","BYA":"America/Anchorage","BYB":"Asia/Muscat","BYC":"America/La_Paz","BYD":"Asia/Aden","BYF":"Europe/Paris","BYG":"America/Denver","BYH":"America/Chicago","BYI":"America/Denver","BYJ":"Europe/Lisbon","BYK":"Africa/Abidjan","BYL":"Africa/Monrovia","BYM":"America/Havana","BYN":"Asia/Ulaanbaatar","BYO":"America/Campo_Grande","BYP":"Australia/Perth","BYQ":"Asia/Makassar","BYR":"Europe/Copenhagen","BYS":"America/Los_Angeles","BYT":"Europe/Dublin","BYU":"Europe/Berlin","BYW":"America/Los_Angeles","BYX":"Australia/Darwin","BZA":"America/Managua","BZB":"Africa/Maputo","BZC":"America/Sao_Paulo","BZD":"Australia/Sydney","BZE":"America/Belize","BZF":"America/Los_Angeles","BZG":"Europe/Warsaw","BZH":"Africa/Harare","BZI":"Europe/Istanbul","BZK":"Europe/Moscow","BZL":"Asia/Dhaka","BZM":"Indian/Antananarivo","BZN":"America/Denver","BZO":"Europe/Rome","BZP":"Australia/Brisbane","BZR":"Europe/Paris","BZS":"America/New_York","BZT":"America/Chicago","BZU":"Africa/Lubumbashi","BZV":"Africa/Brazzaville","BZX":"Asia/Shanghai","BZY":"Europe/Chisinau","BZZ":"Europe/London","CAA":"America/Tegucigalpa","CAB":"Africa/Luanda","CAC":"America/Sao_Paulo","CAD":"America/New_York","CAE":"America/New_York","CAF":"America/Porto_Velho","CAG":"Europe/Rome","CAH":"Asia/Ho_Chi_Minh","CAI":"Africa/Cairo","CAJ":"America/Caracas","CAK":"America/New_York","CAL":"Europe/London","CAM":"America/La_Paz","CAN":"Asia/Shanghai","CAO":"America/Denver","CAP":"America/Port-au-Prince","CAQ":"America/Bogota","CAR":"America/New_York","CAS":"Africa/Casablanca","CAT":"Europe/Lisbon","CAU":"America/Belem","CAV":"Africa/Luanda","CAW":"America/Sao_Paulo","CAX":"Europe/London","CAY":"America/Cayenne","CAZ":"Australia/Sydney","CBA":"America/Anchorage","CBB":"America/La_Paz","CBC":"Australia/Perth","CBD":"Asia/Kolkata","CBE":"America/New_York","CBF":"America/Chicago","CBG":"Europe/London","CBH":"Africa/Algiers","CBI":"Australia/Hobart","CBJ":"America/Santo_Domingo","CBK":"America/Chicago","CBL":"America/Caracas","CBM":"America/Chicago","CBN":"Asia/Jakarta","CBO":"Asia/Manila","CBP":"Europe/Lisbon","CBQ":"Africa/Lagos","CBR":"Australia/Sydney","CBS":"America/Caracas","CBT":"Africa/Luanda","CBU":"Europe/Berlin","CBV":"America/Guatemala","CBW":"America/Sao_Paulo","CBX":"Australia/Sydney","CBY":"Australia/Brisbane","CBZ":"America/Anchorage","CCA":"America/La_Paz","CCB":"America/Los_Angeles","CCC":"America/Havana","CCD":"America/Los_Angeles","CCE":"Africa/Cairo","CCF":"Europe/Paris","CCG":"America/Chicago","CCH":"America/Santiago","CCI":"America/Sao_Paulo","CCJ":"Asia/Kolkata","CCK":"Indian/Cocos","CCL":"Australia/Brisbane","CCM":"America/Sao_Paulo","CCN":"Asia/Kabul","CCO":"America/Bogota","CCP":"America/Santiago","CCQ":"America/Belem","CCR":"America/Los_Angeles","CCS":"America/Caracas","CCT":"America/Argentina/Buenos_Aires","CCU":"Asia/Kolkata","CCV":"Pacific/Efate","CCW":"Australia/Adelaide","CCX":"America/Campo_Grande","CCY":"America/Chicago","CCZ":"America/Nassau","CDA":"Australia/Darwin","CDB":"America/Anchorage","CDC":"America/Denver","CDD":"America/Tegucigalpa","CDE":"Asia/Shanghai","CDF":"Europe/Rome","CDG":"Europe/Paris","CDH":"America/Chicago","CDI":"America/Sao_Paulo","CDJ":"America/Belem","CDK":"America/New_York","CDL":"America/Anchorage","CDN":"America/New_York","CDO":"Africa/Johannesburg","CDP":"Asia/Kolkata","CDQ":"Australia/Brisbane","CDR":"America/Denver","CDS":"America/Chicago","CDT":"Europe/Madrid","CDU":"Australia/Sydney","CDV":"America/Anchorage","CDW":"America/New_York","CDY":"Asia/Manila","CDZ":"Europe/Madrid","CEA":"America/Chicago","CEB":"Asia/Manila","CEC":"America/Los_Angeles","CED":"Australia/Adelaide","CEE":"Europe/Moscow","CEF":"America/New_York","CEG":"Europe/London","CEH":"Africa/Blantyre","CEI":"Asia/Bangkok","CEK":"Asia/Yekaterinburg","CEM":"America/Anchorage","CEN":"America/Hermosillo","CEO":"Africa/Luanda","CEP":"America/La_Paz","CEQ":"Europe/Paris","CER":"Europe/Paris","CES":"Australia/Sydney","CET":"Europe/Paris","CEU":"America/New_York","CEV":"America/Indiana/Indianapolis","CEW":"America/New_York","CEX":"America/Anchorage","CEY":"America/Chicago","CEZ":"America/Denver","CFA":"America/Anchorage","CFB":"America/Sao_Paulo","CFC":"America/Sao_Paulo","CFD":"America/Chicago","CFE":"Europe/Paris","CFF":"Africa/Luanda","CFG":"America/Havana","CFH":"Australia/Adelaide","CFI":"Australia/Darwin","CFK":"Africa/Algiers","CFM":"America/Edmonton","CFN":"Europe/Dublin","CFO":"America/Campo_Grande","CFP":"Australia/Brisbane","CFQ":"America/Vancouver","CFR":"Europe/Paris","CFS":"Australia/Sydney","CFT":"America/Phoenix","CFU":"Europe/Athens","CFV":"America/Chicago","CGA":"America/Anchorage","CGB":"America/Campo_Grande","CGC":"Pacific/Port_Moresby","CGD":"Asia/Shanghai","CGE":"America/New_York","CGF":"America/New_York","CGG":"Asia/Manila","CGH":"America/Sao_Paulo","CGI":"America/Chicago","CGJ":"Africa/Lusaka","CGK":"Asia/Jakarta","CGM":"Asia/Manila","CGN":"Europe/Berlin","CGO":"Asia/Shanghai","CGP":"Asia/Dhaka","CGQ":"Asia/Shanghai","CGR":"America/Campo_Grande","CGS":"America/New_York","CGT":"Africa/Nouakchott","CGV":"Australia/Perth","CGY":"Asia/Manila","CGZ":"America/Phoenix","CHA":"America/New_York","CHB":"Asia/Karachi","CHC":"Pacific/Auckland","CHE":"Europe/Tallinn","CHF":"Asia/Seoul","CHG":"Asia/Shanghai","CHH":"America/Lima","CHJ":"Africa/Harare","CHK":"America/Chicago","CHL":"America/Denver","CHM":"America/Lima","CHN":"Asia/Seoul","CHO":"America/New_York","CHP":"America/Anchorage","CHQ":"Europe/Athens","CHR":"Europe/Paris","CHS":"America/New_York","CHT":"Pacific/Chatham","CHU":"America/Anchorage","CHV":"Europe/Lisbon","CHX":"America/Panama","CHY":"Pacific/Guadalcanal","CHZ":"America/Los_Angeles","CIA":"Europe/Rome","CIC":"America/Los_Angeles","CID":"America/Chicago","CIE":"Australia/Perth","CIF":"Asia/Shanghai","CIG":"America/Denver","CIH":"Asia/Shanghai","CIJ":"America/La_Paz","CIK":"America/Anchorage","CIL":"America/Anchorage","CIM":"America/Bogota","CIN":"America/Chicago","CIO":"America/Asuncion","CIP":"Africa/Lusaka","CIQ":"America/Guatemala","CIR":"America/Chicago","CIS":"Pacific/Enderbury","CIT":"Asia/Almaty","CIU":"America/New_York","CIV":"America/Anchorage","CIW":"America/St_Vincent","CIX":"America/Lima","CIY":"Europe/Rome","CIZ":"America/Porto_Velho","CJA":"America/Lima","CJB":"Asia/Kolkata","CJC":"America/Santiago","CJD":"America/Bogota","CJF":"Australia/Perth","CJH":"America/Vancouver","CJJ":"Asia/Seoul","CJL":"Asia/Karachi","CJM":"Asia/Bangkok","CJN":"Asia/Jakarta","CJS":"America/Ojinaga","CJT":"America/Mexico_City","CJU":"Asia/Seoul","CKA":"America/Chicago","CKB":"America/New_York","CKC":"Europe/Kiev","CKD":"America/Anchorage","CKE":"America/Los_Angeles","CKG":"Asia/Shanghai","CKH":"Asia/Magadan","CKI":"Australia/Darwin","CKK":"America/Chicago","CKL":"Europe/Moscow","CKM":"America/Chicago","CKN":"America/Chicago","CKO":"America/Sao_Paulo","CKR":"America/Los_Angeles","CKS":"America/Belem","CKT":"Asia/Tehran","CKU":"America/Anchorage","CKV":"America/Chicago","CKW":"Australia/Perth","CKX":"America/Anchorage","CKY":"Africa/Conakry","CKZ":"Europe/Istanbul","CLA":"Asia/Dhaka","CLD":"America/Los_Angeles","CLE":"America/New_York","CLF":"Europe/London","CLG":"America/Los_Angeles","CLH":"Australia/Sydney","CLI":"America/Chicago","CLJ":"Europe/Bucharest","CLK":"America/Chicago","CLL":"America/Chicago","CLM":"America/Los_Angeles","CLN":"America/Belem","CLO":"America/Bogota","CLP":"America/Anchorage","CLQ":"America/Mexico_City","CLR":"America/Los_Angeles","CLS":"America/Los_Angeles","CLT":"America/New_York","CLU":"America/Indiana/Indianapolis","CLV":"America/Sao_Paulo","CLW":"America/New_York","CLX":"America/Argentina/Buenos_Aires","CLY":"Europe/Paris","CLZ":"America/Caracas","CMA":"Australia/Brisbane","CMB":"Asia/Colombo","CMC":"America/Belem","CMD":"Australia/Sydney","CME":"America/Mexico_City","CMF":"Europe/Paris","CMG":"America/Campo_Grande","CMH":"America/New_York","CMI":"America/Chicago","CMJ":"Asia/Taipei","CMK":"Africa/Blantyre","CML":"Australia/Brisbane","CMM":"America/Guatemala","CMN":"Africa/Casablanca","CMO":"Africa/Mogadishu","CMP":"America/Belem","CMQ":"Australia/Brisbane","CMR":"Europe/Paris","CMS":"Africa/Mogadishu","CMT":"America/Belem","CMU":"Pacific/Port_Moresby","CMV":"Pacific/Auckland","CMW":"America/Havana","CMX":"America/New_York","CMY":"America/Chicago","CMZ":"Africa/Maputo","CNA":"America/Hermosillo","CNB":"Australia/Sydney","CNC":"Australia/Brisbane","CND":"Europe/Bucharest","CNE":"America/Denver","CNF":"America/Sao_Paulo","CNG":"Europe/Paris","CNH":"America/New_York","CNI":"Asia/Shanghai","CNJ":"Australia/Brisbane","CNK":"America/Chicago","CNL":"Europe/Copenhagen","CNM":"America/Denver","CNN":"Asia/Kolkata","CNO":"America/Los_Angeles","CNP":"America/Scoresbysund","CNQ":"America/Argentina/Buenos_Aires","CNR":"America/Santiago","CNS":"Australia/Brisbane","CNT":"America/Argentina/Buenos_Aires","CNU":"America/Chicago","CNV":"America/Belem","CNW":"America/Chicago","CNX":"Asia/Bangkok","CNY":"America/Denver","CNZ":"Africa/Luanda","COA":"America/Los_Angeles","COB":"Australia/Darwin","COC":"America/Argentina/Buenos_Aires","COD":"America/Denver","COE":"America/Los_Angeles","COF":"America/New_York","COG":"America/Bogota","COH":"Asia/Kolkata","COI":"America/New_York","COJ":"Australia/Sydney","COK":"Asia/Kolkata","COL":"Europe/London","COM":"America/Chicago","CON":"America/New_York","COO":"Africa/Porto-Novo","COP":"America/New_York","COQ":"Asia/Ulaanbaatar","COR":"America/Argentina/Buenos_Aires","COS":"America/Denver","COT":"America/Chicago","COU":"America/Chicago","COV":"Europe/Lisbon","COW":"America/Santiago","COY":"Australia/Perth","COZ":"America/Santo_Domingo","CPA":"Africa/Monrovia","CPB":"America/Bogota","CPC":"America/Argentina/Buenos_Aires","CPD":"Australia/Adelaide","CPE":"America/Mexico_City","CPF":"Asia/Jakarta","CPG":"America/Argentina/Buenos_Aires","CPH":"Europe/Copenhagen","CPI":"Pacific/Port_Moresby","CPL":"America/Bogota","CPM":"America/Los_Angeles","CPN":"Pacific/Port_Moresby","CPO":"America/Santiago","CPP":"America/Santiago","CPQ":"America/Sao_Paulo","CPR":"America/Denver","CPS":"America/Chicago","CPT":"Africa/Johannesburg","CPU":"America/Belem","CPV":"America/Belem","CPX":"America/Puerto_Rico","CQA":"America/Campo_Grande","CQD":"Asia/Tehran","CQF":"Europe/Paris","CQP":"Australia/Brisbane","CQS":"America/Porto_Velho","CQT":"America/Bogota","CQW":"Asia/Shanghai","CRA":"Europe/Bucharest","CRB":"Australia/Sydney","CRC":"America/Bogota","CRD":"America/Argentina/Buenos_Aires","CRE":"America/New_York","CRF":"Africa/Bangui","CRG":"America/New_York","CRH":"Australia/Brisbane","CRI":"America/Nassau","CRJ":"Australia/Adelaide","CRK":"Asia/Manila","CRL":"Europe/Brussels","CRM":"Asia/Manila","CRO":"America/Los_Angeles","CRP":"America/Chicago","CRQ":"America/Belem","CRR":"America/Argentina/Buenos_Aires","CRS":"America/Chicago","CRT":"America/Chicago","CRU":"America/Grenada","CRV":"Europe/Rome","CRW":"America/New_York","CRX":"America/Chicago","CRY":"Australia/Perth","CRZ":"Asia/Ashgabat","CSA":"Europe/London","CSB":"Europe/Bucharest","CSC":"America/Costa_Rica","CSD":"Australia/Darwin","CSE":"America/Denver","CSF":"Europe/Paris","CSG":"America/New_York","CSH":"Europe/Moscow","CSI":"Australia/Sydney","CSJ":"Asia/Ho_Chi_Minh","CSK":"Africa/Dakar","CSM":"America/Chicago","CSN":"America/Los_Angeles","CSO":"Europe/Berlin","CSP":"America/Anchorage","CSQ":"America/Chicago","CSR":"America/Bogota","CSS":"America/Campo_Grande","CST":"Pacific/Fiji","CSU":"America/Sao_Paulo","CSV":"America/Chicago","CSW":"America/Porto_Velho","CSX":"Asia/Shanghai","CSY":"Europe/Moscow","CSZ":"America/Argentina/Buenos_Aires","CTA":"Europe/Rome","CTB":"America/Denver","CTC":"America/Argentina/Buenos_Aires","CTD":"America/Panama","CTE":"America/Panama","CTF":"America/Guatemala","CTG":"America/Bogota","CTH":"America/New_York","CTI":"Africa/Luanda","CTK":"America/Chicago","CTL":"Australia/Brisbane","CTM":"America/Cancun","CTN":"Australia/Brisbane","CTO":"America/New_York","CTP":"America/Belem","CTQ":"America/Sao_Paulo","CTR":"Australia/Darwin","CTS":"Asia/Tokyo","CTT":"Europe/Paris","CTU":"Asia/Shanghai","CTW":"America/Phoenix","CTX":"America/New_York","CTY":"America/New_York","CTZ":"America/New_York","CUA":"America/Mazatlan","CUB":"America/New_York","CUC":"America/Bogota","CUD":"Australia/Brisbane","CUE":"America/Guayaquil","CUF":"Europe/Rome","CUG":"Australia/Sydney","CUH":"America/Chicago","CUI":"America/Bogota","CUJ":"Asia/Manila","CUK":"America/Belize","CUL":"America/Mazatlan","CUM":"America/Caracas","CUN":"America/Cancun","CUO":"America/Bogota","CUP":"America/Caracas","CUQ":"Australia/Brisbane","CUR":"America/Curacao","CUS":"America/Denver","CUT":"America/Argentina/Buenos_Aires","CUU":"America/Mazatlan","CUV":"America/Caracas","CUW":"America/Anchorage","CUX":"America/Chicago","CUY":"Australia/Perth","CUZ":"America/Lima","CVA":"America/New_York","CVB":"Pacific/Port_Moresby","CVC":"Australia/Adelaide","CVE":"America/Bogota","CVF":"Europe/Paris","CVG":"America/New_York","CVH":"America/Argentina/Buenos_Aires","CVI":"America/Argentina/Buenos_Aires","CVJ":"America/Mexico_City","CVL":"Pacific/Port_Moresby","CVM":"America/Mexico_City","CVN":"America/Denver","CVO":"America/Los_Angeles","CVQ":"Australia/Perth","CVR":"America/Los_Angeles","CVS":"America/Denver","CVT":"Europe/London","CVU":"Atlantic/Azores","CWA":"America/Chicago","CWB":"America/Sao_Paulo","CWC":"Europe/Kiev","CWF":"America/Chicago","CWG":"America/New_York","CWI":"America/Chicago","CWJ":"Asia/Shanghai","CWL":"Europe/London","CWO":"America/Chicago","CWP":"Asia/Karachi","CWR":"Australia/Adelaide","CWS":"America/Los_Angeles","CWT":"Australia/Sydney","CWW":"Australia/Sydney","CXA":"America/Caracas","CXB":"Asia/Dhaka","CXC":"America/Anchorage","CXF":"America/Anchorage","CXH":"America/Vancouver","CXI":"Pacific/Kiritimati","CXJ":"America/Sao_Paulo","CXL":"America/Los_Angeles","CXN":"Africa/Mogadishu","CXO":"America/Chicago","CXP":"Asia/Jakarta","CXQ":"Australia/Perth","CXR":"Asia/Ho_Chi_Minh","CXT":"Australia/Brisbane","CXY":"America/Nassau","CYA":"America/Port-au-Prince","CYB":"America/Cayman","CYC":"America/Belize","CYD":"America/Belize","CYE":"America/New_York","CYF":"America/Anchorage","CYG":"Australia/Sydney","CYI":"Asia/Taipei","CYL":"America/Tegucigalpa","CYM":"America/Anchorage","CYO":"America/Havana","CYP":"Asia/Manila","CYR":"America/Montevideo","CYS":"America/Denver","CYT":"America/Anchorage","CYU":"Asia/Manila","CYW":"America/Mexico_City","CYX":"Asia/Magadan","CYZ":"Asia/Manila","CZA":"America/Mexico_City","CZB":"America/Sao_Paulo","CZC":"America/Anchorage","CZE":"America/Caracas","CZF":"America/Anchorage","CZH":"America/Belize","CZJ":"America/Panama","CZK":"America/Los_Angeles","CZL":"Africa/Algiers","CZM":"America/Cancun","CZN":"America/Anchorage","CZO":"America/Anchorage","CZP":"America/Anchorage","CZS":"America/Rio_Branco","CZT":"America/Chicago","CZU":"America/Bogota","CZW":"Europe/Warsaw","CZX":"Asia/Shanghai","CZY":"Australia/Brisbane","CZZ":"America/Los_Angeles","DAA":"America/New_York","DAB":"America/New_York","DAC":"Asia/Dhaka","DAD":"Asia/Ho_Chi_Minh","DAE":"Asia/Kolkata","DAF":"Pacific/Port_Moresby","DAG":"America/Los_Angeles","DAH":"Asia/Aden","DAI":"Asia/Kolkata","DAJ":"Australia/Brisbane","DAK":"Africa/Cairo","DAL":"America/Chicago","DAM":"Asia/Damascus","DAN":"America/New_York","DAO":"Pacific/Port_Moresby","DAP":"Asia/Kathmandu","DAR":"Africa/Dar_es_Salaam","DAS":"America/Edmonton","DAT":"Asia/Shanghai","DAU":"Pacific/Port_Moresby","DAV":"America/Panama","DAX":"Asia/Shanghai","DAY":"America/New_York","DAZ":"Asia/Kabul","DBA":"Asia/Karachi","DBB":"Africa/Cairo","DBC":"Asia/Shanghai","DBD":"Asia/Kolkata","DBM":"Africa/Addis_Ababa","DBN":"America/New_York","DBO":"Australia/Sydney","DBP":"Pacific/Port_Moresby","DBQ":"America/Chicago","DBS":"America/Denver","DBT":"Africa/Addis_Ababa","DBU":"Asia/Colombo","DBV":"Europe/Zagreb","DBY":"Australia/Brisbane","DCA":"America/New_York","DCF":"America/Dominica","DCI":"Europe/Rome","DCK":"America/Anchorage","DCM":"Europe/Paris","DCN":"Australia/Perth","DCR":"America/Indiana/Indianapolis","DCT":"America/Nassau","DCU":"America/Chicago","DCY":"Asia/Shanghai","DDC":"America/Chicago","DDD":"Indian/Maldives","DDG":"Asia/Shanghai","DDI":"Australia/Brisbane","DDM":"Pacific/Port_Moresby","DDN":"Australia/Brisbane","DDU":"Asia/Karachi","DEA":"Asia/Karachi","DEB":"Europe/Budapest","DEC":"America/Chicago","DED":"Asia/Kolkata","DEE":"Asia/Magadan","DEF":"Asia/Tehran","DEH":"America/Chicago","DEI":"Indian/Mahe","DEL":"Asia/Kolkata","DEM":"Africa/Addis_Ababa","DEN":"America/Denver","DEO":"America/New_York","DEP":"Asia/Kolkata","DEQ":"Asia/Shanghai","DER":"Pacific/Port_Moresby","DES":"Indian/Mahe","DET":"America/New_York","DEX":"Asia/Jayapura","DEZ":"Asia/Damascus","DFI":"America/New_York","DFP":"Australia/Brisbane","DFW":"America/Chicago","DGA":"America/Belize","DGB":"America/Anchorage","DGC":"Africa/Addis_Ababa","DGD":"Australia/Perth","DGE":"Australia/Sydney","DGF":"America/Vancouver","DGL":"America/Phoenix","DGM":"Asia/Colombo","DGN":"America/New_York","DGO":"America/Mexico_City","DGP":"Europe/Riga","DGR":"Pacific/Auckland","DGT":"Asia/Manila","DGU":"Africa/Ouagadougou","DGW":"America/Denver","DHA":"Asia/Riyadh","DHB":"America/Los_Angeles","DHD":"Australia/Brisbane","DHF":"Asia/Dubai","DHG":"Asia/Vladivostok","DHI":"Asia/Kathmandu","DHL":"Asia/Aden","DHM":"Asia/Kolkata","DHN":"America/Chicago","DHR":"Europe/Amsterdam","DHT":"America/Chicago","DIB":"Asia/Kolkata","DIC":"Africa/Lubumbashi","DIE":"Indian/Antananarivo","DIG":"Asia/Shanghai","DIJ":"Europe/Paris","DIK":"America/Denver","DIL":"Asia/Dili","DIM":"Africa/Abidjan","DIN":"Asia/Ho_Chi_Minh","DIO":"America/Anchorage","DIP":"Africa/Ouagadougou","DIQ":"America/Sao_Paulo","DIR":"Africa/Addis_Ababa","DIS":"Africa/Brazzaville","DIU":"Asia/Kolkata","DIV":"Africa/Abidjan","DIW":"Asia/Colombo","DIY":"Europe/Istanbul","DJA":"Africa/Porto-Novo","DJB":"Asia/Jakarta","DJE":"Africa/Tunis","DJG":"Africa/Algiers","DJJ":"Asia/Jayapura","DJM":"Africa/Brazzaville","DJN":"America/Anchorage","DJO":"Africa/Abidjan","DJU":"Atlantic/Reykjavik","DKA":"Africa/Lagos","DKI":"Australia/Brisbane","DKK":"America/New_York","DKR":"Africa/Dakar","DKS":"Asia/Krasnoyarsk","DKV":"Australia/Darwin","DLA":"Africa/Douala","DLC":"Asia/Shanghai","DLD":"Europe/Oslo","DLE":"Europe/Paris","DLF":"America/Chicago","DLG":"America/Anchorage","DLH":"America/Chicago","DLI":"Asia/Ho_Chi_Minh","DLK":"Australia/Adelaide","DLL":"America/New_York","DLM":"Europe/Istanbul","DLN":"America/Denver","DLO":"America/Anchorage","DLP":"Europe/Paris","DLR":"Asia/Vladivostok","DLS":"America/Los_Angeles","DLU":"Asia/Shanghai","DLV":"Australia/Darwin","DLY":"Pacific/Efate","DLZ":"Asia/Ulaanbaatar","DMA":"America/Phoenix","DMB":"Asia/Almaty","DMD":"Australia/Brisbane","DME":"Europe/Moscow","DMK":"Asia/Bangkok","DMM":"Asia/Riyadh","DMN":"America/Denver","DMO":"America/Chicago","DMR":"Asia/Aden","DMT":"America/Campo_Grande","DMU":"Asia/Kolkata","DNA":"Asia/Tokyo","DNB":"Australia/Brisbane","DNC":"Africa/Abidjan","DND":"Europe/London","DNF":"Africa/Tripoli","DNG":"Australia/Perth","DNH":"Asia/Shanghai","DNI":"Africa/Khartoum","DNK":"Europe/Kiev","DNL":"America/New_York","DNM":"Australia/Perth","DNN":"America/New_York","DNO":"America/Belem","DNP":"Asia/Kathmandu","DNQ":"Australia/Sydney","DNR":"Europe/Paris","DNS":"America/Chicago","DNU":"Pacific/Port_Moresby","DNV":"America/Chicago","DNX":"Africa/Khartoum","DNZ":"Europe/Istanbul","DOA":"Indian/Antananarivo","DOB":"Asia/Jayapura","DOC":"Europe/London","DOD":"Africa/Dar_es_Salaam","DOE":"America/Paramaribo","DOF":"America/Anchorage","DOG":"Africa/Khartoum","DOH":"Asia/Qatar","DOI":"Pacific/Port_Moresby","DOL":"Europe/Paris","DOM":"America/Dominica","DON":"America/Guatemala","DOO":"Pacific/Port_Moresby","DOP":"Asia/Kathmandu","DOR":"Africa/Ouagadougou","DOS":"Pacific/Bougainville","DOU":"America/Campo_Grande","DOV":"America/New_York","DOX":"Australia/Perth","DOY":"Asia/Shanghai","DPA":"America/Chicago","DPB":"America/Argentina/Salta","DPE":"Europe/Paris","DPG":"America/Denver","DPK":"America/New_York","DPL":"Asia/Manila","DPO":"Australia/Hobart","DPS":"Asia/Makassar","DPT":"Asia/Vladivostok","DPU":"Pacific/Port_Moresby","DQA":"Asia/Shanghai","DQM":"Asia/Muscat","DQO":"America/Chicago","DRA":"America/Los_Angeles","DRB":"Australia/Perth","DRC":"Africa/Luanda","DRD":"Australia/Brisbane","DRE":"America/New_York","DRF":"America/Anchorage","DRG":"America/Anchorage","DRH":"Asia/Jayapura","DRI":"America/Chicago","DRJ":"America/Paramaribo","DRK":"America/Costa_Rica","DRM":"Europe/Athens","DRN":"Australia/Brisbane","DRO":"America/Denver","DRR":"Australia/Brisbane","DRS":"Europe/Berlin","DRT":"America/Chicago","DRU":"America/Denver","DRV":"Indian/Maldives","DRW":"Australia/Darwin","DRY":"Australia/Perth","DSA":"Europe/London","DSC":"Africa/Douala","DSD":"America/Guadeloupe","DSE":"Africa/Addis_Ababa","DSG":"Asia/Manila","DSI":"America/Chicago","DSK":"Asia/Karachi","DSL":"Africa/Freetown","DSM":"America/Chicago","DSN":"Asia/Shanghai","DSS":"Africa/Dakar","DSV":"America/New_York","DSX":"Asia/Taipei","DTA":"America/Denver","DTB":"Asia/Jakarta","DTD":"Asia/Makassar","DTE":"Asia/Manila","DTH":"America/Los_Angeles","DTI":"America/Sao_Paulo","DTL":"America/Chicago","DTM":"Europe/Berlin","DTN":"America/Chicago","DTR":"America/Los_Angeles","DTU":"Asia/Shanghai","DTW":"America/New_York","DUA":"America/Chicago","DUB":"Europe/Dublin","DUC":"America/Chicago","DUD":"Pacific/Auckland","DUE":"Africa/Luanda","DUF":"America/New_York","DUG":"America/Phoenix","DUH":"Europe/Tirane","DUJ":"America/New_York","DUK":"Africa/Johannesburg","DUM":"Asia/Jakarta","DUN":"America/Godthab","DUQ":"America/Vancouver","DUR":"Africa/Johannesburg","DUS":"Europe/Berlin","DUT":"America/Anchorage","DVA":"Europe/Bucharest","DVD":"Indian/Antananarivo","DVK":"America/Edmonton","DVL":"America/Chicago","DVN":"America/Chicago","DVO":"Asia/Manila","DVP":"Australia/Brisbane","DVR":"Australia/Darwin","DVT":"America/Phoenix","DWA":"Africa/Blantyre","DWB":"Indian/Antananarivo","DWC":"Asia/Dubai","DWD":"Asia/Riyadh","DWF":"America/New_York","DWH":"America/Chicago","DWN":"America/Chicago","DWO":"Asia/Colombo","DWR":"Asia/Kabul","DWS":"America/New_York","DXA":"Europe/Paris","DXB":"Asia/Dubai","DXD":"Australia/Brisbane","DXE":"America/Chicago","DXR":"America/New_York","DYA":"Australia/Brisbane","DYG":"Asia/Shanghai","DYL":"America/New_York","DYM":"Australia/Brisbane","DYR":"Asia/Anadyr","DYS":"America/Chicago","DYU":"Asia/Dushanbe","DYW":"Australia/Darwin","DZA":"Indian/Mayotte","DZI":"America/Bogota","DZN":"Asia/Almaty","DZO":"America/Montevideo","DZU":"Asia/Shanghai","EAA":"America/Anchorage","EAB":"Asia/Aden","EAE":"Pacific/Efate","EAL":"Pacific/Majuro","EAM":"Asia/Riyadh","EAN":"America/Denver","EAR":"America/Chicago","EAS":"Europe/Madrid","EAT":"America/Los_Angeles","EAU":"America/Chicago","EBA":"Europe/Rome","EBB":"Africa/Kampala","EBD":"Africa/Khartoum","EBG":"America/Bogota","EBH":"Africa/Algiers","EBJ":"Europe/Copenhagen","EBL":"Asia/Baghdad","EBM":"Africa/Tunis","EBN":"Pacific/Majuro","EBO":"Pacific/Majuro","EBR":"America/Chicago","EBS":"America/Chicago","EBU":"Europe/Paris","EBW":"Africa/Douala","ECA":"America/New_York","ECG":"America/New_York","ECH":"Australia/Sydney","ECI":"America/Managua","ECN":"Asia/Famagusta","ECO":"America/Bogota","ECP":"America/Chicago","ECR":"America/Bogota","ECS":"America/Denver","EDA":"America/Anchorage","EDB":"Africa/Khartoum","EDC":"America/Chicago","EDD":"Australia/Darwin","EDE":"America/New_York","EDF":"America/Anchorage","EDG":"America/New_York","EDI":"Europe/London","EDK":"America/Chicago","EDL":"Africa/Nairobi","EDM":"Europe/Paris","EDN":"Asia/Vladivostok","EDO":"Europe/Istanbul","EDQ":"America/Tegucigalpa","EDR":"Australia/Brisbane","EDW":"America/Los_Angeles","EED":"America/Los_Angeles","EEK":"America/Anchorage","EEN":"America/New_York","EFB":"America/Anchorage","EFD":"America/Chicago","EFG":"Pacific/Port_Moresby","EFK":"America/New_York","EFL":"Europe/Athens","EFW":"America/Chicago","EGA":"Pacific/Port_Moresby","EGC":"Europe/Paris","EGE":"America/Denver","EGI":"America/Chicago","EGL":"Africa/Addis_Ababa","EGM":"Pacific/Guadalcanal","EGN":"Africa/Khartoum","EGO":"Europe/Moscow","EGP":"America/Chicago","EGS":"Atlantic/Reykjavik","EGV":"America/Chicago","EGX":"America/Anchorage","EHL":"America/Argentina/Buenos_Aires","EHM":"America/Anchorage","EIA":"Pacific/Port_Moresby","EIB":"Europe/Berlin","EIE":"Asia/Krasnoyarsk","EIH":"Australia/Brisbane","EIL":"America/Anchorage","EIN":"Europe/Amsterdam","EIS":"America/Tortola","EIY":"Asia/Jerusalem","EJA":"America/Bogota","EJH":"Asia/Riyadh","EJN":"Asia/Shanghai","EJT":"Pacific/Majuro","EKA":"America/Los_Angeles","EKB":"Asia/Almaty","EKD":"Australia/Darwin","EKE":"America/Guyana","EKI":"America/Indiana/Indianapolis","EKN":"America/New_York","EKO":"America/Los_Angeles","EKS":"Asia/Magadan","EKT":"Europe/Stockholm","EKX":"America/New_York","ELA":"America/Chicago","ELB":"America/Bogota","ELC":"Australia/Darwin","ELD":"America/Chicago","ELE":"America/Panama","ELF":"Africa/Khartoum","ELG":"Africa/Algiers","ELH":"America/Nassau","ELI":"America/Anchorage","ELJ":"America/Bogota","ELK":"America/Chicago","ELL":"Africa/Johannesburg","ELM":"America/New_York","ELN":"America/Los_Angeles","ELO":"America/Argentina/Buenos_Aires","ELP":"America/Denver","ELQ":"Asia/Riyadh","ELR":"Asia/Jayapura","ELS":"Africa/Johannesburg","ELT":"Africa/Cairo","ELU":"Africa/Algiers","ELV":"America/Anchorage","ELW":"America/Anchorage","ELX":"America/Caracas","ELY":"America/Los_Angeles","ELZ":"America/New_York","EMA":"Europe/London","EMB":"America/Los_Angeles","EMD":"Australia/Brisbane","EME":"Europe/Berlin","EMG":"Africa/Johannesburg","EMI":"Pacific/Port_Moresby","EMK":"America/Anchorage","EML":"Europe/Zurich","EMM":"America/Denver","EMN":"Africa/Nouakchott","EMO":"Pacific/Port_Moresby","EMP":"America/Chicago","EMR":"America/Guatemala","EMS":"Pacific/Port_Moresby","EMT":"America/Los_Angeles","EMX":"America/Argentina/Buenos_Aires","EMY":"Africa/Cairo","ENA":"America/Anchorage","ENB":"Australia/Perth","ENC":"Europe/Paris","END":"America/Chicago","ENE":"Asia/Makassar","ENF":"Europe/Helsinki","ENH":"Asia/Shanghai","ENI":"Asia/Manila","ENJ":"America/Guatemala","ENK":"Europe/London","ENL":"America/Chicago","ENN":"America/Anchorage","ENO":"America/Asuncion","ENQ":"America/Tegucigalpa","ENS":"Europe/Amsterdam","ENT":"Pacific/Majuro","ENU":"Africa/Lagos","ENV":"America/Denver","ENW":"America/Chicago","ENY":"Asia/Shanghai","EOH":"America/Bogota","EOI":"Europe/London","EOK":"America/Chicago","EOR":"America/Caracas","EOS":"America/Chicago","EOZ":"America/Caracas","EPA":"America/Argentina/Buenos_Aires","EPG":"America/Chicago","EPH":"America/Los_Angeles","EPI":"Pacific/Efate","EPK":"Asia/Nicosia","EPL":"Europe/Paris","EPN":"Africa/Brazzaville","EPR":"Australia/Perth","EPS":"America/Santo_Domingo","EPT":"Pacific/Port_Moresby","EPU":"Europe/Tallinn","EQS":"America/Argentina/Buenos_Aires","ERA":"Africa/Mogadishu","ERB":"Australia/Adelaide","ERC":"Europe/Istanbul","ERD":"Europe/Kiev","ERE":"Pacific/Port_Moresby","ERF":"Europe/Berlin","ERG":"Asia/Irkutsk","ERH":"Africa/Casablanca","ERI":"America/New_York","ERL":"Asia/Shanghai","ERM":"America/Sao_Paulo","ERN":"America/Eirunepe","ERO":"America/Anchorage","ERQ":"Australia/Brisbane","ERR":"America/New_York","ERS":"Africa/Windhoek","ERT":"Asia/Ulaanbaatar","ERU":"Pacific/Port_Moresby","ERV":"America/Chicago","ERZ":"Europe/Istanbul","ESA":"Pacific/Port_Moresby","ESB":"Europe/Istanbul","ESC":"America/New_York","ESD":"America/Los_Angeles","ESE":"America/Tijuana","ESF":"America/Chicago","ESG":"America/Asuncion","ESH":"Europe/London","ESI":"America/Sao_Paulo","ESK":"Europe/Istanbul","ESL":"Europe/Moscow","ESM":"America/Guayaquil","ESN":"America/New_York","ESO":"America/Denver","ESP":"America/New_York","ESR":"America/Santiago","ESS":"Europe/Berlin","EST":"America/Chicago","ESU":"Africa/Casablanca","ESW":"America/Los_Angeles","ETB":"America/Chicago","ETD":"Australia/Adelaide","ETE":"Africa/Addis_Ababa","ETH":"Asia/Jerusalem","ETL":"Asia/Vladivostok","ETM":"Asia/Jerusalem","ETN":"America/Chicago","ETR":"America/Guayaquil","ETS":"America/Chicago","ETZ":"Europe/Paris","EUA":"Pacific/Tongatapu","EUC":"Australia/Perth","EUE":"America/Los_Angeles","EUF":"America/Chicago","EUG":"America/Los_Angeles","EUM":"Europe/Berlin","EUN":"Africa/Casablanca","EUQ":"Asia/Manila","EUX":"America/Curacao","EVA":"America/Chicago","EVD":"Australia/Darwin","EVE":"Europe/Oslo","EVG":"Europe/Stockholm","EVH":"Australia/Sydney","EVM":"America/Chicago","EVN":"Asia/Yerevan","EVV":"America/Chicago","EVW":"America/Denver","EVX":"Europe/Paris","EWB":"America/New_York","EWD":"America/Anchorage","EWE":"Asia/Jayapura","EWI":"Asia/Jayapura","EWK":"America/Chicago","EWN":"America/New_York","EWO":"Africa/Brazzaville","EWR":"America/New_York","EWY":"Europe/London","EXI":"America/Anchorage","EXM":"Australia/Perth","EXT":"Europe/London","EYK":"Asia/Yekaterinburg","EYL":"Africa/Bamako","EYP":"America/Bogota","EYR":"America/Los_Angeles","EYS":"Africa/Nairobi","EYW":"America/New_York","EZE":"America/Argentina/Buenos_Aires","EZS":"Europe/Istanbul","EZV":"Asia/Yekaterinburg","FAA":"Africa/Conakry","FAB":"Europe/London","FAC":"Pacific/Tahiti","FAE":"Atlantic/Faroe","FAF":"America/New_York","FAG":"Atlantic/Reykjavik","FAH":"Asia/Kabul","FAI":"America/Anchorage","FAJ":"America/Puerto_Rico","FAK":"America/Anchorage","FAL":"America/Chicago","FAM":"America/Chicago","FAN":"Europe/Oslo","FAO":"Europe/Lisbon","FAQ":"Pacific/Port_Moresby","FAR":"America/Chicago","FAS":"Atlantic/Reykjavik","FAT":"America/Los_Angeles","FAU":"Asia/Muscat","FAV":"Pacific/Tahiti","FAY":"America/New_York","FAZ":"Asia/Tehran","FBA":"America/Porto_Velho","FBD":"Asia/Kabul","FBE":"America/Sao_Paulo","FBG":"America/New_York","FBK":"America/Anchorage","FBL":"America/Chicago","FBM":"Africa/Lubumbashi","FBR":"America/Denver","FBS":"America/Los_Angeles","FBY":"America/Chicago","FCA":"America/Denver","FCB":"Africa/Johannesburg","FCH":"America/Los_Angeles","FCM":"America/Chicago","FCN":"Europe/Berlin","FCO":"Europe/Rome","FCS":"America/Denver","FCT":"America/Los_Angeles","FCY":"America/Chicago","FDB":"America/Campo_Grande","FDE":"Europe/Oslo","FDF":"America/Martinique","FDH":"Europe/Berlin","FDK":"America/New_York","FDR":"America/Chicago","FDU":"Africa/Kinshasa","FDY":"America/New_York","FEA":"Europe/London","FEB":"Asia/Kathmandu","FEC":"America/Belem","FEG":"Asia/Tashkent","FEJ":"America/Rio_Branco","FEK":"Africa/Abidjan","FEL":"Europe/Berlin","FEN":"America/Noronha","FEP":"America/Chicago","FES":"Europe/Madrid","FET":"America/Chicago","FEW":"America/Denver","FEZ":"Africa/Casablanca","FFA":"America/New_York","FFD":"Europe/London","FFL":"America/Chicago","FFM":"America/Chicago","FFO":"America/New_York","FFT":"America/New_York","FFU":"America/Santiago","FGD":"Africa/Nouakchott","FGI":"Pacific/Apia","FGL":"Pacific/Auckland","FGR":"Europe/Madrid","FGU":"Pacific/Tahiti","FHU":"America/Phoenix","FHZ":"Pacific/Tahiti","FIC":"America/Anchorage","FID":"America/New_York","FIE":"Europe/London","FIG":"Africa/Conakry","FIH":"Africa/Kinshasa","FIK":"Australia/Darwin","FIL":"America/Denver","FIN":"Pacific/Port_Moresby","FIV":"America/Anchorage","FIZ":"Australia/Perth","FJR":"Asia/Dubai","FKB":"Europe/Berlin","FKH":"Europe/London","FKI":"Africa/Lubumbashi","FKJ":"Asia/Tokyo","FKL":"America/New_York","FKN":"America/New_York","FKQ":"Asia/Jayapura","FKS":"Asia/Tokyo","FLA":"America/Bogota","FLB":"America/Belem","FLC":"Australia/Sydney","FLD":"America/Chicago","FLF":"Europe/Berlin","FLG":"America/Phoenix","FLH":"Europe/London","FLI":"Atlantic/Reykjavik","FLJ":"America/Anchorage","FLL":"America/New_York","FLM":"America/Asuncion","FLN":"America/Sao_Paulo","FLO":"America/New_York","FLP":"America/Chicago","FLR":"Europe/Rome","FLS":"Australia/Hobart","FLT":"America/Anchorage","FLV":"America/Chicago","FLW":"Atlantic/Azores","FLX":"America/Los_Angeles","FLY":"Australia/Sydney","FLZ":"Asia/Jakarta","FMA":"America/Argentina/Buenos_Aires","FMC":"America/Anchorage","FME":"America/New_York","FMG":"America/Costa_Rica","FMH":"America/New_York","FMI":"Africa/Lubumbashi","FMM":"Europe/Berlin","FMN":"America/Denver","FMO":"Europe/Berlin","FMS":"America/Chicago","FMU":"America/Los_Angeles","FMY":"America/New_York","FNA":"Africa/Freetown","FNB":"Europe/Berlin","FNC":"Europe/Lisbon","FND":"Indian/Maldives","FNE":"Pacific/Port_Moresby","FNG":"Africa/Ouagadougou","FNH":"Africa/Addis_Ababa","FNI":"Europe/Paris","FNJ":"Asia/Pyongyang","FNK":"America/Anchorage","FNL":"America/Denver","FNR":"America/Anchorage","FNT":"America/New_York","FOA":"Europe/London","FOB":"America/Los_Angeles","FOC":"Asia/Shanghai","FOD":"America/Chicago","FOE":"America/Chicago","FOG":"Europe/Rome","FOK":"America/New_York","FOM":"Africa/Douala","FON":"America/Costa_Rica","FOO":"Asia/Jayapura","FOP":"America/New_York","FOR":"America/Belem","FOS":"Australia/Perth","FOT":"Australia/Sydney","FOU":"Africa/Libreville","FOX":"America/Anchorage","FOY":"Africa/Monrovia","FPO":"America/Nassau","FPR":"America/New_York","FPY":"America/New_York","FRA":"Europe/Berlin","FRB":"Australia/Sydney","FRC":"America/Sao_Paulo","FRD":"America/Los_Angeles","FRE":"Pacific/Guadalcanal","FRG":"America/New_York","FRH":"America/Indiana/Indianapolis","FRI":"America/Chicago","FRJ":"Europe/Paris","FRK":"Indian/Mahe","FRL":"Europe/Rome","FRM":"America/Chicago","FRN":"America/Anchorage","FRO":"Europe/Oslo","FRP":"America/Anchorage","FRQ":"Pacific/Port_Moresby","FRR":"America/New_York","FRS":"America/Guatemala","FRT":"America/Santiago","FRU":"Asia/Bishkek","FRW":"Africa/Gaborone","FRY":"America/New_York","FRZ":"Europe/Berlin","FSC":"Europe/Paris","FSD":"America/Chicago","FSI":"America/Chicago","FSK":"America/Chicago","FSL":"Australia/Perth","FSM":"America/Chicago","FSN":"America/Chicago","FSP":"America/Miquelon","FSS":"Europe/London","FST":"America/Chicago","FSU":"America/Denver","FSZ":"Asia/Tokyo","FTA":"Pacific/Efate","FTE":"America/Argentina/Buenos_Aires","FTI":"Pacific/Pago_Pago","FTK":"America/Chicago","FTL":"America/Anchorage","FTU":"Indian/Antananarivo","FTW":"America/Chicago","FTX":"Africa/Brazzaville","FTY":"America/New_York","FUB":"Pacific/Port_Moresby","FUD":"Asia/Shanghai","FUE":"Atlantic/Canary","FUG":"Asia/Shanghai","FUJ":"Asia/Tokyo","FUK":"Asia/Tokyo","FUL":"America/Los_Angeles","FUM":"Pacific/Port_Moresby","FUN":"Pacific/Funafuti","FUO":"Asia/Shanghai","FUP":"Europe/Stockholm","FUT":"Pacific/Wallis","FVL":"Australia/Perth","FVM":"Indian/Maldives","FVR":"Australia/Perth","FWA":"America/Indiana/Indianapolis","FWH":"America/Chicago","FWL":"America/Anchorage","FWM":"Europe/London","FXE":"America/New_York","FXM":"America/Anchorage","FXO":"Africa/Maputo","FXY":"America/Chicago","FYJ":"Asia/Shanghai","FYM":"America/Chicago","FYN":"Asia/Shanghai","FYT":"Africa/Ndjamena","FYU":"America/Anchorage","FYV":"America/Chicago","FZO":"Europe/London","GAA":"America/Bogota","GAB":"America/Los_Angeles","GAC":"America/Tegucigalpa","GAD":"America/Chicago","GAE":"Africa/Tunis","GAF":"Africa/Tunis","GAG":"America/Chicago","GAH":"Australia/Brisbane","GAI":"America/New_York","GAJ":"Asia/Tokyo","GAK":"America/Anchorage","GAL":"America/Anchorage","GAM":"America/Anchorage","GAN":"Indian/Maldives","GAO":"America/Havana","GAP":"Pacific/Port_Moresby","GAQ":"Africa/Bamako","GAR":"Pacific/Port_Moresby","GAS":"Africa/Nairobi","GAT":"Europe/Paris","GAU":"Asia/Kolkata","GAV":"Asia/Jayapura","GAW":"Asia/Yangon","GAX":"Africa/Libreville","GAY":"Asia/Kolkata","GAZ":"Pacific/Port_Moresby","GBA":"Pacific/Efate","GBB":"Asia/Baku","GBC":"Pacific/Port_Moresby","GBD":"America/Chicago","GBE":"Africa/Gaborone","GBF":"Pacific/Port_Moresby","GBG":"America/Chicago","GBH":"America/Anchorage","GBI":"Asia/Kolkata","GBJ":"America/Guadeloupe","GBK":"Africa/Freetown","GBL":"Australia/Darwin","GBM":"Africa/Mogadishu","GBO":"America/New_York","GBP":"Australia/Brisbane","GBR":"America/New_York","GBS":"Pacific/Auckland","GBT":"Asia/Tehran","GBU":"Africa/Khartoum","GBV":"Australia/Perth","GBW":"Australia/Perth","GBZ":"Pacific/Auckland","GCA":"America/Bogota","GCC":"America/Denver","GCH":"Asia/Tehran","GCI":"Europe/London","GCJ":"Africa/Johannesburg","GCK":"America/Chicago","GCM":"America/Cayman","GCN":"America/Phoenix","GCT":"America/Phoenix","GCV":"America/Sao_Paulo","GCW":"America/Phoenix","GCY":"America/Chicago","GDA":"Africa/Bangui","GDC":"America/New_York","GDD":"Australia/Perth","GDE":"Africa/Addis_Ababa","GDG":"Asia/Yakutsk","GDH":"America/Anchorage","GDI":"Africa/Bangui","GDJ":"Africa/Kinshasa","GDL":"America/Mexico_City","GDM":"America/New_York","GDN":"Europe/Warsaw","GDO":"America/Caracas","GDP":"America/Belem","GDQ":"Africa/Addis_Ababa","GDT":"America/Grand_Turk","GDV":"America/Denver","GDW":"America/New_York","GDX":"Asia/Magadan","GDZ":"Europe/Moscow","GEA":"Pacific/Noumea","GEB":"Asia/Jayapura","GEC":"Asia/Famagusta","GED":"America/New_York","GEE":"Australia/Hobart","GEF":"Pacific/Guadalcanal","GEG":"America/Los_Angeles","GEI":"Pacific/Bougainville","GEK":"America/Anchorage","GEL":"America/Sao_Paulo","GEM":"Africa/Lagos","GEN":"Europe/Madrid","GEO":"America/Guyana","GER":"America/Havana","GES":"Asia/Manila","GET":"Australia/Perth","GEV":"Europe/Stockholm","GEW":"Pacific/Port_Moresby","GEX":"Australia/Sydney","GEY":"America/Denver","GFA":"America/Denver","GFB":"America/Anchorage","GFD":"America/Indiana/Indianapolis","GFE":"Australia/Sydney","GFF":"Australia/Sydney","GFK":"America/Chicago","GFL":"America/New_York","GFN":"Australia/Sydney","GFO":"America/Guyana","GFR":"Europe/Paris","GFY":"Africa/Windhoek","GGB":"America/Cuiaba","GGC":"Africa/Luanda","GGD":"Australia/Brisbane","GGE":"America/New_York","GGF":"America/Santarem","GGG":"America/Chicago","GGH":"America/Campo_Grande","GGJ":"America/Sao_Paulo","GGL":"America/Bogota","GGM":"Africa/Nairobi","GGN":"Africa/Abidjan","GGO":"Africa/Abidjan","GGR":"Africa/Mogadishu","GGS":"America/Argentina/Buenos_Aires","GGT":"America/Nassau","GGW":"America/Denver","GHA":"Africa/Algiers","GHB":"America/Nassau","GHC":"America/Nassau","GHD":"Africa/Addis_Ababa","GHE":"America/Panama","GHF":"Europe/Berlin","GHK":"Asia/Jerusalem","GHM":"America/Chicago","GHN":"Asia/Shanghai","GHS":"Asia/Makassar","GHT":"Africa/Tripoli","GHU":"America/Argentina/Buenos_Aires","GIB":"Europe/Gibraltar","GIC":"Australia/Brisbane","GID":"Africa/Bujumbura","GIF":"America/New_York","GIG":"America/Sao_Paulo","GII":"Africa/Conakry","GIL":"Asia/Karachi","GIM":"Africa/Libreville","GIR":"America/Bogota","GIS":"Pacific/Auckland","GIT":"Africa/Dar_es_Salaam","GIU":"Asia/Colombo","GIY":"Africa/Johannesburg","GIZ":"Asia/Riyadh","GJA":"America/Tegucigalpa","GJL":"Africa/Algiers","GJM":"America/Porto_Velho","GJR":"Atlantic/Reykjavik","GJT":"America/Denver","GKA":"Pacific/Port_Moresby","GKE":"Europe/Berlin","GKH":"Asia/Kathmandu","GKK":"Indian/Maldives","GKL":"Australia/Brisbane","GKN":"America/Anchorage","GKO":"Africa/Libreville","GKT":"America/New_York","GLA":"Europe/London","GLC":"Africa/Addis_Ababa","GLD":"America/Denver","GLE":"America/Chicago","GLF":"America/Costa_Rica","GLG":"Australia/Brisbane","GLH":"America/Chicago","GLI":"Australia/Sydney","GLK":"Africa/Mogadishu","GLL":"Europe/Oslo","GLM":"Australia/Brisbane","GLN":"Africa/Casablanca","GLO":"Europe/London","GLP":"Pacific/Port_Moresby","GLQ":"America/Anchorage","GLR":"America/New_York","GLS":"America/Chicago","GLT":"Australia/Brisbane","GLU":"Asia/Thimphu","GLV":"America/Anchorage","GLW":"America/Chicago","GLX":"Asia/Jayapura","GLY":"Australia/Perth","GLZ":"Europe/Amsterdam","GMA":"Africa/Kinshasa","GMB":"Africa/Addis_Ababa","GMC":"America/Bogota","GMD":"Africa/Casablanca","GME":"Europe/Minsk","GMI":"Pacific/Port_Moresby","GMM":"Africa/Brazzaville","GMN":"Pacific/Auckland","GMO":"Africa/Lagos","GMP":"Asia/Seoul","GMQ":"Asia/Shanghai","GMR":"Pacific/Gambier","GMS":"America/Belem","GMT":"America/Anchorage","GMU":"America/New_York","GMV":"America/Denver","GMY":"Europe/Berlin","GMZ":"Atlantic/Canary","GNA":"Europe/Minsk","GNB":"Europe/Paris","GND":"America/Grenada","GNE":"Europe/Brussels","GNF":"America/Los_Angeles","GNG":"America/Denver","GNI":"Asia/Taipei","GNM":"America/Belem","GNN":"Africa/Addis_Ababa","GNR":"America/Argentina/Buenos_Aires","GNS":"Asia/Jakarta","GNT":"America/Denver","GNU":"America/Anchorage","GNV":"America/New_York","GNY":"Europe/Istanbul","GNZ":"Africa/Gaborone","GOA":"Europe/Rome","GOB":"Africa/Addis_Ababa","GOC":"Pacific/Port_Moresby","GOE":"Pacific/Port_Moresby","GOF":"America/Chicago","GOG":"Africa/Windhoek","GOH":"America/Godthab","GOI":"Asia/Kolkata","GOJ":"Europe/Moscow","GOK":"America/Chicago","GOL":"America/Los_Angeles","GOM":"Africa/Lubumbashi","GON":"America/New_York","GOO":"Australia/Brisbane","GOP":"Asia/Kolkata","GOQ":"Asia/Shanghai","GOR":"Africa/Addis_Ababa","GOS":"Australia/Sydney","GOT":"Europe/Stockholm","GOU":"Africa/Douala","GOV":"Australia/Darwin","GOZ":"Europe/Sofia","GPA":"Europe/Athens","GPB":"America/Sao_Paulo","GPD":"Australia/Brisbane","GPI":"America/Bogota","GPL":"America/Costa_Rica","GPN":"Australia/Darwin","GPO":"America/Argentina/Buenos_Aires","GPS":"Pacific/Galapagos","GPT":"America/Chicago","GPZ":"America/Chicago","GQJ":"Europe/London","GQQ":"America/New_York","GRA":"America/Bogota","GRB":"America/Chicago","GRC":"Africa/Monrovia","GRD":"America/New_York","GRE":"America/Chicago","GRF":"America/Los_Angeles","GRG":"Asia/Kabul","GRH":"Pacific/Port_Moresby","GRI":"America/Chicago","GRJ":"Africa/Johannesburg","GRK":"America/Chicago","GRL":"Pacific/Port_Moresby","GRM":"America/Chicago","GRN":"America/Denver","GRO":"Europe/Madrid","GRP":"America/Belem","GRQ":"Europe/Amsterdam","GRR":"America/New_York","GRS":"Europe/Rome","GRT":"Asia/Karachi","GRU":"America/Sao_Paulo","GRV":"Europe/Moscow","GRW":"Atlantic/Azores","GRX":"Europe/Madrid","GRY":"Atlantic/Reykjavik","GRZ":"Europe/Vienna","GSA":"Asia/Kuala_Lumpur","GSB":"America/New_York","GSC":"Australia/Perth","GSE":"Europe/Stockholm","GSH":"America/Indiana/Indianapolis","GSI":"Pacific/Guadalcanal","GSJ":"America/Guatemala","GSL":"America/Edmonton","GSM":"Asia/Tehran","GSN":"Australia/Adelaide","GSO":"America/New_York","GSP":"America/New_York","GSQ":"Africa/Cairo","GSR":"Africa/Mogadishu","GSS":"Africa/Johannesburg","GST":"America/Anchorage","GSU":"Africa/Khartoum","GSV":"Europe/Saratov","GSY":"Europe/London","GTA":"Pacific/Guadalcanal","GTB":"Asia/Kuala_Lumpur","GTC":"America/Nassau","GTE":"Australia/Darwin","GTF":"America/Denver","GTG":"America/Chicago","GTI":"Europe/Berlin","GTK":"Asia/Kuala_Lumpur","GTN":"Pacific/Auckland","GTO":"Asia/Makassar","GTP":"America/Los_Angeles","GTR":"America/Chicago","GTS":"Australia/Darwin","GTT":"Australia/Brisbane","GTW":"Europe/Prague","GTY":"America/New_York","GTZ":"Africa/Dar_es_Salaam","GUA":"America/Guatemala","GUB":"America/Mazatlan","GUC":"America/Denver","GUD":"Africa/Bamako","GUE":"Pacific/Port_Moresby","GUF":"America/Chicago","GUG":"Pacific/Port_Moresby","GUH":"Australia/Sydney","GUI":"America/Caracas","GUJ":"America/Sao_Paulo","GUL":"Australia/Sydney","GUM":"Pacific/Guam","GUO":"Africa/Mogadishu","GUP":"America/Denver","GUQ":"America/Caracas","GUR":"Pacific/Port_Moresby","GUS":"America/Indiana/Indianapolis","GUT":"Europe/Berlin","GUU":"Atlantic/Reykjavik","GUV":"Pacific/Port_Moresby","GUW":"Asia/Atyrau","GUX":"Asia/Kolkata","GUY":"America/Chicago","GUZ":"America/Sao_Paulo","GVA":"Europe/Zurich","GVE":"America/New_York","GVI":"Pacific/Port_Moresby","GVL":"America/New_York","GVP":"Australia/Brisbane","GVR":"America/Sao_Paulo","GVT":"America/Chicago","GVW":"America/Chicago","GVX":"Europe/Stockholm","GWA":"Asia/Yangon","GWD":"Asia/Karachi","GWE":"Africa/Harare","GWL":"Asia/Kolkata","GWN":"Pacific/Port_Moresby","GWO":"America/Chicago","GWS":"America/Denver","GWT":"Europe/Berlin","GWV":"America/New_York","GWW":"Europe/Berlin","GWY":"Europe/Dublin","GXA":"Asia/Jakarta","GXF":"Asia/Aden","GXG":"Africa/Luanda","GXH":"Asia/Shanghai","GXQ":"America/Santiago","GXX":"Africa/Douala","GXY":"America/Denver","GYA":"America/La_Paz","GYB":"Australia/Perth","GYD":"Asia/Baku","GYE":"America/Guayaquil","GYG":"Asia/Yakutsk","GYI":"Africa/Kigali","GYL":"Australia/Perth","GYM":"America/Hermosillo","GYN":"America/Sao_Paulo","GYP":"Australia/Brisbane","GYR":"America/Phoenix","GYS":"Asia/Shanghai","GYU":"Asia/Shanghai","GYZ":"Australia/Perth","GZA":"Asia/Gaza","GZG":"Asia/Shanghai","GZI":"Asia/Kabul","GZM":"Europe/Malta","GZO":"Pacific/Guadalcanal","GZP":"Europe/Istanbul","GZT":"Europe/Istanbul","GZW":"Asia/Tehran","HAA":"Europe/Oslo","HAB":"America/Chicago","HAC":"Asia/Tokyo","HAD":"Europe/Stockholm","HAE":"America/Phoenix","HAF":"America/Los_Angeles","HAH":"Indian/Comoro","HAI":"America/New_York","HAJ":"Europe/Berlin","HAK":"Asia/Shanghai","HAL":"Africa/Windhoek","HAM":"Europe/Berlin","HAN":"Asia/Ho_Chi_Minh","HAO":"America/New_York","HAP":"Australia/Brisbane","HAQ":"Indian/Maldives","HAR":"America/New_York","HAS":"Asia/Riyadh","HAT":"Australia/Brisbane","HAU":"Europe/Oslo","HAV":"America/Havana","HAW":"Europe/London","HAX":"America/Chicago","HAY":"America/Anchorage","HAZ":"Pacific/Port_Moresby","HBA":"Australia/Hobart","HBB":"America/Denver","HBC":"America/Anchorage","HBD":"Pacific/Port_Moresby","HBE":"Africa/Cairo","HBG":"America/Chicago","HBH":"America/Anchorage","HBI":"America/Nassau","HBK":"America/Phoenix","HBN":"Asia/Ho_Chi_Minh","HBO":"America/Chicago","HBQ":"Asia/Shanghai","HBR":"America/Chicago","HBT":"Asia/Colombo","HBU":"Asia/Ulaanbaatar","HBX":"Asia/Kolkata","HCA":"America/Chicago","HCB":"America/Anchorage","HCC":"America/New_York","HCJ":"Asia/Shanghai","HCM":"Africa/Mogadishu","HCN":"Asia/Taipei","HCQ":"Australia/Perth","HCR":"America/Anchorage","HCW":"America/New_York","HDA":"America/Anchorage","HDB":"Europe/Berlin","HDD":"Asia/Karachi","HDE":"America/Chicago","HDF":"Europe/Berlin","HDG":"Asia/Shanghai","HDH":"Pacific/Honolulu","HDK":"Indian/Maldives","HDM":"Asia/Tehran","HDN":"America/Denver","HDR":"Asia/Tehran","HDS":"Africa/Johannesburg","HDY":"Asia/Bangkok","HEA":"Asia/Kabul","HEB":"Asia/Yangon","HED":"America/Anchorage","HEE":"America/Chicago","HEH":"Asia/Yangon","HEI":"Europe/Berlin","HEK":"Asia/Shanghai","HEL":"Europe/Helsinki","HEM":"Europe/Helsinki","HEO":"Pacific/Port_Moresby","HER":"Europe/Athens","HES":"America/Los_Angeles","HET":"Asia/Shanghai","HEV":"Europe/Madrid","HEW":"Asia/Shanghai","HEX":"America/Santo_Domingo","HEY":"America/Chicago","HEZ":"America/Chicago","HFA":"Asia/Jerusalem","HFD":"America/New_York","HFE":"Asia/Shanghai","HFF":"America/New_York","HFN":"Atlantic/Reykjavik","HFS":"Europe/Stockholm","HFT":"Europe/Oslo","HGA":"Africa/Mogadishu","HGD":"Australia/Brisbane","HGE":"America/Caracas","HGH":"Asia/Shanghai","HGL":"Europe/Berlin","HGN":"Asia/Bangkok","HGO":"Africa/Abidjan","HGR":"America/New_York","HGS":"Africa/Freetown","HGT":"America/Los_Angeles","HGU":"Pacific/Port_Moresby","HGZ":"America/Anchorage","HHE":"Asia/Tokyo","HHH":"America/New_York","HHI":"Pacific/Honolulu","HHN":"Europe/Berlin","HHP":"Asia/Hong_Kong","HHQ":"Asia/Bangkok","HHR":"America/Los_Angeles","HHZ":"Pacific/Tahiti","HIA":"Asia/Shanghai","HIB":"America/Chicago","HID":"Australia/Brisbane","HIE":"America/New_York","HIF":"America/Denver","HIG":"Australia/Brisbane","HIH":"Australia/Brisbane","HII":"America/Phoenix","HIJ":"Asia/Tokyo","HIK":"Pacific/Honolulu","HIL":"Africa/Addis_Ababa","HIM":"Asia/Colombo","HIN":"Asia/Seoul","HIO":"America/Los_Angeles","HIP":"Australia/Brisbane","HIR":"Pacific/Guadalcanal","HIS":"Australia/Brisbane","HIT":"Pacific/Port_Moresby","HIW":"Asia/Tokyo","HJJ":"Asia/Shanghai","HJR":"Asia/Kolkata","HJT":"Asia/Ulaanbaatar","HKA":"America/Chicago","HKB":"America/Anchorage","HKD":"Asia/Tokyo","HKG":"Asia/Hong_Kong","HKK":"Pacific/Auckland","HKN":"Pacific/Port_Moresby","HKR":"Africa/Nairobi","HKS":"America/Chicago","HKT":"Asia/Bangkok","HKV":"Europe/Sofia","HKY":"America/New_York","HLA":"Africa/Johannesburg","HLB":"America/Indiana/Indianapolis","HLC":"America/Chicago","HLD":"Asia/Shanghai","HLE":"Atlantic/St_Helena","HLF":"Europe/Stockholm","HLG":"America/New_York","HLH":"Asia/Shanghai","HLI":"America/Los_Angeles","HLL":"Australia/Perth","HLM":"America/New_York","HLN":"America/Denver","HLP":"Asia/Jakarta","HLR":"America/Chicago","HLS":"Australia/Hobart","HLT":"Australia/Sydney","HLU":"Pacific/Noumea","HLV":"Australia/Brisbane","HLW":"Africa/Johannesburg","HLY":"Europe/London","HLZ":"Pacific/Auckland","HMA":"Asia/Yekaterinburg","HMB":"Africa/Cairo","HME":"Africa/Algiers","HMG":"Australia/Darwin","HMI":"Asia/Shanghai","HMJ":"Europe/Kiev","HMN":"America/Denver","HMO":"America/Hermosillo","HMR":"Europe/Oslo","HMS":"America/Anchorage","HMT":"America/Los_Angeles","HMV":"Europe/Stockholm","HMY":"Asia/Seoul","HNA":"Asia/Tokyo","HNB":"America/Indiana/Indianapolis","HNC":"America/New_York","HND":"Asia/Tokyo","HNE":"America/Anchorage","HNG":"Pacific/Noumea","HNH":"America/Anchorage","HNI":"Pacific/Port_Moresby","HNK":"Australia/Brisbane","HNL":"Pacific/Honolulu","HNM":"Pacific/Honolulu","HNN":"Pacific/Port_Moresby","HNS":"America/Anchorage","HNX":"America/Denver","HNY":"Asia/Shanghai","HOA":"Africa/Nairobi","HOB":"America/Denver","HOC":"Pacific/Port_Moresby","HOD":"Asia/Aden","HOE":"Asia/Vientiane","HOF":"Asia/Riyadh","HOG":"America/Havana","HOH":"Europe/Vienna","HOI":"Pacific/Tahiti","HOK":"Australia/Darwin","HOL":"America/Anchorage","HOM":"America/Anchorage","HON":"America/Chicago","HOO":"Asia/Ho_Chi_Minh","HOP":"America/Chicago","HOQ":"Europe/Berlin","HOR":"Atlantic/Azores","HOS":"America/Argentina/Buenos_Aires","HOT":"America/Chicago","HOU":"America/Chicago","HOV":"Europe/Oslo","HOX":"Asia/Yangon","HOY":"Europe/London","HPA":"Pacific/Tongatapu","HPB":"America/Anchorage","HPE":"Australia/Brisbane","HPG":"Asia/Shanghai","HPH":"Asia/Ho_Chi_Minh","HPN":"America/New_York","HPT":"America/Chicago","HPV":"Pacific/Honolulu","HPY":"America/Chicago","HQM":"America/Los_Angeles","HRA":"Asia/Karachi","HRB":"Asia/Shanghai","HRC":"Asia/Almaty","HRE":"Africa/Harare","HRG":"Africa/Cairo","HRI":"Asia/Colombo","HRK":"Europe/Kiev","HRL":"America/Chicago","HRM":"Africa/Algiers","HRN":"Australia/Brisbane","HRO":"America/Chicago","HRR":"America/Bogota","HRS":"Africa/Johannesburg","HRT":"Europe/London","HRY":"Australia/Darwin","HRZ":"America/Sao_Paulo","HSB":"America/Chicago","HSC":"Asia/Shanghai","HSG":"Asia/Tokyo","HSH":"America/Los_Angeles","HSI":"America/Chicago","HSK":"Europe/Madrid","HSL":"America/Anchorage","HSM":"Australia/Sydney","HSN":"Asia/Shanghai","HSP":"America/New_York","HSS":"Asia/Kolkata","HST":"America/New_York","HSV":"America/Chicago","HSZ":"Asia/Taipei","HTA":"Asia/Yakutsk","HTB":"America/Guadeloupe","HTF":"Europe/London","HTG":"Asia/Krasnoyarsk","HTH":"America/Los_Angeles","HTI":"Australia/Brisbane","HTL":"America/New_York","HTM":"Asia/Ulaanbaatar","HTN":"Asia/Shanghai","HTO":"America/New_York","HTR":"Asia/Tokyo","HTS":"America/New_York","HTT":"Asia/Shanghai","HTU":"Australia/Sydney","HTV":"America/Chicago","HTW":"America/New_York","HTY":"Europe/Istanbul","HTZ":"America/Bogota","HUA":"America/Chicago","HUB":"Australia/Darwin","HUC":"America/Puerto_Rico","HUD":"America/Chicago","HUE":"Africa/Addis_Ababa","HUF":"America/Indiana/Indianapolis","HUG":"America/Guatemala","HUH":"Pacific/Tahiti","HUI":"Asia/Ho_Chi_Minh","HUJ":"America/Chicago","HUK":"Africa/Gaborone","HUL":"America/New_York","HUM":"America/Chicago","HUN":"Asia/Taipei","HUO":"Asia/Shanghai","HUQ":"Africa/Tripoli","HUS":"America/Anchorage","HUT":"America/Chicago","HUU":"America/Lima","HUV":"Europe/Stockholm","HUW":"America/Porto_Velho","HUX":"America/Mexico_City","HUY":"Europe/London","HUZ":"Asia/Shanghai","HVA":"Indian/Antananarivo","HVB":"Australia/Brisbane","HVD":"Asia/Ulaanbaatar","HVE":"America/Denver","HVG":"Europe/Oslo","HVK":"Atlantic/Reykjavik","HVM":"Atlantic/Reykjavik","HVN":"America/New_York","HVR":"America/Denver","HVS":"America/New_York","HWA":"Pacific/Port_Moresby","HWD":"America/Los_Angeles","HWI":"America/Anchorage","HWK":"Australia/Adelaide","HWN":"Africa/Harare","HWO":"America/New_York","HXD":"Asia/Shanghai","HXX":"Australia/Sydney","HYA":"America/New_York","HYC":"Europe/London","HYD":"Asia/Kolkata","HYF":"Pacific/Port_Moresby","HYG":"America/Anchorage","HYL":"America/Anchorage","HYN":"Asia/Shanghai","HYR":"America/Chicago","HYS":"America/Chicago","HYV":"Europe/Helsinki","HZB":"Europe/Paris","HZG":"Asia/Shanghai","HZH":"Asia/Shanghai","HZK":"Atlantic/Reykjavik","HZL":"America/New_York","HZP":"America/Edmonton","HZV":"Africa/Johannesburg","IAA":"Asia/Krasnoyarsk","IAB":"America/Chicago","IAD":"America/New_York","IAG":"America/New_York","IAH":"America/Chicago","IAM":"Africa/Algiers","IAN":"America/Anchorage","IAO":"Asia/Manila","IAQ":"Asia/Tehran","IAR":"Europe/Moscow","IAS":"Europe/Bucharest","IAU":"Pacific/Port_Moresby","IBA":"Africa/Lagos","IBE":"America/Bogota","IBI":"Pacific/Port_Moresby","IBO":"Africa/Maputo","IBP":"America/Lima","IBR":"Asia/Tokyo","IBZ":"Europe/Madrid","ICA":"America/Caracas","ICI":"Pacific/Fiji","ICK":"America/Paramaribo","ICL":"America/Chicago","ICN":"Asia/Seoul","ICO":"Asia/Manila","ICR":"America/Havana","ICT":"America/Chicago","ICY":"America/Anchorage","IDA":"America/Denver","IDB":"Europe/Stockholm","IDF":"Africa/Kinshasa","IDG":"America/Chicago","IDI":"America/New_York","IDK":"Australia/Adelaide","IDN":"Pacific/Port_Moresby","IDO":"America/Belem","IDP":"America/Chicago","IDR":"Asia/Kolkata","IDY":"Europe/Paris","IEG":"Europe/Warsaw","IEJ":"Asia/Tokyo","IES":"Europe/Berlin","IEV":"Europe/Kiev","IFA":"America/Chicago","IFF":"Australia/Brisbane","IFH":"Asia/Tehran","IFJ":"Atlantic/Reykjavik","IFL":"Australia/Brisbane","IFN":"Asia/Tehran","IFO":"Europe/Kiev","IFP":"America/Phoenix","IFU":"Indian/Maldives","IGA":"America/Nassau","IGB":"America/Argentina/Buenos_Aires","IGD":"Europe/Istanbul","IGE":"Africa/Libreville","IGG":"America/Anchorage","IGH":"Australia/Brisbane","IGL":"Europe/Istanbul","IGM":"America/Phoenix","IGN":"Asia/Manila","IGO":"America/Bogota","IGR":"America/Argentina/Buenos_Aires","IGS":"Europe/Berlin","IGT":"Europe/Moscow","IGU":"America/Sao_Paulo","IHA":"Asia/Tokyo","IHC":"Africa/Maputo","IHN":"Asia/Aden","IHO":"Indian/Antananarivo","IHR":"Asia/Tehran","IHU":"Pacific/Port_Moresby","IIA":"Europe/Dublin","IIL":"Asia/Tehran","IIN":"Asia/Tokyo","IIS":"Pacific/Bougainville","IJK":"Europe/Samara","IJU":"America/Sao_Paulo","IJX":"America/Chicago","IKA":"Asia/Tehran","IKB":"America/New_York","IKE":"America/Godthab","IKI":"Asia/Tokyo","IKK":"America/Chicago","IKL":"Africa/Kinshasa","IKO":"America/Anchorage","IKP":"Australia/Brisbane","IKS":"Asia/Yakutsk","IKT":"Asia/Irkutsk","IKU":"Asia/Bishkek","ILA":"Asia/Jayapura","ILB":"America/Campo_Grande","ILD":"Europe/Madrid","ILE":"America/Chicago","ILF":"America/Winnipeg","ILG":"America/New_York","ILH":"Europe/Berlin","ILI":"America/Anchorage","ILK":"Indian/Antananarivo","ILL":"America/Chicago","ILM":"America/New_York","ILN":"America/New_York","ILO":"Asia/Manila","ILP":"Pacific/Noumea","ILQ":"America/Lima","ILR":"Africa/Lagos","ILS":"America/El_Salvador","ILU":"Africa/Nairobi","ILY":"Europe/London","ILZ":"Europe/Bratislava","IMA":"Pacific/Port_Moresby","IMB":"America/Guyana","IMD":"Pacific/Port_Moresby","IMF":"Asia/Kolkata","IMG":"Africa/Maputo","IMI":"Pacific/Majuro","IMK":"Asia/Kathmandu","IML":"America/Denver","IMM":"America/New_York","IMN":"Pacific/Port_Moresby","IMO":"Africa/Bangui","IMP":"America/Belem","IMT":"America/Chicago","IMZ":"Asia/Kabul","INA":"Europe/Moscow","INB":"America/Belize","INC":"Asia/Shanghai","IND":"America/Indiana/Indianapolis","INE":"Africa/Maputo","INF":"Africa/Algiers","ING":"America/Argentina/Buenos_Aires","INH":"Africa/Maputo","INI":"Europe/Belgrade","INJ":"Australia/Brisbane","INK":"America/Chicago","INL":"America/Chicago","INM":"Australia/Adelaide","INN":"Europe/Vienna","INO":"Africa/Kinshasa","INQ":"Europe/Dublin","INS":"America/Los_Angeles","INT":"America/New_York","INU":"Pacific/Nauru","INV":"Europe/London","INW":"America/Phoenix","INX":"Asia/Jayapura","INY":"Africa/Johannesburg","INZ":"Africa/Algiers","IOA":"Europe/Athens","IOK":"Pacific/Port_Moresby","IOM":"Europe/London","ION":"Africa/Brazzaville","IOP":"Pacific/Port_Moresby","IOQ":"America/Godthab","IOR":"Europe/Dublin","IOS":"America/Belem","IOT":"America/Godthab","IOU":"Pacific/Noumea","IOW":"America/Chicago","IPA":"Pacific/Efate","IPC":"Pacific/Easter","IPE":"Asia/Manila","IPG":"America/Porto_Velho","IPH":"Asia/Kuala_Lumpur","IPI":"America/Bogota","IPL":"America/Los_Angeles","IPN":"America/Sao_Paulo","IPT":"America/New_York","IPU":"America/Belem","IPW":"Europe/London","IQA":"Asia/Baghdad","IQM":"Asia/Shanghai","IQN":"Asia/Shanghai","IQQ":"America/Santiago","IQT":"America/Lima","IRA":"Pacific/Guadalcanal","IRB":"America/Chicago","IRC":"America/Anchorage","IRD":"Asia/Dhaka","IRE":"America/Belem","IRG":"Australia/Brisbane","IRI":"Africa/Dar_es_Salaam","IRJ":"America/Argentina/Buenos_Aires","IRK":"America/Chicago","IRM":"Asia/Yekaterinburg","IRN":"America/Tegucigalpa","IRO":"Africa/Bangui","IRP":"Africa/Lubumbashi","IRS":"America/New_York","IRZ":"America/Porto_Velho","ISA":"Australia/Brisbane","ISB":"Asia/Karachi","ISC":"Europe/London","ISD":"America/Bogota","ISE":"Europe/Istanbul","ISG":"Asia/Tokyo","ISH":"Europe/Rome","ISI":"Australia/Brisbane","ISJ":"America/Mexico_City","ISK":"Asia/Kolkata","ISL":"Europe/Istanbul","ISM":"America/New_York","ISN":"America/Chicago","ISO":"America/New_York","ISP":"America/New_York","ISQ":"America/New_York","ISS":"America/New_York","IST":"Europe/Istanbul","ISU":"Asia/Baghdad","ISW":"America/Chicago","ITA":"America/Porto_Velho","ITB":"America/Belem","ITE":"America/Belem","ITH":"America/New_York","ITI":"America/Sao_Paulo","ITK":"Pacific/Port_Moresby","ITM":"Asia/Tokyo","ITN":"America/Belem","ITO":"Pacific/Honolulu","ITP":"America/Sao_Paulo","ITQ":"America/Sao_Paulo","ITR":"America/Sao_Paulo","ITU":"Asia/Magadan","IUE":"Pacific/Niue","IUI":"America/Godthab","IUL":"Asia/Jayapura","IUM":"America/Vancouver","IUS":"Pacific/Bougainville","IVA":"Indian/Antananarivo","IVC":"Pacific/Auckland","IVG":"Europe/Podgorica","IVH":"America/Anchorage","IVL":"Europe/Helsinki","IVO":"America/Bogota","IVR":"Australia/Sydney","IVW":"Australia/Darwin","IWA":"Europe/Moscow","IWD":"America/Chicago","IWJ":"Asia/Tokyo","IWK":"Asia/Tokyo","IWO":"Asia/Tokyo","IWS":"America/Chicago","IXA":"Asia/Kolkata","IXB":"Asia/Kolkata","IXC":"Asia/Kolkata","IXD":"Asia/Kolkata","IXE":"Asia/Kolkata","IXG":"Asia/Kolkata","IXH":"Asia/Kolkata","IXI":"Asia/Kolkata","IXJ":"Asia/Kolkata","IXK":"Asia/Kolkata","IXL":"Asia/Kolkata","IXM":"Asia/Kolkata","IXN":"Asia/Kolkata","IXP":"Asia/Kolkata","IXQ":"Asia/Kolkata","IXR":"Asia/Kolkata","IXS":"Asia/Kolkata","IXT":"Asia/Kolkata","IXU":"Asia/Kolkata","IXV":"Asia/Kolkata","IXW":"Asia/Kolkata","IXY":"Asia/Kolkata","IXZ":"Asia/Kolkata","IYK":"America/Los_Angeles","IZA":"America/Sao_Paulo","IZO":"Asia/Tokyo","IZT":"America/Mexico_City","JAA":"Asia/Kabul","JAB":"Australia/Darwin","JAC":"America/Denver","JAD":"Australia/Perth","JAE":"America/Lima","JAF":"Asia/Colombo","JAG":"Asia/Karachi","JAH":"Europe/Paris","JAI":"Asia/Kolkata","JAJ":"America/New_York","JAK":"America/Port-au-Prince","JAL":"America/Mexico_City","JAM":"Europe/Sofia","JAN":"America/Chicago","JAO":"America/New_York","JAP":"America/Costa_Rica","JAQ":"Pacific/Port_Moresby","JAR":"Asia/Tehran","JAS":"America/Chicago","JAT":"Pacific/Majuro","JAU":"America/Lima","JAV":"America/Godthab","JAX":"America/New_York","JBB":"Asia/Jakarta","JBC":"America/New_York","JBP":"America/Los_Angeles","JBQ":"America/Santo_Domingo","JBR":"America/Chicago","JBS":"America/Sao_Paulo","JBT":"America/Anchorage","JCA":"Europe/Paris","JCB":"America/Sao_Paulo","JCC":"America/Los_Angeles","JCD":"America/St_Thomas","JCE":"America/Los_Angeles","JCH":"America/Godthab","JCI":"America/Chicago","JCJ":"Asia/Seoul","JCK":"Australia/Brisbane","JCM":"America/Belem","JCN":"Asia/Seoul","JCO":"Europe/Malta","JCR":"America/Porto_Velho","JCT":"America/Chicago","JCU":"Africa/Ceuta","JCY":"America/Chicago","JDA":"America/Los_Angeles","JDB":"America/Chicago","JDF":"America/Sao_Paulo","JDH":"Asia/Kolkata","JDM":"America/New_York","JDN":"America/Denver","JDO":"America/Belem","JDP":"Europe/Paris","JDR":"America/Sao_Paulo","JDT":"America/Chicago","JDX":"America/Chicago","JDY":"America/Los_Angeles","JDZ":"Asia/Shanghai","JED":"Asia/Riyadh","JEE":"America/Port-au-Prince","JEF":"America/Chicago","JEG":"America/Godthab","JEJ":"Pacific/Majuro","JEK":"Africa/Lusaka","JEM":"America/Los_Angeles","JEQ":"America/Belem","JER":"Europe/London","JEV":"Europe/Paris","JFK":"America/New_York","JFM":"Australia/Perth","JFN":"America/New_York","JFR":"America/Godthab","JGA":"Asia/Kolkata","JGB":"Asia/Kolkata","JGC":"America/Phoenix","JGD":"Asia/Shanghai","JGE":"Asia/Seoul","JGL":"America/New_York","JGN":"Asia/Shanghai","JGO":"America/Godthab","JGP":"America/Chicago","JGQ":"America/Chicago","JGR":"America/Godthab","JGS":"Asia/Shanghai","JGX":"America/Los_Angeles","JHB":"Asia/Kuala_Lumpur","JHC":"America/New_York","JHE":"Europe/Stockholm","JHG":"Asia/Shanghai","JHL":"America/Edmonton","JHM":"Pacific/Honolulu","JHQ":"Australia/Brisbane","JHS":"America/Godthab","JHW":"America/New_York","JIA":"America/Campo_Grande","JIB":"Africa/Djibouti","JIC":"Asia/Shanghai","JID":"America/Los_Angeles","JIJ":"Africa/Addis_Ababa","JIK":"Europe/Athens","JIL":"Asia/Shanghai","JIM":"Africa/Addis_Ababa","JIN":"Africa/Kampala","JIO":"Asia/Jayapura","JIP":"America/Guayaquil","JIQ":"Asia/Shanghai","JIR":"Asia/Kathmandu","JIU":"Asia/Shanghai","JIW":"Asia/Karachi","JJA":"Pacific/Guadalcanal","JJD":"America/Belem","JJG":"America/Sao_Paulo","JJI":"America/Lima","JJM":"Africa/Nairobi","JJN":"Asia/Shanghai","JJU":"America/Godthab","JKG":"Europe/Stockholm","JKH":"Europe/Athens","JKL":"Europe/Athens","JKR":"Asia/Kathmandu","JKV":"America/Chicago","JLA":"America/Anchorage","JLB":"America/Los_Angeles","JLD":"Europe/Stockholm","JLH":"America/Chicago","JLN":"America/Chicago","JLO":"Europe/Rome","JLP":"Europe/Paris","JLR":"Asia/Kolkata","JLS":"America/Sao_Paulo","JLX":"America/Los_Angeles","JMA":"America/Chicago","JMB":"Africa/Luanda","JMC":"America/Los_Angeles","JMD":"America/Chicago","JMH":"America/Chicago","JMJ":"Asia/Shanghai","JMK":"Europe/Athens","JMM":"Europe/Stockholm","JMN":"America/Chicago","JMO":"Asia/Kathmandu","JMS":"America/Chicago","JMU":"Asia/Shanghai","JMY":"Africa/Freetown","JNA":"America/Sao_Paulo","JNB":"Africa/Johannesburg","JNG":"Asia/Shanghai","JNH":"America/Chicago","JNI":"America/Argentina/Buenos_Aires","JNJ":"Asia/Muscat","JNN":"America/Godthab","JNP":"America/Los_Angeles","JNS":"America/Godthab","JNU":"America/Anchorage","JNX":"Europe/Athens","JNZ":"Asia/Shanghai","JOC":"America/Los_Angeles","JOE":"Europe/Helsinki","JOG":"Asia/Jakarta","JOH":"Africa/Johannesburg","JOI":"America/Sao_Paulo","JOK":"Europe/Moscow","JOL":"Asia/Manila","JOM":"Africa/Dar_es_Salaam","JON":"Pacific/Honolulu","JOP":"Pacific/Port_Moresby","JOR":"America/Los_Angeles","JOS":"Africa/Lagos","JOT":"America/Chicago","JPA":"America/Belem","JPD":"America/Los_Angeles","JPN":"America/New_York","JPR":"America/Porto_Velho","JPT":"America/Chicago","JPU":"Europe/Paris","JQA":"America/Godthab","JQE":"America/Panama","JRC":"America/Chicago","JRD":"America/Los_Angeles","JRE":"America/New_York","JRF":"Pacific/Honolulu","JRG":"Asia/Kolkata","JRH":"Asia/Kolkata","JRK":"America/Godthab","JRN":"America/Campo_Grande","JRO":"Africa/Dar_es_Salaam","JRS":"Asia/Jerusalem","JSA":"Asia/Kolkata","JSD":"America/New_York","JSG":"America/Los_Angeles","JSH":"Europe/Athens","JSI":"Europe/Athens","JSJ":"Asia/Shanghai","JSK":"Asia/Tehran","JSL":"America/New_York","JSM":"America/Argentina/Buenos_Aires","JSN":"America/Los_Angeles","JSO":"Europe/Stockholm","JSP":"Asia/Seoul","JSR":"Asia/Dhaka","JSS":"Europe/Athens","JST":"America/New_York","JSU":"America/Godthab","JSY":"Europe/Athens","JTC":"America/Sao_Paulo","JTI":"America/Sao_Paulo","JTO":"America/Los_Angeles","JTR":"Europe/Athens","JTY":"Europe/Athens","JUA":"America/Campo_Grande","JUB":"Africa/Juba","JUC":"America/Los_Angeles","JUH":"Asia/Shanghai","JUI":"Europe/Berlin","JUJ":"America/Argentina/Buenos_Aires","JUK":"America/Godthab","JUL":"America/Lima","JUM":"Asia/Kathmandu","JUN":"Australia/Brisbane","JUO":"America/Bogota","JUP":"America/Los_Angeles","JUR":"Australia/Perth","JUT":"America/Tegucigalpa","JUU":"America/Godthab","JUV":"America/Godthab","JUZ":"Asia/Shanghai","JVA":"Indian/Antananarivo","JVI":"America/New_York","JVL":"America/Chicago","JWA":"Africa/Gaborone","JWC":"America/Los_Angeles","JWH":"America/Chicago","JWL":"America/Chicago","JWN":"Asia/Tehran","JXA":"Asia/Shanghai","JXN":"America/New_York","JYR":"Asia/Tehran","JYV":"Europe/Helsinki","JZH":"Asia/Shanghai","KAA":"Africa/Lusaka","KAB":"Africa/Harare","KAC":"Asia/Damascus","KAD":"Africa/Lagos","KAE":"America/Anchorage","KAF":"Pacific/Bougainville","KAG":"Asia/Seoul","KAH":"Australia/Sydney","KAI":"America/Guyana","KAJ":"Europe/Helsinki","KAK":"Pacific/Port_Moresby","KAL":"America/Anchorage","KAM":"Asia/Aden","KAN":"Africa/Lagos","KAO":"Europe/Helsinki","KAP":"Africa/Lubumbashi","KAQ":"Pacific/Port_Moresby","KAR":"America/Guyana","KAS":"Africa/Windhoek","KAT":"Pacific/Auckland","KAU":"Europe/Helsinki","KAV":"America/Caracas","KAW":"Asia/Yangon","KAX":"Australia/Perth","KAY":"Pacific/Fiji","KAZ":"Asia/Jayapura","KBA":"Africa/Freetown","KBB":"Australia/Darwin","KBC":"America/Anchorage","KBD":"Australia/Perth","KBE":"America/Anchorage","KBF":"Asia/Jayapura","KBG":"Africa/Kampala","KBH":"Africa/Dar_es_Salaam","KBI":"Africa/Douala","KBJ":"Australia/Darwin","KBK":"America/Anchorage","KBL":"Asia/Kabul","KBM":"Pacific/Port_Moresby","KBN":"Africa/Lubumbashi","KBO":"Africa/Lubumbashi","KBP":"Europe/Kiev","KBQ":"Africa/Blantyre","KBR":"Asia/Kuala_Lumpur","KBS":"Africa/Freetown","KBT":"Pacific/Majuro","KBU":"Asia/Makassar","KBV":"Asia/Bangkok","KBW":"America/Anchorage","KBX":"Asia/Jayapura","KBY":"Australia/Adelaide","KBZ":"Pacific/Auckland","KCA":"Asia/Shanghai","KCB":"America/Paramaribo","KCC":"America/Anchorage","KCD":"Asia/Jayapura","KCE":"Australia/Brisbane","KCF":"Asia/Karachi","KCG":"America/Anchorage","KCH":"Asia/Kuala_Lumpur","KCI":"Asia/Jayapura","KCJ":"Pacific/Port_Moresby","KCK":"Asia/Irkutsk","KCL":"America/Anchorage","KCM":"Europe/Istanbul","KCN":"America/Anchorage","KCO":"Europe/Istanbul","KCP":"Europe/Kiev","KCQ":"America/Anchorage","KCS":"Australia/Darwin","KCT":"Asia/Colombo","KCU":"Africa/Kampala","KCZ":"Asia/Tokyo","KDA":"Africa/Dakar","KDB":"Australia/Perth","KDC":"Africa/Porto-Novo","KDD":"Asia/Karachi","KDE":"Pacific/Port_Moresby","KDF":"Africa/Algiers","KDH":"Asia/Kabul","KDI":"Asia/Makassar","KDJ":"Africa/Libreville","KDK":"America/Anchorage","KDL":"Europe/Tallinn","KDM":"Indian/Maldives","KDN":"Africa/Libreville","KDO":"Indian/Maldives","KDP":"Pacific/Port_Moresby","KDQ":"Pacific/Port_Moresby","KDR":"Pacific/Port_Moresby","KDS":"Australia/Brisbane","KDT":"Asia/Bangkok","KDU":"Asia/Karachi","KDV":"Pacific/Fiji","KDW":"Asia/Colombo","KDX":"Africa/Khartoum","KDY":"Asia/Yakutsk","KDZ":"Asia/Colombo","KEA":"Asia/Jayapura","KEB":"America/Anchorage","KEC":"Africa/Lubumbashi","KED":"Africa/Nouakchott","KEE":"Africa/Brazzaville","KEF":"Atlantic/Reykjavik","KEG":"Pacific/Port_Moresby","KEH":"America/Los_Angeles","KEI":"Asia/Jayapura","KEJ":"Asia/Novokuznetsk","KEK":"America/Anchorage","KEL":"Europe/Berlin","KEM":"Europe/Helsinki","KEN":"Africa/Freetown","KEO":"Africa/Abidjan","KEP":"Asia/Kathmandu","KEQ":"Asia/Jayapura","KER":"Asia/Tehran","KES":"America/Winnipeg","KET":"Asia/Yangon","KEU":"Africa/Nairobi","KEV":"Europe/Helsinki","KEW":"America/Winnipeg","KEX":"Pacific/Port_Moresby","KEY":"Africa/Nairobi","KEZ":"Asia/Colombo","KFA":"Africa/Nouakchott","KFE":"Australia/Perth","KFG":"Australia/Darwin","KFM":"America/Edmonton","KFP":"America/Anchorage","KFS":"Europe/Istanbul","KGA":"Africa/Lubumbashi","KGB":"Pacific/Port_Moresby","KGC":"Australia/Adelaide","KGD":"Europe/Kaliningrad","KGE":"Pacific/Guadalcanal","KGF":"Asia/Almaty","KGG":"Africa/Dakar","KGH":"Pacific/Port_Moresby","KGI":"Australia/Perth","KGJ":"Africa/Blantyre","KGK":"America/Anchorage","KGL":"Africa/Kigali","KGN":"Africa/Kinshasa","KGO":"Europe/Kiev","KGP":"Asia/Yekaterinburg","KGQ":"America/Godthab","KGR":"Australia/Darwin","KGS":"Europe/Athens","KGT":"Asia/Shanghai","KGU":"Asia/Kuala_Lumpur","KGW":"Pacific/Port_Moresby","KGX":"America/Anchorage","KGY":"Australia/Brisbane","KGZ":"America/Anchorage","KHA":"Asia/Tehran","KHC":"Europe/Simferopol","KHD":"Asia/Tehran","KHE":"Europe/Kiev","KHG":"Asia/Shanghai","KHH":"Asia/Taipei","KHI":"Asia/Karachi","KHJ":"Europe/Helsinki","KHK":"Asia/Tehran","KHL":"Asia/Dhaka","KHM":"Asia/Yangon","KHN":"Asia/Shanghai","KHO":"Africa/Johannesburg","KHQ":"America/Godthab","KHR":"Asia/Ulaanbaatar","KHS":"Asia/Muscat","KHT":"Asia/Kabul","KHU":"Europe/Kiev","KHV":"Asia/Vladivostok","KHW":"Africa/Gaborone","KHX":"Africa/Kampala","KHY":"Asia/Tehran","KHZ":"Pacific/Tahiti","KIA":"Pacific/Port_Moresby","KIB":"America/Anchorage","KIC":"America/Los_Angeles","KID":"Europe/Stockholm","KIE":"Pacific/Bougainville","KIF":"America/Winnipeg","KIG":"Africa/Johannesburg","KIH":"Asia/Tehran","KII":"Pacific/Port_Moresby","KIJ":"Asia/Tokyo","KIK":"Asia/Baghdad","KIL":"Africa/Kinshasa","KIM":"Africa/Johannesburg","KIN":"America/Jamaica","KIO":"Pacific/Majuro","KIP":"America/Chicago","KIQ":"Pacific/Port_Moresby","KIR":"Europe/Dublin","KIS":"Africa/Nairobi","KIT":"Europe/Athens","KIU":"Africa/Nairobi","KIV":"Europe/Chisinau","KIW":"Africa/Lusaka","KIX":"Asia/Tokyo","KIY":"Africa/Dar_es_Salaam","KIZ":"Pacific/Port_Moresby","KJA":"Asia/Krasnoyarsk","KJH":"Asia/Shanghai","KJI":"Asia/Shanghai","KJK":"Europe/Brussels","KJP":"Asia/Tokyo","KJT":"Asia/Jakarta","KJU":"Pacific/Port_Moresby","KKA":"America/Anchorage","KKB":"America/Anchorage","KKC":"Asia/Bangkok","KKD":"Pacific/Port_Moresby","KKE":"Pacific/Auckland","KKF":"America/Anchorage","KKG":"America/Guyana","KKH":"America/Anchorage","KKI":"America/Anchorage","KKJ":"Asia/Tokyo","KKK":"America/Anchorage","KKL":"America/Anchorage","KKM":"Asia/Bangkok","KKN":"Europe/Oslo","KKO":"Pacific/Auckland","KKP":"Australia/Brisbane","KKQ":"Asia/Yekaterinburg","KKR":"Pacific/Tahiti","KKS":"Asia/Tehran","KKT":"America/Chicago","KKU":"America/Anchorage","KKW":"Africa/Kinshasa","KKX":"Asia/Tokyo","KKY":"Europe/Dublin","KKZ":"Asia/Phnom_Penh","KLB":"Africa/Lusaka","KLC":"Africa/Dakar","KLD":"Europe/Moscow","KLE":"Africa/Douala","KLF":"Europe/Moscow","KLG":"America/Anchorage","KLH":"Asia/Kolkata","KLI":"Africa/Kinshasa","KLJ":"Europe/Vilnius","KLK":"Africa/Nairobi","KLL":"America/Anchorage","KLM":"Asia/Tehran","KLN":"America/Anchorage","KLO":"Asia/Manila","KLP":"America/Anchorage","KLQ":"Asia/Jakarta","KLR":"Europe/Stockholm","KLS":"America/Los_Angeles","KLT":"Europe/Berlin","KLU":"Europe/Vienna","KLV":"Europe/Prague","KLW":"America/Anchorage","KLX":"Europe/Athens","KLY":"Africa/Lubumbashi","KLZ":"Africa/Johannesburg","KMA":"Pacific/Port_Moresby","KMB":"Pacific/Port_Moresby","KMC":"Asia/Riyadh","KMD":"Africa/Libreville","KME":"Africa/Kigali","KMF":"Pacific/Port_Moresby","KMG":"Asia/Shanghai","KMH":"Africa/Johannesburg","KMI":"Asia/Tokyo","KMJ":"Asia/Tokyo","KMK":"Africa/Brazzaville","KML":"Australia/Brisbane","KMM":"Asia/Jayapura","KMN":"Africa/Lubumbashi","KMO":"America/Anchorage","KMP":"Africa/Windhoek","KMQ":"Asia/Tokyo","KMR":"Pacific/Port_Moresby","KMS":"Africa/Accra","KMT":"Asia/Phnom_Penh","KMU":"Africa/Mogadishu","KMV":"Asia/Yangon","KMW":"Europe/Moscow","KMX":"Asia/Riyadh","KMY":"America/Anchorage","KMZ":"Africa/Lusaka","KNA":"America/Santiago","KNB":"America/Denver","KNC":"Asia/Shanghai","KND":"Africa/Lubumbashi","KNE":"Pacific/Port_Moresby","KNF":"Europe/London","KNG":"Asia/Jayapura","KNH":"Asia/Taipei","KNI":"Australia/Perth","KNJ":"Africa/Brazzaville","KNK":"America/Anchorage","KNL":"Pacific/Port_Moresby","KNM":"Africa/Lubumbashi","KNN":"Africa/Conakry","KNO":"Asia/Jakarta","KNP":"Africa/Luanda","KNQ":"Pacific/Noumea","KNR":"Asia/Tehran","KNS":"Australia/Hobart","KNT":"America/Chicago","KNU":"Asia/Kolkata","KNV":"America/Vancouver","KNW":"America/Anchorage","KNX":"Australia/Perth","KNY":"America/Regina","KNZ":"Africa/Bamako","KOA":"Pacific/Honolulu","KOB":"Africa/Douala","KOC":"Pacific/Noumea","KOD":"Asia/Makassar","KOE":"Asia/Makassar","KOF":"Africa/Johannesburg","KOG":"Asia/Vientiane","KOH":"Australia/Brisbane","KOI":"Europe/London","KOJ":"Asia/Tokyo","KOK":"Europe/Helsinki","KOL":"Africa/Bangui","KOM":"Pacific/Port_Moresby","KON":"Asia/Ho_Chi_Minh","KOO":"Africa/Lubumbashi","KOP":"Asia/Bangkok","KOQ":"Europe/Berlin","KOR":"Pacific/Port_Moresby","KOS":"Asia/Phnom_Penh","KOT":"America/Anchorage","KOU":"Africa/Libreville","KOV":"Asia/Almaty","KOW":"Asia/Shanghai","KOX":"Asia/Jayapura","KOY":"America/Anchorage","KOZ":"America/Anchorage","KPA":"Pacific/Port_Moresby","KPB":"America/Anchorage","KPC":"America/Anchorage","KPE":"Pacific/Port_Moresby","KPF":"Pacific/Port_Moresby","KPG":"America/Guyana","KPH":"America/Anchorage","KPI":"Asia/Kuala_Lumpur","KPK":"America/Anchorage","KPL":"Pacific/Port_Moresby","KPM":"Pacific/Port_Moresby","KPN":"America/Anchorage","KPO":"Asia/Seoul","KPP":"Australia/Brisbane","KPR":"America/Anchorage","KPS":"Australia/Sydney","KPT":"America/Los_Angeles","KPV":"America/Anchorage","KPW":"Asia/Kamchatka","KPY":"America/Anchorage","KQA":"America/Anchorage","KQB":"Australia/Adelaide","KQH":"Asia/Kolkata","KQL":"Pacific/Port_Moresby","KQT":"Asia/Dushanbe","KRA":"Australia/Sydney","KRB":"Australia/Brisbane","KRC":"Asia/Jakarta","KRD":"Australia/Darwin","KRE":"Africa/Bujumbura","KRF":"Europe/Stockholm","KRG":"America/Guyana","KRH":"Europe/London","KRI":"Pacific/Port_Moresby","KRJ":"Pacific/Port_Moresby","KRK":"Europe/Warsaw","KRL":"Asia/Shanghai","KRM":"America/Guyana","KRN":"Europe/Stockholm","KRO":"Asia/Yekaterinburg","KRP":"Europe/Copenhagen","KRQ":"Europe/Kiev","KRR":"Europe/Moscow","KRS":"Europe/Oslo","KRT":"Africa/Khartoum","KRU":"Pacific/Port_Moresby","KRV":"Africa/Nairobi","KRW":"Asia/Ashgabat","KRX":"Pacific/Port_Moresby","KRY":"Asia/Shanghai","KRZ":"Africa/Kinshasa","KSA":"Pacific/Pohnpei","KSB":"Pacific/Port_Moresby","KSC":"Europe/Bratislava","KSD":"Europe/Stockholm","KSE":"Africa/Kampala","KSF":"Europe/Berlin","KSG":"Pacific/Port_Moresby","KSH":"Asia/Tehran","KSI":"Africa/Conakry","KSJ":"Europe/Athens","KSK":"Europe/Stockholm","KSL":"Africa/Khartoum","KSM":"America/Anchorage","KSN":"Asia/Qostanay","KSO":"Europe/Athens","KSP":"Pacific/Port_Moresby","KSQ":"Asia/Tashkent","KSR":"Asia/Makassar","KSS":"Africa/Bamako","KST":"Africa/Khartoum","KSU":"Europe/Oslo","KSV":"Australia/Brisbane","KSW":"Asia/Jerusalem","KSX":"Pacific/Port_Moresby","KSY":"Europe/Istanbul","KSZ":"Europe/Moscow","KTA":"Australia/Perth","KTB":"America/Anchorage","KTC":"Africa/Abidjan","KTD":"Asia/Tokyo","KTE":"Asia/Kuala_Lumpur","KTF":"Pacific/Auckland","KTG":"Asia/Jakarta","KTH":"America/Anchorage","KTI":"Asia/Phnom_Penh","KTJ":"Africa/Nairobi","KTK":"Pacific/Bougainville","KTL":"Africa/Nairobi","KTM":"Asia/Kathmandu","KTN":"America/Anchorage","KTO":"America/Guyana","KTP":"America/Jamaica","KTQ":"Europe/Helsinki","KTR":"Australia/Darwin","KTS":"America/Anchorage","KTT":"Europe/Helsinki","KTU":"Asia/Kolkata","KTV":"America/Caracas","KTW":"Europe/Warsaw","KTX":"Africa/Bamako","KUA":"Asia/Kuala_Lumpur","KUC":"Pacific/Tarawa","KUD":"Asia/Kuala_Lumpur","KUE":"Pacific/Guadalcanal","KUF":"Europe/Samara","KUG":"Australia/Brisbane","KUH":"Asia/Tokyo","KUI":"Pacific/Auckland","KUJ":"Asia/Tokyo","KUK":"America/Anchorage","KUL":"Asia/Kuala_Lumpur","KUM":"Asia/Tokyo","KUN":"Europe/Vilnius","KUO":"Europe/Helsinki","KUP":"Pacific/Port_Moresby","KUQ":"Pacific/Port_Moresby","KUR":"Asia/Kabul","KUS":"America/Godthab","KUT":"Asia/Tbilisi","KUU":"Asia/Kolkata","KUV":"Asia/Seoul","KUW":"America/Anchorage","KUX":"Pacific/Port_Moresby","KUY":"Pacific/Port_Moresby","KUZ":"America/Godthab","KVA":"Europe/Athens","KVB":"Europe/Stockholm","KVC":"America/Anchorage","KVD":"Asia/Baku","KVE":"Pacific/Port_Moresby","KVG":"Pacific/Port_Moresby","KVK":"Europe/Moscow","KVL":"America/Anchorage","KVO":"Europe/Belgrade","KVR":"Asia/Vladivostok","KVU":"Pacific/Fiji","KVX":"Europe/Moscow","KWA":"Pacific/Majuro","KWB":"Asia/Jakarta","KWE":"Asia/Shanghai","KWF":"America/Anchorage","KWG":"Europe/Kiev","KWH":"Asia/Kabul","KWI":"Asia/Kuwait","KWJ":"Asia/Seoul","KWK":"America/Anchorage","KWL":"Asia/Shanghai","KWM":"Australia/Brisbane","KWN":"America/Anchorage","KWO":"Pacific/Port_Moresby","KWP":"America/Anchorage","KWR":"Pacific/Guadalcanal","KWS":"Pacific/Guadalcanal","KWT":"America/Anchorage","KWV":"Pacific/Bougainville","KWX":"Pacific/Port_Moresby","KWY":"Africa/Nairobi","KWZ":"Africa/Lubumbashi","KXA":"America/Anchorage","KXE":"Africa/Johannesburg","KXF":"Pacific/Fiji","KXK":"Asia/Vladivostok","KXR":"Pacific/Bougainville","KXU":"Pacific/Tahiti","KYA":"Europe/Istanbul","KYD":"Asia/Taipei","KYE":"Asia/Beirut","KYF":"Australia/Perth","KYI":"Australia/Adelaide","KYK":"America/Anchorage","KYL":"America/New_York","KYN":"Europe/London","KYO":"America/New_York","KYP":"Asia/Yangon","KYS":"Africa/Bamako","KYT":"Asia/Yangon","KYU":"America/Anchorage","KYX":"Pacific/Port_Moresby","KYZ":"Asia/Krasnoyarsk","KZB":"America/Anchorage","KZC":"Asia/Phnom_Penh","KZD":"Asia/Phnom_Penh","KZF":"Pacific/Port_Moresby","KZG":"Europe/Berlin","KZH":"America/Anchorage","KZI":"Europe/Athens","KZK":"Asia/Phnom_Penh","KZN":"Europe/Moscow","KZO":"Asia/Qyzylorda","KZR":"Europe/Istanbul","KZS":"Europe/Athens","LAA":"America/Denver","LAB":"Pacific/Port_Moresby","LAC":"Asia/Kuala_Lumpur","LAD":"Africa/Luanda","LAE":"Pacific/Port_Moresby","LAF":"America/Indiana/Indianapolis","LAG":"America/Caracas","LAH":"Asia/Jayapura","LAI":"Europe/Paris","LAJ":"America/Sao_Paulo","LAK":"America/Edmonton","LAL":"America/New_York","LAM":"America/Denver","LAN":"America/New_York","LAO":"Asia/Manila","LAP":"America/Mazatlan","LAQ":"Africa/Tripoli","LAR":"America/Denver","LAS":"America/Los_Angeles","LAU":"Africa/Nairobi","LAV":"Pacific/Apia","LAW":"America/Chicago","LAX":"America/Los_Angeles","LAY":"Africa/Johannesburg","LAZ":"America/Belem","LBA":"Europe/London","LBB":"America/Chicago","LBC":"Europe/Berlin","LBD":"Asia/Dushanbe","LBE":"America/New_York","LBF":"America/Chicago","LBG":"Europe/Paris","LBH":"Australia/Sydney","LBI":"Europe/Paris","LBJ":"Asia/Makassar","LBK":"Africa/Nairobi","LBL":"America/Chicago","LBM":"Africa/Maputo","LBN":"Africa/Nairobi","LBO":"Africa/Lubumbashi","LBP":"Asia/Kuala_Lumpur","LBQ":"Africa/Libreville","LBR":"America/Porto_Velho","LBS":"Pacific/Fiji","LBT":"America/New_York","LBU":"Asia/Kuala_Lumpur","LBV":"Africa/Libreville","LBW":"Asia/Makassar","LBX":"Asia/Manila","LBY":"Europe/Paris","LBZ":"Africa/Luanda","LCA":"Asia/Nicosia","LCB":"America/Campo_Grande","LCC":"Europe/Rome","LCD":"Africa/Johannesburg","LCE":"America/Tegucigalpa","LCF":"America/Guatemala","LCG":"Europe/Madrid","LCH":"America/Chicago","LCI":"America/New_York","LCJ":"Europe/Warsaw","LCK":"America/New_York","LCL":"America/Havana","LCM":"America/Argentina/Buenos_Aires","LCN":"Australia/Adelaide","LCO":"Africa/Brazzaville","LCP":"America/Argentina/Buenos_Aires","LCQ":"America/New_York","LCR":"America/Bogota","LCS":"America/Costa_Rica","LCV":"Europe/Rome","LCX":"Asia/Shanghai","LCY":"Europe/London","LDA":"Asia/Kolkata","LDB":"America/Sao_Paulo","LDC":"Australia/Brisbane","LDE":"Europe/Paris","LDG":"Europe/Moscow","LDH":"Australia/Sydney","LDI":"Africa/Dar_es_Salaam","LDJ":"America/New_York","LDK":"Europe/Stockholm","LDM":"America/New_York","LDN":"Asia/Kathmandu","LDO":"America/Paramaribo","LDR":"Asia/Aden","LDS":"Asia/Shanghai","LDU":"Asia/Kuala_Lumpur","LDV":"Europe/Paris","LDW":"Australia/Perth","LDX":"America/Cayenne","LDY":"Europe/London","LDZ":"Africa/Johannesburg","LEA":"Australia/Perth","LEB":"America/New_York","LEC":"America/Belem","LED":"Europe/Moscow","LEE":"America/New_York","LEF":"Africa/Maseru","LEG":"Africa/Nouakchott","LEH":"Europe/Paris","LEI":"Europe/Madrid","LEJ":"Europe/Berlin","LEK":"Africa/Conakry","LEL":"Australia/Darwin","LEM":"America/Denver","LEN":"Europe/Madrid","LEO":"Africa/Libreville","LEP":"America/Sao_Paulo","LEQ":"Europe/London","LER":"Australia/Perth","LES":"Africa/Maseru","LET":"America/Bogota","LEU":"Europe/Madrid","LEV":"Pacific/Fiji","LEW":"America/New_York","LEX":"America/New_York","LEY":"Europe/Amsterdam","LEZ":"America/Tegucigalpa","LFB":"Africa/Maputo","LFI":"America/New_York","LFK":"America/Chicago","LFM":"Asia/Tehran","LFN":"America/New_York","LFO":"Africa/Addis_Ababa","LFP":"Australia/Brisbane","LFQ":"Asia/Shanghai","LFR":"America/Caracas","LFT":"America/Chicago","LFW":"Africa/Lome","LGA":"America/New_York","LGB":"America/Los_Angeles","LGC":"America/New_York","LGD":"America/Los_Angeles","LGE":"Australia/Perth","LGF":"America/Phoenix","LGG":"Europe/Brussels","LGH":"Australia/Adelaide","LGI":"America/Nassau","LGK":"Asia/Kuala_Lumpur","LGL":"Asia/Kuala_Lumpur","LGM":"Pacific/Port_Moresby","LGN":"Pacific/Port_Moresby","LGO":"Europe/Berlin","LGP":"Asia/Manila","LGQ":"America/Guayaquil","LGR":"America/Santiago","LGS":"America/Argentina/Buenos_Aires","LGT":"America/Bogota","LGU":"America/Denver","LGW":"Europe/London","LGX":"Africa/Mogadishu","LGY":"America/Caracas","LHA":"Europe/Berlin","LHB":"America/Anchorage","LHE":"Asia/Karachi","LHG":"Australia/Sydney","LHI":"Asia/Jayapura","LHK":"Asia/Shanghai","LHN":"Asia/Taipei","LHP":"Pacific/Bougainville","LHR":"Europe/London","LHS":"America/Argentina/Buenos_Aires","LHU":"Africa/Windhoek","LHV":"America/New_York","LHW":"Asia/Shanghai","LIA":"Asia/Shanghai","LIB":"Australia/Darwin","LIC":"America/Denver","LID":"Europe/Amsterdam","LIE":"Africa/Kinshasa","LIF":"Pacific/Noumea","LIG":"Europe/Paris","LIH":"Pacific/Honolulu","LII":"Asia/Jayapura","LIJ":"America/Anchorage","LIK":"Pacific/Majuro","LIL":"Europe/Paris","LIM":"America/Lima","LIN":"Europe/Rome","LIO":"America/Costa_Rica","LIP":"America/Sao_Paulo","LIQ":"Africa/Kinshasa","LIR":"America/Costa_Rica","LIS":"Europe/Lisbon","LIT":"America/Chicago","LIU":"Europe/Rome","LIV":"America/Anchorage","LIW":"Asia/Yangon","LIX":"Africa/Blantyre","LIY":"America/New_York","LIZ":"America/New_York","LJA":"Africa/Lubumbashi","LJC":"America/New_York","LJG":"Asia/Shanghai","LJN":"America/Chicago","LJU":"Europe/Ljubljana","LKA":"Asia/Makassar","LKB":"Pacific/Fiji","LKC":"Africa/Brazzaville","LKD":"Australia/Brisbane","LKE":"America/Los_Angeles","LKG":"Africa/Nairobi","LKH":"Asia/Kuala_Lumpur","LKI":"America/Chicago","LKK":"America/Anchorage","LKL":"Europe/Oslo","LKN":"Europe/Oslo","LKO":"Asia/Kolkata","LKP":"America/New_York","LKR":"Africa/Mogadishu","LKS":"America/Chicago","LKT":"Africa/Abidjan","LKU":"Africa/Nairobi","LKV":"America/Los_Angeles","LKY":"Africa/Dar_es_Salaam","LKZ":"Europe/London","LLA":"Europe/Stockholm","LLB":"Asia/Shanghai","LLC":"Asia/Manila","LLE":"Africa/Johannesburg","LLF":"Asia/Shanghai","LLG":"Australia/Brisbane","LLH":"America/Tegucigalpa","LLI":"Africa/Addis_Ababa","LLJ":"Asia/Makassar","LLK":"Asia/Baku","LLL":"Australia/Perth","LLM":"Pacific/Guadalcanal","LLN":"Asia/Jayapura","LLO":"Asia/Makassar","LLP":"Australia/Brisbane","LLS":"America/Argentina/Buenos_Aires","LLU":"America/Godthab","LLV":"Asia/Shanghai","LLW":"Africa/Blantyre","LLX":"America/New_York","LLY":"America/New_York","LMA":"America/Anchorage","LMB":"Africa/Blantyre","LMC":"America/Bogota","LMD":"America/Argentina/Buenos_Aires","LME":"Europe/Paris","LMG":"Pacific/Port_Moresby","LMH":"America/Tegucigalpa","LMI":"Pacific/Port_Moresby","LML":"Pacific/Majuro","LMM":"America/Mazatlan","LMN":"Asia/Kuala_Lumpur","LMO":"Europe/London","LMP":"Europe/Rome","LMQ":"Africa/Tripoli","LMR":"Africa/Johannesburg","LMS":"America/Chicago","LMT":"America/Los_Angeles","LMU":"Asia/Jakarta","LMX":"America/Bogota","LMY":"Pacific/Port_Moresby","LMZ":"Africa/Maputo","LNA":"America/New_York","LNB":"Pacific/Efate","LNC":"Pacific/Port_Moresby","LND":"America/Denver","LNE":"Pacific/Efate","LNF":"Pacific/Port_Moresby","LNG":"Pacific/Port_Moresby","LNH":"Australia/Darwin","LNI":"America/Anchorage","LNJ":"Asia/Shanghai","LNK":"America/Chicago","LNL":"Asia/Shanghai","LNM":"Pacific/Port_Moresby","LNN":"America/New_York","LNO":"Australia/Perth","LNP":"America/New_York","LNQ":"Pacific/Port_Moresby","LNR":"America/Chicago","LNS":"America/New_York","LNU":"Asia/Makassar","LNV":"Pacific/Port_Moresby","LNX":"Europe/Moscow","LNY":"Pacific/Honolulu","LNZ":"Europe/Vienna","LOA":"Australia/Brisbane","LOB":"America/Santiago","LOC":"Australia/Adelaide","LOD":"Pacific/Efate","LOE":"Asia/Bangkok","LOF":"Pacific/Majuro","LOG":"America/Los_Angeles","LOH":"America/Guayaquil","LOI":"America/Sao_Paulo","LOK":"Africa/Nairobi","LOL":"America/Los_Angeles","LOM":"America/Mexico_City","LOO":"Africa/Algiers","LOP":"Asia/Makassar","LOQ":"Africa/Gaborone","LOR":"America/Chicago","LOS":"Africa/Lagos","LOT":"America/Chicago","LOU":"America/New_York","LOV":"America/Mexico_City","LOW":"America/New_York","LOY":"Africa/Nairobi","LOZ":"America/New_York","LPA":"Atlantic/Canary","LPB":"America/La_Paz","LPC":"America/Los_Angeles","LPD":"America/Bogota","LPE":"America/Bogota","LPF":"Asia/Shanghai","LPG":"America/Argentina/Buenos_Aires","LPH":"Europe/London","LPI":"Europe/Stockholm","LPJ":"America/Caracas","LPK":"Europe/Moscow","LPL":"Europe/London","LPM":"Pacific/Efate","LPO":"America/Chicago","LPP":"Europe/Helsinki","LPQ":"Asia/Vientiane","LPS":"America/Los_Angeles","LPT":"Asia/Bangkok","LPU":"Asia/Makassar","LPW":"America/Anchorage","LPX":"Europe/Riga","LPY":"Europe/Paris","LQK":"America/New_York","LQM":"America/Bogota","LQN":"Asia/Kabul","LRA":"Europe/Athens","LRB":"Africa/Maseru","LRD":"America/Chicago","LRE":"Australia/Brisbane","LRF":"America/Chicago","LRG":"Asia/Karachi","LRH":"Europe/Paris","LRI":"America/Bogota","LRJ":"America/Chicago","LRL":"Africa/Lome","LRM":"America/Santo_Domingo","LRN":"America/Los_Angeles","LRO":"America/Los_Angeles","LRQ":"America/Winnipeg","LRR":"Asia/Tehran","LRS":"Europe/Athens","LRT":"Europe/Paris","LRU":"America/Denver","LRV":"America/Caracas","LSA":"Pacific/Port_Moresby","LSB":"America/Denver","LSC":"America/Santiago","LSE":"America/Chicago","LSF":"America/New_York","LSH":"Asia/Yangon","LSI":"Europe/London","LSJ":"Pacific/Port_Moresby","LSK":"America/Denver","LSL":"America/Costa_Rica","LSM":"Asia/Kuala_Lumpur","LSN":"America/Los_Angeles","LSO":"Europe/Paris","LSP":"America/Caracas","LSQ":"America/Santiago","LSR":"America/Anchorage","LSS":"America/Guadeloupe","LST":"Australia/Hobart","LSU":"Asia/Kuala_Lumpur","LSV":"America/Los_Angeles","LSW":"Asia/Jakarta","LSX":"Asia/Jakarta","LSY":"Australia/Sydney","LSZ":"Europe/Zagreb","LTA":"Africa/Johannesburg","LTB":"Australia/Hobart","LTC":"Africa/Ndjamena","LTD":"Africa/Tripoli","LTF":"Pacific/Port_Moresby","LTG":"Asia/Kathmandu","LTH":"America/Los_Angeles","LTI":"Asia/Ulaanbaatar","LTK":"Asia/Damascus","LTL":"Africa/Libreville","LTM":"America/Guyana","LTN":"Europe/London","LTO":"America/Mazatlan","LTP":"Australia/Brisbane","LTQ":"Europe/Paris","LTR":"Europe/Dublin","LTS":"America/Chicago","LTT":"Europe/Paris","LTU":"Asia/Kolkata","LTV":"Australia/Brisbane","LTW":"America/New_York","LTX":"America/Guayaquil","LUA":"Asia/Kathmandu","LUB":"America/Guyana","LUC":"Pacific/Fiji","LUD":"Africa/Windhoek","LUE":"Europe/Bratislava","LUF":"America/Phoenix","LUG":"Europe/Zurich","LUH":"Asia/Kolkata","LUI":"America/Tegucigalpa","LUJ":"Africa/Johannesburg","LUK":"America/New_York","LUL":"America/Chicago","LUM":"Asia/Shanghai","LUN":"Africa/Lusaka","LUO":"Africa/Luanda","LUP":"Pacific/Honolulu","LUQ":"America/Argentina/Buenos_Aires","LUR":"America/Anchorage","LUS":"Africa/Kinshasa","LUT":"Australia/Brisbane","LUU":"Australia/Brisbane","LUV":"Asia/Jayapura","LUW":"Asia/Makassar","LUX":"Europe/Luxembourg","LUZ":"Europe/Warsaw","LVA":"Europe/Paris","LVB":"America/Sao_Paulo","LVD":"America/Anchorage","LVI":"Africa/Lusaka","LVK":"America/Los_Angeles","LVL":"America/New_York","LVM":"America/Denver","LVO":"Australia/Perth","LVP":"Asia/Tehran","LVS":"America/Denver","LWA":"Asia/Manila","LWB":"America/New_York","LWC":"America/Chicago","LWE":"Asia/Makassar","LWH":"Australia/Brisbane","LWI":"Pacific/Port_Moresby","LWK":"Europe/London","LWL":"America/Los_Angeles","LWM":"America/New_York","LWN":"Asia/Yerevan","LWO":"Europe/Kiev","LWR":"Europe/Amsterdam","LWS":"America/Los_Angeles","LWT":"America/Denver","LWV":"America/Chicago","LWY":"Asia/Kuala_Lumpur","LXA":"Asia/Shanghai","LXG":"Asia/Vientiane","LXI":"Asia/Shanghai","LXN":"America/Chicago","LXR":"Africa/Cairo","LXS":"Europe/Athens","LXU":"Africa/Lusaka","LXV":"America/Denver","LYA":"Asia/Shanghai","LYB":"America/Cayman","LYC":"Europe/Stockholm","LYE":"Europe/London","LYG":"Asia/Shanghai","LYH":"America/New_York","LYI":"Asia/Shanghai","LYK":"Asia/Makassar","LYN":"Europe/Paris","LYO":"America/Chicago","LYP":"Asia/Karachi","LYR":"Arctic/Longyearbyen","LYS":"Europe/Paris","LYT":"Australia/Brisbane","LYU":"America/Chicago","LYX":"Europe/London","LZA":"Africa/Kinshasa","LZC":"America/Mexico_City","LZD":"Asia/Shanghai","LZH":"Asia/Shanghai","LZI":"Africa/Kinshasa","LZM":"Africa/Luanda","LZN":"Asia/Shanghai","LZO":"Asia/Shanghai","LZR":"Australia/Brisbane","LZY":"Asia/Shanghai","MAA":"Asia/Kolkata","MAB":"America/Belem","MAC":"America/New_York","MAD":"Europe/Madrid","MAE":"America/Los_Angeles","MAF":"America/Chicago","MAG":"Pacific/Port_Moresby","MAH":"Europe/Madrid","MAI":"Africa/Blantyre","MAJ":"Pacific/Majuro","MAK":"Africa/Juba","MAL":"Asia/Jayapura","MAM":"America/Matamoros","MAN":"Europe/London","MAO":"America/Porto_Velho","MAP":"Pacific/Port_Moresby","MAQ":"Asia/Bangkok","MAR":"America/Caracas","MAS":"Pacific/Port_Moresby","MAT":"Africa/Kinshasa","MAU":"Pacific/Tahiti","MAV":"Pacific/Majuro","MAW":"America/Chicago","MAX":"Africa/Dakar","MAY":"America/Nassau","MAZ":"America/Puerto_Rico","MBA":"Africa/Nairobi","MBB":"Australia/Perth","MBC":"Africa/Libreville","MBD":"Africa/Johannesburg","MBE":"Asia/Tokyo","MBF":"Australia/Sydney","MBG":"America/Chicago","MBH":"Australia/Brisbane","MBI":"Africa/Dar_es_Salaam","MBJ":"America/Jamaica","MBK":"America/Campo_Grande","MBL":"America/New_York","MBM":"Africa/Johannesburg","MBN":"Australia/Perth","MBO":"Asia/Manila","MBP":"America/Lima","MBQ":"Africa/Kampala","MBR":"Africa/Nouakchott","MBS":"America/New_York","MBT":"Asia/Manila","MBU":"Pacific/Guadalcanal","MBV":"Pacific/Port_Moresby","MBW":"Australia/Sydney","MBX":"Europe/Ljubljana","MBY":"America/Chicago","MBZ":"America/Porto_Velho","MCA":"Africa/Conakry","MCB":"America/Chicago","MCC":"America/Los_Angeles","MCD":"America/New_York","MCE":"America/Los_Angeles","MCF":"America/New_York","MCG":"America/Anchorage","MCH":"America/Guayaquil","MCI":"America/Chicago","MCJ":"America/Bogota","MCK":"America/Chicago","MCL":"America/Anchorage","MCM":"Europe/Monaco","MCN":"America/New_York","MCO":"America/New_York","MCP":"America/Belem","MCQ":"Europe/Budapest","MCR":"America/Guatemala","MCS":"America/Argentina/Buenos_Aires","MCT":"Asia/Muscat","MCU":"Europe/Paris","MCV":"Australia/Darwin","MCW":"America/Chicago","MCX":"Europe/Moscow","MCY":"Australia/Brisbane","MCZ":"America/Belem","MDA":"America/Chicago","MDB":"America/Belize","MDC":"Asia/Makassar","MDD":"America/Chicago","MDE":"America/Bogota","MDF":"America/Chicago","MDG":"Asia/Shanghai","MDH":"America/Chicago","MDI":"Africa/Lagos","MDJ":"America/Los_Angeles","MDK":"Africa/Kinshasa","MDL":"Asia/Yangon","MDM":"Pacific/Port_Moresby","MDN":"America/Indiana/Indianapolis","MDO":"America/Anchorage","MDP":"Asia/Jayapura","MDQ":"America/Argentina/Buenos_Aires","MDR":"Africa/Nairobi","MDS":"America/Grand_Turk","MDT":"America/New_York","MDU":"Pacific/Port_Moresby","MDV":"Africa/Libreville","MDW":"America/Chicago","MDX":"America/Argentina/Buenos_Aires","MDY":"Pacific/Midway","MDZ":"America/Argentina/Buenos_Aires","MEA":"America/Sao_Paulo","MEB":"Australia/Sydney","MEC":"America/Guayaquil","MED":"Asia/Riyadh","MEE":"Pacific/Noumea","MEF":"Africa/Ndjamena","MEG":"Africa/Luanda","MEH":"Europe/Oslo","MEI":"America/Chicago","MEJ":"America/New_York","MEK":"Africa/Casablanca","MEL":"Australia/Sydney","MEM":"America/Chicago","MEN":"Europe/Paris","MEO":"America/New_York","MEP":"Asia/Kuala_Lumpur","MEQ":"Asia/Jakarta","MER":"America/Los_Angeles","MES":"Asia/Jakarta","MET":"Australia/Brisbane","MEU":"America/Belem","MEV":"America/Los_Angeles","MEW":"Africa/Lubumbashi","MEX":"America/Mexico_City","MEY":"Asia/Kathmandu","MEZ":"Africa/Johannesburg","MFA":"Africa/Dar_es_Salaam","MFB":"America/Bogota","MFC":"Africa/Maseru","MFD":"America/New_York","MFE":"America/Chicago","MFF":"Africa/Libreville","MFG":"Asia/Karachi","MFH":"America/Los_Angeles","MFI":"America/Chicago","MFJ":"Pacific/Fiji","MFK":"Asia/Taipei","MFL":"Australia/Brisbane","MFM":"Asia/Macau","MFN":"Pacific/Auckland","MFO":"Pacific/Port_Moresby","MFP":"Australia/Darwin","MFQ":"Africa/Niamey","MFR":"America/Los_Angeles","MFS":"America/Bogota","MFT":"America/Lima","MFU":"Africa/Lusaka","MFV":"America/New_York","MFW":"Africa/Maputo","MFX":"Europe/Paris","MFY":"Asia/Aden","MFZ":"Pacific/Port_Moresby","MGA":"America/Managua","MGB":"Australia/Adelaide","MGC":"America/Chicago","MGD":"America/La_Paz","MGE":"America/New_York","MGF":"America/Sao_Paulo","MGG":"Pacific/Port_Moresby","MGH":"Africa/Johannesburg","MGI":"America/Chicago","MGJ":"America/New_York","MGK":"Asia/Yangon","MGL":"Europe/Berlin","MGM":"America/Chicago","MGN":"America/Bogota","MGO":"Africa/Libreville","MGP":"Pacific/Port_Moresby","MGQ":"Africa/Mogadishu","MGR":"America/New_York","MGS":"Pacific/Rarotonga","MGT":"Australia/Darwin","MGU":"Asia/Yangon","MGV":"Australia/Perth","MGW":"America/New_York","MGX":"Africa/Libreville","MGY":"America/New_York","MGZ":"Asia/Yangon","MHA":"America/Guyana","MHB":"Pacific/Auckland","MHC":"America/Santiago","MHD":"Asia/Tehran","MHE":"America/Chicago","MHF":"America/Bogota","MHG":"Europe/Berlin","MHH":"America/Nassau","MHI":"Africa/Djibouti","MHK":"America/Chicago","MHL":"America/Chicago","MHM":"Pacific/Guadalcanal","MHN":"America/Denver","MHO":"Australia/Perth","MHP":"Europe/Minsk","MHQ":"Europe/Helsinki","MHR":"America/Los_Angeles","MHS":"America/Los_Angeles","MHT":"America/New_York","MHU":"Australia/Sydney","MHV":"America/Los_Angeles","MHW":"America/La_Paz","MHX":"Pacific/Rarotonga","MHY":"Pacific/Port_Moresby","MHZ":"Europe/London","MIA":"America/New_York","MIB":"America/Chicago","MIC":"America/Chicago","MID":"America/Mexico_City","MIE":"America/Indiana/Indianapolis","MIF":"America/Chicago","MIG":"Asia/Shanghai","MIH":"Australia/Perth","MII":"America/Sao_Paulo","MIJ":"Pacific/Majuro","MIK":"Europe/Helsinki","MIM":"Australia/Sydney","MIN":"Australia/Adelaide","MIO":"America/Chicago","MIP":"Asia/Jerusalem","MIQ":"America/Chicago","MIR":"Africa/Tunis","MIS":"Pacific/Port_Moresby","MIT":"America/Los_Angeles","MIU":"Africa/Lagos","MIV":"America/New_York","MIW":"America/Chicago","MIX":"America/Bogota","MIZ":"Australia/Darwin","MJA":"Indian/Antananarivo","MJB":"Pacific/Majuro","MJC":"Africa/Abidjan","MJD":"Asia/Karachi","MJE":"Pacific/Majuro","MJF":"Europe/Oslo","MJG":"America/Havana","MJH":"Asia/Riyadh","MJI":"Africa/Tripoli","MJJ":"Pacific/Port_Moresby","MJK":"Australia/Perth","MJL":"Africa/Libreville","MJM":"Africa/Lubumbashi","MJN":"Indian/Antananarivo","MJO":"Africa/Windhoek","MJP":"Australia/Perth","MJQ":"America/Chicago","MJR":"America/Argentina/Buenos_Aires","MJT":"Europe/Athens","MJU":"Asia/Makassar","MJV":"Europe/Madrid","MJW":"Africa/Harare","MJX":"America/New_York","MJY":"Asia/Jakarta","MJZ":"Asia/Yakutsk","MKA":"Europe/Prague","MKB":"Africa/Libreville","MKC":"America/Chicago","MKD":"Africa/Addis_Ababa","MKE":"America/Chicago","MKF":"America/New_York","MKG":"America/New_York","MKH":"Africa/Maseru","MKI":"Africa/Bangui","MKJ":"Africa/Brazzaville","MKK":"Pacific/Honolulu","MKL":"America/Chicago","MKM":"Asia/Kuala_Lumpur","MKN":"Pacific/Port_Moresby","MKO":"America/Chicago","MKP":"Pacific/Tahiti","MKQ":"Asia/Jayapura","MKR":"Australia/Perth","MKS":"Africa/Addis_Ababa","MKT":"America/Chicago","MKU":"Africa/Libreville","MKV":"Australia/Darwin","MKW":"Asia/Jayapura","MKX":"Asia/Aden","MKY":"Australia/Brisbane","MKZ":"Asia/Kuala_Lumpur","MLA":"Europe/Malta","MLB":"America/New_York","MLC":"America/Chicago","MLD":"America/Denver","MLE":"Indian/Maldives","MLF":"America/Denver","MLG":"Asia/Jakarta","MLH":"Europe/Zurich","MLI":"America/Chicago","MLJ":"America/New_York","MLK":"America/Denver","MLL":"America/Anchorage","MLM":"America/Mexico_City","MLN":"Europe/Madrid","MLO":"Europe/Athens","MLP":"Asia/Manila","MLQ":"Pacific/Port_Moresby","MLR":"Australia/Adelaide","MLS":"America/Denver","MLT":"America/New_York","MLU":"America/Chicago","MLV":"Australia/Brisbane","MLW":"Africa/Monrovia","MLX":"Europe/Istanbul","MLY":"America/Anchorage","MLZ":"America/Montevideo","MMB":"Asia/Tokyo","MMC":"America/Mexico_City","MMD":"Asia/Tokyo","MME":"Europe/London","MMF":"Africa/Douala","MMG":"Australia/Perth","MMH":"America/Los_Angeles","MMI":"America/New_York","MMJ":"Asia/Tokyo","MMK":"Europe/Moscow","MML":"America/Chicago","MMM":"Australia/Brisbane","MMN":"America/New_York","MMO":"Atlantic/Cape_Verde","MMP":"America/Bogota","MMQ":"Africa/Lusaka","MMR":"America/Chicago","MMS":"America/Chicago","MMT":"America/New_York","MMU":"America/New_York","MMW":"Africa/Maputo","MMX":"Europe/Stockholm","MMY":"Asia/Tokyo","MMZ":"Asia/Kabul","MNA":"Asia/Makassar","MNB":"Africa/Kinshasa","MNC":"Africa/Maputo","MND":"America/Bogota","MNE":"Australia/Adelaide","MNF":"Pacific/Fiji","MNG":"Australia/Darwin","MNH":"Asia/Muscat","MNI":"America/Montserrat","MNJ":"Indian/Antananarivo","MNK":"Pacific/Tarawa","MNL":"Asia/Manila","MNM":"America/Chicago","MNN":"America/New_York","MNO":"Africa/Lubumbashi","MNQ":"Australia/Brisbane","MNR":"Africa/Lusaka","MNS":"Africa/Lusaka","MNT":"America/Anchorage","MNU":"Asia/Yangon","MNV":"Australia/Darwin","MNW":"Australia/Darwin","MNX":"America/Porto_Velho","MNY":"Pacific/Guadalcanal","MNZ":"America/New_York","MOA":"America/Havana","MOB":"America/Chicago","MOC":"America/Sao_Paulo","MOD":"America/Los_Angeles","MOE":"Asia/Yangon","MOF":"Asia/Makassar","MOG":"Asia/Yangon","MOH":"Asia/Makassar","MOI":"Pacific/Rarotonga","MOJ":"America/Paramaribo","MOK":"Africa/Abidjan","MOL":"Europe/Oslo","MOM":"Africa/Nouakchott","MON":"Pacific/Auckland","MOO":"Australia/Adelaide","MOP":"America/New_York","MOQ":"Indian/Antananarivo","MOR":"America/New_York","MOS":"America/Anchorage","MOT":"America/Chicago","MOU":"America/Anchorage","MOV":"Australia/Brisbane","MOX":"America/Chicago","MOY":"America/Bogota","MOZ":"Pacific/Tahiti","MPA":"Africa/Windhoek","MPB":"America/New_York","MPC":"Asia/Jakarta","MPD":"Asia/Karachi","MPE":"America/New_York","MPF":"Pacific/Port_Moresby","MPG":"Pacific/Port_Moresby","MPH":"Asia/Manila","MPI":"America/Panama","MPJ":"America/Chicago","MPK":"Asia/Seoul","MPL":"Europe/Paris","MPM":"Africa/Maputo","MPN":"Atlantic/Stanley","MPO":"America/New_York","MPP":"America/Panama","MPQ":"Asia/Amman","MPR":"America/Chicago","MPS":"America/Chicago","MPT":"Asia/Jayapura","MPU":"Pacific/Port_Moresby","MPV":"America/New_York","MPX":"Pacific/Port_Moresby","MPY":"America/Cayenne","MPZ":"America/Chicago","MQA":"Australia/Perth","MQB":"America/Chicago","MQC":"America/Miquelon","MQD":"America/Argentina/Buenos_Aires","MQE":"Australia/Darwin","MQF":"Asia/Yekaterinburg","MQG":"Africa/Windhoek","MQH":"America/Sao_Paulo","MQI":"America/New_York","MQJ":"Asia/Magadan","MQK":"America/La_Paz","MQL":"Australia/Sydney","MQM":"Europe/Istanbul","MQN":"Europe/Oslo","MQO":"Pacific/Port_Moresby","MQP":"Africa/Johannesburg","MQQ":"Africa/Ndjamena","MQR":"America/Bogota","MQS":"America/St_Vincent","MQT":"America/New_York","MQU":"America/Bogota","MQV":"Africa/Algiers","MQW":"America/New_York","MQX":"Africa/Addis_Ababa","MQY":"America/Chicago","MQZ":"Australia/Perth","MRA":"Africa/Tripoli","MRB":"America/New_York","MRC":"America/Chicago","MRD":"America/Caracas","MRE":"Africa/Nairobi","MRF":"America/Chicago","MRG":"Australia/Brisbane","MRH":"Pacific/Port_Moresby","MRI":"America/Anchorage","MRJ":"America/Tegucigalpa","MRK":"America/New_York","MRL":"Australia/Brisbane","MRM":"Pacific/Port_Moresby","MRN":"America/New_York","MRO":"Pacific/Auckland","MRP":"Australia/Adelaide","MRQ":"Asia/Manila","MRR":"America/Guayaquil","MRS":"Europe/Paris","MRT":"Australia/Darwin","MRU":"Indian/Mauritius","MRV":"Europe/Moscow","MRW":"Europe/Copenhagen","MRX":"Asia/Tehran","MRY":"America/Los_Angeles","MRZ":"Australia/Sydney","MSA":"America/Winnipeg","MSC":"America/Phoenix","MSD":"America/Denver","MSE":"Europe/London","MSF":"Australia/Darwin","MSG":"Africa/Maseru","MSH":"Asia/Muscat","MSI":"Asia/Jakarta","MSJ":"Asia/Tokyo","MSK":"America/Nassau","MSL":"America/Chicago","MSM":"Africa/Kinshasa","MSN":"America/Chicago","MSO":"America/Denver","MSP":"America/Chicago","MSQ":"Europe/Minsk","MSR":"Europe/Istanbul","MSS":"America/New_York","MST":"Europe/Amsterdam","MSU":"Africa/Maseru","MSV":"America/New_York","MSW":"Africa/Asmara","MSX":"Africa/Brazzaville","MSY":"America/Chicago","MSZ":"Africa/Luanda","MTA":"Pacific/Auckland","MTB":"America/Bogota","MTC":"America/New_York","MTD":"Australia/Darwin","MTE":"America/Porto_Velho","MTF":"Africa/Addis_Ababa","MTG":"America/Campo_Grande","MTH":"America/New_York","MTI":"Atlantic/Cape_Verde","MTJ":"America/Denver","MTK":"Pacific/Tarawa","MTL":"Australia/Sydney","MTM":"America/Anchorage","MTN":"America/New_York","MTO":"America/Chicago","MTP":"America/New_York","MTQ":"Australia/Brisbane","MTR":"America/Bogota","MTS":"Africa/Mbabane","MTT":"America/Mexico_City","MTU":"Africa/Maputo","MTV":"Pacific/Efate","MTW":"America/Chicago","MTX":"America/Anchorage","MTY":"America/Mexico_City","MTZ":"Asia/Jerusalem","MUA":"Pacific/Guadalcanal","MUB":"Africa/Gaborone","MUC":"Europe/Berlin","MUD":"Africa/Maputo","MUE":"Pacific/Honolulu","MUF":"Asia/Jayapura","MUG":"America/Mazatlan","MUH":"Africa/Cairo","MUI":"America/New_York","MUJ":"Africa/Addis_Ababa","MUK":"Pacific/Rarotonga","MUL":"America/New_York","MUM":"Africa/Nairobi","MUN":"America/Caracas","MUO":"America/Denver","MUP":"Australia/Darwin","MUQ":"Australia/Perth","MUR":"Asia/Kuala_Lumpur","MUT":"America/Chicago","MUU":"America/New_York","MUV":"America/New_York","MUW":"Africa/Algiers","MUX":"Asia/Karachi","MUY":"Africa/Brazzaville","MUZ":"Africa/Dar_es_Salaam","MVA":"Atlantic/Reykjavik","MVB":"Africa/Libreville","MVC":"America/Chicago","MVD":"America/Montevideo","MVE":"America/Chicago","MVF":"America/Belem","MVG":"Africa/Libreville","MVH":"Australia/Sydney","MVI":"Pacific/Bougainville","MVJ":"America/Jamaica","MVK":"Australia/Adelaide","MVL":"America/New_York","MVM":"America/Phoenix","MVN":"America/Chicago","MVO":"Africa/Ndjamena","MVP":"America/Bogota","MVQ":"Europe/Minsk","MVR":"Africa/Douala","MVS":"America/Belem","MVT":"Pacific/Tahiti","MVU":"Australia/Brisbane","MVV":"Europe/Paris","MVW":"America/Los_Angeles","MVX":"Africa/Libreville","MVY":"America/New_York","MVZ":"Africa/Harare","MWA":"America/Chicago","MWB":"Australia/Perth","MWC":"America/Chicago","MWD":"Asia/Karachi","MWE":"Africa/Khartoum","MWF":"Pacific/Efate","MWG":"Pacific/Port_Moresby","MWH":"America/Los_Angeles","MWI":"Pacific/Port_Moresby","MWJ":"America/Guyana","MWK":"Asia/Jakarta","MWL":"America/Chicago","MWM":"America/Chicago","MWN":"Africa/Dar_es_Salaam","MWO":"America/New_York","MWP":"Asia/Kathmandu","MWQ":"Asia/Yangon","MWS":"America/Los_Angeles","MWT":"Australia/Adelaide","MWU":"Pacific/Port_Moresby","MWV":"Asia/Phnom_Penh","MWW":"Europe/Brussels","MWX":"Asia/Seoul","MWY":"Australia/Brisbane","MWZ":"Africa/Dar_es_Salaam","MXA":"America/Chicago","MXB":"Asia/Jayapura","MXC":"America/Denver","MXD":"Australia/Brisbane","MXE":"America/New_York","MXF":"America/Chicago","MXG":"America/New_York","MXH":"Pacific/Port_Moresby","MXI":"Asia/Manila","MXJ":"Africa/Lagos","MXK":"Pacific/Port_Moresby","MXL":"America/Tijuana","MXM":"Indian/Antananarivo","MXN":"Europe/Paris","MXO":"America/Chicago","MXP":"Europe/Rome","MXQ":"Australia/Brisbane","MXR":"Europe/Kiev","MXS":"Pacific/Apia","MXT":"Indian/Antananarivo","MXU":"Australia/Perth","MXV":"Asia/Ulaanbaatar","MXW":"Asia/Ulaanbaatar","MXX":"Europe/Stockholm","MXY":"America/Anchorage","MXZ":"Asia/Shanghai","MYA":"Australia/Sydney","MYB":"Africa/Libreville","MYC":"America/Caracas","MYD":"Africa/Nairobi","MYE":"Asia/Tokyo","MYF":"America/Los_Angeles","MYG":"America/Nassau","MYH":"America/Phoenix","MYI":"Australia/Brisbane","MYJ":"Asia/Tokyo","MYK":"America/Anchorage","MYL":"America/Denver","MYM":"America/Guyana","MYN":"Asia/Aden","MYO":"Australia/Perth","MYP":"Asia/Ashgabat","MYQ":"Asia/Kolkata","MYR":"America/New_York","MYS":"Africa/Addis_Ababa","MYT":"Asia/Yangon","MYU":"America/Anchorage","MYV":"America/Los_Angeles","MYW":"Africa/Dar_es_Salaam","MYX":"Pacific/Port_Moresby","MYY":"Asia/Kuala_Lumpur","MYZ":"Africa/Blantyre","MZA":"America/Lima","MZB":"Africa/Maputo","MZC":"Africa/Libreville","MZD":"America/Guayaquil","MZE":"America/Belize","MZF":"Africa/Johannesburg","MZG":"Asia/Taipei","MZH":"Europe/Istanbul","MZI":"Africa/Bamako","MZJ":"America/Phoenix","MZK":"Pacific/Tarawa","MZL":"America/Bogota","MZM":"Europe/Paris","MZN":"Pacific/Port_Moresby","MZO":"America/Havana","MZP":"Pacific/Auckland","MZQ":"Africa/Johannesburg","MZR":"Asia/Kabul","MZS":"Asia/Kuala_Lumpur","MZT":"America/Mazatlan","MZU":"Asia/Kolkata","MZV":"Asia/Kuala_Lumpur","MZW":"Africa/Algiers","MZX":"Africa/Addis_Ababa","MZY":"Africa/Johannesburg","MZZ":"America/Indiana/Indianapolis","NAA":"Australia/Sydney","NAB":"America/New_York","NAC":"Australia/Adelaide","NAD":"America/Bogota","NAE":"Africa/Porto-Novo","NAF":"Asia/Makassar","NAG":"Asia/Kolkata","NAH":"Asia/Makassar","NAI":"America/Guyana","NAJ":"Asia/Baku","NAK":"Asia/Bangkok","NAL":"Europe/Moscow","NAM":"Asia/Jayapura","NAN":"Pacific/Fiji","NAO":"Asia/Shanghai","NAP":"Europe/Rome","NAQ":"America/Godthab","NAR":"America/Bogota","NAS":"America/Nassau","NAT":"America/Belem","NAU":"Pacific/Tahiti","NAV":"Europe/Istanbul","NAW":"Asia/Bangkok","NBA":"Pacific/Port_Moresby","NBB":"America/Bogota","NBC":"Europe/Moscow","NBE":"Africa/Tunis","NBG":"America/Chicago","NBH":"Australia/Sydney","NBL":"America/Panama","NBN":"Africa/Lagos","NBO":"Africa/Nairobi","NBP":"America/New_York","NBR":"Australia/Brisbane","NBS":"Asia/Shanghai","NBV":"America/Sao_Paulo","NBW":"America/Havana","NBX":"Asia/Jayapura","NCA":"America/Grand_Turk","NCE":"Europe/Paris","NCG":"America/Mexico_City","NCH":"Africa/Dar_es_Salaam","NCI":"America/Bogota","NCJ":"America/Argentina/Cordoba","NCL":"Europe/London","NCN":"America/Anchorage","NCO":"America/New_York","NCP":"Asia/Manila","NCQ":"America/New_York","NCR":"America/Managua","NCS":"Africa/Johannesburg","NCT":"America/Costa_Rica","NCU":"Asia/Tashkent","NCY":"Europe/Paris","NDA":"Asia/Jayapura","NDB":"Africa/Nouakchott","NDC":"Asia/Kolkata","NDD":"Africa/Luanda","NDE":"Africa/Nairobi","NDF":"Africa/Luanda","NDG":"Asia/Shanghai","NDI":"Pacific/Port_Moresby","NDJ":"Africa/Ndjamena","NDK":"Pacific/Majuro","NDL":"Africa/Bangui","NDM":"Africa/Addis_Ababa","NDN":"Pacific/Port_Moresby","NDO":"Europe/Madrid","NDR":"Africa/Casablanca","NDS":"Australia/Perth","NDU":"Africa/Windhoek","NDV":"America/New_York","NDY":"Europe/London","NDZ":"Europe/Berlin","NEA":"America/New_York","NEC":"America/Argentina/Buenos_Aires","NEF":"Asia/Yekaterinburg","NEG":"America/Jamaica","NEI":"Asia/Vladivostok","NEJ":"Africa/Addis_Ababa","NEK":"Africa/Addis_Ababa","NEL":"America/New_York","NEN":"America/New_York","NER":"Asia/Yakutsk","NES":"America/New_York","NEU":"Asia/Vientiane","NEV":"America/St_Kitts","NEW":"America/Chicago","NFB":"America/New_York","NFG":"Asia/Yekaterinburg","NFL":"America/Los_Angeles","NFO":"Pacific/Tongatapu","NFR":"Africa/Tripoli","NGA":"Australia/Sydney","NGB":"Asia/Shanghai","NGC":"America/Phoenix","NGD":"America/Tortola","NGE":"Africa/Douala","NGF":"Pacific/Honolulu","NGI":"Pacific/Fiji","NGK":"Asia/Magadan","NGL":"Africa/Johannesburg","NGM":"Pacific/Guam","NGN":"America/Panama","NGO":"Asia/Tokyo","NGP":"America/Chicago","NGQ":"Asia/Shanghai","NGR":"Pacific/Port_Moresby","NGS":"Asia/Tokyo","NGU":"America/New_York","NGW":"America/Chicago","NGX":"Asia/Kathmandu","NGZ":"America/Los_Angeles","NHA":"Asia/Ho_Chi_Minh","NHD":"Asia/Dubai","NHF":"Africa/Khartoum","NHK":"America/New_York","NHS":"Asia/Karachi","NHT":"Europe/London","NHV":"Pacific/Marquesas","NHX":"America/Chicago","NHZ":"America/New_York","NIA":"Africa/Monrovia","NIB":"America/Anchorage","NIE":"America/Anchorage","NIF":"Australia/Perth","NIG":"Pacific/Tarawa","NIK":"Africa/Dakar","NIM":"Africa/Niamey","NIN":"America/Anchorage","NIO":"Africa/Kinshasa","NIP":"America/New_York","NIQ":"America/Godthab","NIR":"America/Chicago","NIS":"Pacific/Port_Moresby","NIT":"Europe/Paris","NIU":"Pacific/Tahiti","NIX":"Africa/Bamako","NJA":"Asia/Tokyo","NJC":"Asia/Yekaterinburg","NJF":"Asia/Baghdad","NJJ":"Asia/Shanghai","NJK":"America/Los_Angeles","NKA":"Africa/Libreville","NKB":"Australia/Perth","NKC":"Africa/Nouakchott","NKD":"Asia/Jayapura","NKG":"Asia/Shanghai","NKI":"America/Anchorage","NKL":"Africa/Lubumbashi","NKM":"Asia/Tokyo","NKN":"Pacific/Port_Moresby","NKO":"Indian/Antananarivo","NKS":"Africa/Douala","NKT":"Europe/Istanbul","NKU":"Africa/Maseru","NKX":"America/Los_Angeles","NKY":"Africa/Brazzaville","NLA":"Africa/Lusaka","NLC":"America/Los_Angeles","NLD":"America/Matamoros","NLE":"America/New_York","NLF":"Australia/Brisbane","NLG":"America/Anchorage","NLH":"Asia/Shanghai","NLI":"Asia/Vladivostok","NLK":"Pacific/Norfolk","NLL":"Australia/Perth","NLO":"Africa/Kinshasa","NLP":"Africa/Johannesburg","NLS":"Australia/Perth","NLT":"Asia/Shanghai","NLU":"America/Mexico_City","NLV":"Europe/Kiev","NMA":"Asia/Tashkent","NMB":"Asia/Kolkata","NMC":"America/Nassau","NME":"America/Anchorage","NMF":"Indian/Maldives","NMG":"America/Panama","NMN":"Pacific/Port_Moresby","NMP":"Australia/Brisbane","NMR":"Australia/Brisbane","NMS":"Asia/Yangon","NMT":"Asia/Yangon","NMU":"Pacific/Majuro","NNA":"Africa/Casablanca","NNB":"Pacific/Guadalcanal","NND":"Africa/Maputo","NNG":"Asia/Shanghai","NNI":"Africa/Windhoek","NNK":"America/Anchorage","NNL":"America/Anchorage","NNM":"Europe/Moscow","NNR":"Europe/Dublin","NNT":"Asia/Bangkok","NNU":"America/Sao_Paulo","NNX":"Asia/Makassar","NNY":"Asia/Shanghai","NOA":"Australia/Sydney","NOB":"America/Costa_Rica","NOC":"Europe/Dublin","NOD":"Europe/Berlin","NOE":"Europe/Berlin","NOG":"America/Hermosillo","NOH":"America/Chicago","NOI":"Europe/Moscow","NOJ":"Asia/Yekaterinburg","NOK":"America/Campo_Grande","NOL":"America/Anchorage","NOM":"Pacific/Port_Moresby","NON":"Pacific/Tarawa","NOO":"Pacific/Port_Moresby","NOP":"Europe/Istanbul","NOR":"Atlantic/Reykjavik","NOS":"Indian/Antananarivo","NOT":"America/Los_Angeles","NOU":"Pacific/Noumea","NOV":"Africa/Luanda","NOZ":"Asia/Novokuznetsk","NPA":"America/Chicago","NPE":"Pacific/Auckland","NPG":"Pacific/Port_Moresby","NPH":"America/Denver","NPL":"Pacific/Auckland","NPO":"Asia/Makassar","NPP":"Australia/Darwin","NPT":"America/New_York","NPU":"America/Bogota","NPY":"Africa/Dar_es_Salaam","NQA":"America/Chicago","NQI":"America/Chicago","NQL":"America/Sao_Paulo","NQN":"America/Argentina/Buenos_Aires","NQT":"Europe/London","NQU":"America/Bogota","NQX":"America/New_York","NQY":"Europe/London","NRA":"Australia/Sydney","NRB":"America/New_York","NRC":"America/Los_Angeles","NRD":"Europe/Berlin","NRE":"Asia/Jayapura","NRG":"Australia/Perth","NRI":"America/Chicago","NRK":"Europe/Stockholm","NRL":"Europe/London","NRM":"Africa/Bamako","NRN":"Europe/Berlin","NRR":"America/Puerto_Rico","NRS":"America/Los_Angeles","NRT":"Asia/Tokyo","NRV":"Pacific/Guam","NRY":"Australia/Darwin","NSB":"America/Nassau","NSE":"America/New_York","NSF":"America/New_York","NSH":"Asia/Tehran","NSI":"Africa/Douala","NSK":"Asia/Krasnoyarsk","NSL":"America/Chicago","NSM":"Australia/Perth","NSN":"Pacific/Auckland","NSO":"Australia/Sydney","NSQ":"America/Godthab","NST":"Asia/Bangkok","NSV":"Australia/Brisbane","NSX":"America/Tortola","NSY":"Europe/Rome","NTA":"Pacific/Fiji","NTB":"Europe/Oslo","NTD":"America/Los_Angeles","NTE":"Europe/Paris","NTG":"Asia/Shanghai","NTI":"Asia/Jayapura","NTJ":"America/Denver","NTL":"Australia/Sydney","NTM":"America/Belem","NTN":"Australia/Brisbane","NTO":"Atlantic/Cape_Verde","NTQ":"Asia/Tokyo","NTR":"America/Mexico_City","NTT":"Pacific/Tongatapu","NTU":"America/New_York","NTX":"Asia/Jakarta","NTY":"Africa/Johannesburg","NUA":"Asia/Colombo","NUB":"Australia/Darwin","NUD":"Africa/Khartoum","NUE":"Europe/Berlin","NUF":"Asia/Colombo","NUG":"Pacific/Port_Moresby","NUH":"America/Bogota","NUI":"America/Anchorage","NUJ":"Asia/Tehran","NUK":"Pacific/Tahiti","NUL":"America/Anchorage","NUM":"Asia/Riyadh","NUN":"America/Chicago","NUP":"America/Anchorage","NUQ":"America/Los_Angeles","NUR":"Australia/Adelaide","NUS":"Pacific/Efate","NUT":"Pacific/Port_Moresby","NUU":"Africa/Nairobi","NUW":"America/Los_Angeles","NUX":"Asia/Yekaterinburg","NVA":"America/Bogota","NVD":"America/Chicago","NVG":"America/Managua","NVI":"Asia/Tashkent","NVK":"Europe/Oslo","NVP":"America/Porto_Velho","NVR":"Europe/Moscow","NVS":"Europe/Paris","NVT":"America/Sao_Paulo","NVY":"Asia/Kolkata","NWA":"Indian/Comoro","NWH":"America/New_York","NWI":"Europe/London","NWP":"America/St_Johns","NWS":"America/New_York","NWT":"Pacific/Port_Moresby","NWU":"Atlantic/Bermuda","NXX":"America/New_York","NYA":"Asia/Yekaterinburg","NYE":"Africa/Nairobi","NYG":"America/New_York","NYI":"Africa/Accra","NYK":"Africa/Nairobi","NYM":"Asia/Yekaterinburg","NYN":"Australia/Sydney","NYO":"Europe/Stockholm","NYR":"Asia/Yakutsk","NYS":"America/New_York","NYT":"Asia/Yangon","NYU":"Asia/Yangon","NYW":"Asia/Yangon","NZA":"Africa/Luanda","NZC":"America/Lima","NZE":"Africa/Conakry","NZH":"Asia/Shanghai","NZL":"Asia/Shanghai","NZO":"Africa/Nairobi","NZW":"America/New_York","NZY":"America/Los_Angeles","OAA":"Asia/Kabul","OAG":"Australia/Sydney","OAH":"Asia/Kabul","OAI":"Asia/Kabul","OAJ":"America/New_York","OAK":"America/Los_Angeles","OAL":"America/Porto_Velho","OAM":"Pacific/Auckland","OAN":"America/Tegucigalpa","OAR":"America/Los_Angeles","OAS":"Asia/Kabul","OAX":"America/Mexico_City","OAZ":"Asia/Kabul","OBA":"Australia/Brisbane","OBC":"Africa/Djibouti","OBD":"Asia/Jayapura","OBE":"America/New_York","OBF":"Europe/Berlin","OBI":"America/Porto_Velho","OBK":"America/Chicago","OBL":"Europe/Brussels","OBM":"Pacific/Port_Moresby","OBN":"Europe/London","OBO":"Asia/Tokyo","OBS":"Europe/Paris","OBU":"America/Anchorage","OBX":"Pacific/Port_Moresby","OBY":"America/Scoresbysund","OCA":"America/New_York","OCC":"America/Guayaquil","OCE":"America/New_York","OCF":"America/New_York","OCH":"America/Chicago","OCI":"America/Anchorage","OCJ":"America/Jamaica","OCM":"Australia/Perth","OCN":"America/Los_Angeles","OCV":"America/Bogota","OCW":"America/New_York","ODA":"Africa/Bangui","ODB":"Europe/Madrid","ODD":"Australia/Adelaide","ODE":"Europe/Copenhagen","ODH":"Europe/London","ODJ":"Africa/Bangui","ODL":"Australia/Adelaide","ODM":"America/New_York","ODN":"Asia/Kuala_Lumpur","ODO":"Asia/Irkutsk","ODR":"Australia/Perth","ODS":"Europe/Kiev","ODW":"America/Los_Angeles","ODY":"Asia/Vientiane","OEA":"America/Indiana/Indianapolis","OEC":"Asia/Jayapura","OEL":"Europe/Moscow","OEM":"America/Paramaribo","OEO":"America/Chicago","OER":"Europe/Stockholm","OES":"America/Argentina/Buenos_Aires","OFF":"America/Chicago","OFI":"Africa/Abidjan","OFJ":"Atlantic/Reykjavik","OFK":"America/Chicago","OFU":"Pacific/Pago_Pago","OGA":"America/Denver","OGB":"America/New_York","OGD":"America/Denver","OGE":"Pacific/Port_Moresby","OGG":"Pacific/Honolulu","OGL":"America/Guyana","OGM":"America/Panama","OGN":"Asia/Tokyo","OGO":"Africa/Abidjan","OGR":"Africa/Ndjamena","OGS":"America/New_York","OGU":"Europe/Istanbul","OGX":"Africa/Algiers","OGZ":"Europe/Moscow","OHA":"Pacific/Auckland","OHC":"America/Anchorage","OHD":"Europe/Skopje","OHE":"Asia/Shanghai","OHH":"Asia/Magadan","OHI":"Africa/Windhoek","OHO":"Asia/Vladivostok","OHP":"Europe/London","OHR":"Europe/Berlin","OHS":"Asia/Muscat","OHT":"Asia/Karachi","OIA":"America/Belem","OIC":"America/New_York","OIL":"America/New_York","OIM":"Asia/Tokyo","OIR":"Asia/Tokyo","OIT":"Asia/Tokyo","OJC":"America/Chicago","OJU":"Asia/Makassar","OKA":"Asia/Tokyo","OKB":"Australia/Brisbane","OKC":"America/Chicago","OKD":"Asia/Tokyo","OKE":"Asia/Tokyo","OKF":"Africa/Windhoek","OKG":"Africa/Brazzaville","OKH":"Europe/London","OKI":"Asia/Tokyo","OKJ":"Asia/Tokyo","OKK":"America/Indiana/Indianapolis","OKL":"Asia/Jayapura","OKM":"America/Chicago","OKN":"Africa/Libreville","OKO":"Asia/Tokyo","OKP":"Pacific/Port_Moresby","OKQ":"Asia/Jayapura","OKR":"Australia/Brisbane","OKS":"America/Chicago","OKT":"Asia/Yekaterinburg","OKU":"Africa/Windhoek","OKV":"Pacific/Port_Moresby","OKY":"Australia/Brisbane","OLA":"Europe/Oslo","OLB":"Europe/Rome","OLC":"America/Porto_Velho","OLD":"America/New_York","OLE":"America/New_York","OLF":"America/Denver","OLG":"Africa/Nairobi","OLH":"America/Anchorage","OLI":"Atlantic/Reykjavik","OLJ":"Pacific/Efate","OLK":"America/Asuncion","OLL":"Africa/Brazzaville","OLM":"America/Los_Angeles","OLO":"Europe/Prague","OLP":"Australia/Adelaide","OLQ":"Pacific/Port_Moresby","OLR":"Asia/Kabul","OLS":"America/Phoenix","OLU":"America/Chicago","OLV":"America/Chicago","OLX":"Africa/Nairobi","OLY":"America/Chicago","OLZ":"Asia/Yakutsk","OMA":"America/Chicago","OMB":"Africa/Libreville","OMC":"Asia/Manila","OMD":"Africa/Windhoek","OME":"America/Anchorage","OMF":"Asia/Amman","OMG":"Africa/Windhoek","OMH":"Asia/Tehran","OMI":"Asia/Tehran","OMJ":"Asia/Tokyo","OMK":"America/Los_Angeles","OML":"Pacific/Port_Moresby","OMM":"Asia/Muscat","OMN":"Asia/Kolkata","OMO":"Europe/Sarajevo","OMR":"Europe/Bucharest","OMS":"Asia/Omsk","OMY":"Asia/Phnom_Penh","ONA":"America/Chicago","ONB":"Pacific/Port_Moresby","OND":"Africa/Windhoek","ONE":"Pacific/Guadalcanal","ONG":"Australia/Brisbane","ONH":"America/New_York","ONI":"Asia/Jayapura","ONJ":"Asia/Tokyo","ONK":"Asia/Yakutsk","ONL":"America/Chicago","ONM":"America/Denver","ONN":"America/Anchorage","ONO":"America/Los_Angeles","ONP":"America/Los_Angeles","ONQ":"Europe/Istanbul","ONR":"Australia/Brisbane","ONS":"Australia/Perth","ONT":"America/Los_Angeles","ONU":"Pacific/Fiji","ONX":"America/Panama","ONY":"America/Chicago","OOA":"America/Chicago","OOK":"America/Anchorage","OOL":"Australia/Brisbane","OOM":"Australia/Sydney","OOR":"Australia/Brisbane","OOT":"Pacific/Tarawa","OPA":"Atlantic/Reykjavik","OPB":"Pacific/Port_Moresby","OPF":"America/New_York","OPI":"Australia/Darwin","OPL":"America/Chicago","OPO":"Europe/Lisbon","OPS":"America/Campo_Grande","OPU":"Pacific/Port_Moresby","OPW":"Africa/Windhoek","ORA":"America/Argentina/Buenos_Aires","ORB":"Europe/Stockholm","ORC":"America/Bogota","ORD":"America/Chicago","ORE":"Europe/Paris","ORF":"America/New_York","ORG":"America/Paramaribo","ORH":"America/New_York","ORI":"America/Anchorage","ORJ":"America/Guyana","ORK":"Europe/Dublin","ORL":"America/New_York","ORM":"Europe/London","ORN":"Africa/Algiers","ORO":"America/Tegucigalpa","ORP":"Africa/Gaborone","ORQ":"America/New_York","ORR":"Australia/Adelaide","ORS":"Australia/Brisbane","ORT":"America/Anchorage","ORU":"America/La_Paz","ORV":"America/Anchorage","ORW":"Asia/Karachi","ORX":"America/Porto_Velho","ORY":"Europe/Paris","ORZ":"America/Belize","OSB":"America/Chicago","OSC":"America/New_York","OSD":"Europe/Stockholm","OSE":"Pacific/Port_Moresby","OSF":"Europe/Moscow","OSG":"Pacific/Port_Moresby","OSH":"America/Chicago","OSI":"Europe/Zagreb","OSJ":"Africa/Nairobi","OSK":"Europe/Stockholm","OSL":"Europe/Oslo","OSM":"Asia/Baghdad","OSN":"Asia/Seoul","OSO":"Australia/Brisbane","OSP":"Europe/Warsaw","OSR":"Europe/Prague","OSS":"Asia/Bishkek","OST":"Europe/Brussels","OSU":"America/New_York","OSW":"Asia/Yekaterinburg","OSX":"America/Chicago","OSY":"Europe/Oslo","OSZ":"Europe/Warsaw","OTA":"Africa/Addis_Ababa","OTC":"Africa/Ndjamena","OTD":"America/Panama","OTG":"America/Chicago","OTH":"America/Los_Angeles","OTI":"Asia/Jayapura","OTJ":"Africa/Windhoek","OTK":"America/Los_Angeles","OTL":"Africa/Nouakchott","OTM":"America/Chicago","OTN":"America/Indiana/Indianapolis","OTO":"America/Denver","OTP":"Europe/Bucharest","OTR":"America/Costa_Rica","OTS":"America/Los_Angeles","OTT":"America/Campo_Grande","OTU":"America/Bogota","OTV":"Pacific/Guadalcanal","OTY":"Pacific/Bougainville","OTZ":"America/Anchorage","OUA":"Africa/Ouagadougou","OUD":"Africa/Casablanca","OUE":"Africa/Brazzaville","OUG":"Africa/Ouagadougou","OUH":"Africa/Johannesburg","OUK":"Europe/London","OUL":"Europe/Helsinki","OUM":"Africa/Ndjamena","OUN":"America/Chicago","OUR":"Africa/Douala","OUS":"America/Sao_Paulo","OUT":"Africa/Ndjamena","OUU":"Africa/Libreville","OUZ":"Africa/Nouakchott","OVA":"Indian/Antananarivo","OVB":"Asia/Novosibirsk","OVD":"Europe/Madrid","OVE":"America/Los_Angeles","OVG":"Africa/Johannesburg","OVL":"America/Santiago","OVR":"America/Argentina/Buenos_Aires","OVS":"Asia/Yekaterinburg","OWA":"America/Chicago","OWB":"America/Chicago","OWD":"America/New_York","OWE":"Africa/Libreville","OWK":"America/New_York","OXB":"Africa/Bissau","OXC":"America/New_York","OXD":"America/New_York","OXF":"Europe/London","OXO":"Australia/Brisbane","OXR":"America/Los_Angeles","OXY":"Australia/Brisbane","OYA":"America/Argentina/Buenos_Aires","OYE":"Africa/Libreville","OYG":"Africa/Kampala","OYK":"America/Belem","OYL":"Africa/Nairobi","OYN":"Australia/Sydney","OYO":"America/Argentina/Buenos_Aires","OYP":"America/Cayenne","OYS":"America/Los_Angeles","OZA":"America/Chicago","OZC":"Asia/Manila","OZG":"Africa/Casablanca","OZH":"Europe/Kiev","OZI":"Europe/Madrid","OZP":"Europe/Madrid","OZR":"America/Chicago","OZU":"Europe/Madrid","OZZ":"Africa/Casablanca","PAA":"Asia/Yangon","PAB":"Asia/Kolkata","PAC":"America/Panama","PAD":"Europe/Berlin","PAE":"America/Los_Angeles","PAF":"Africa/Kampala","PAG":"Asia/Manila","PAH":"America/Chicago","PAI":"Asia/Phnom_Penh","PAJ":"Asia/Karachi","PAK":"Pacific/Honolulu","PAL":"America/Bogota","PAM":"America/Chicago","PAN":"Asia/Bangkok","PAO":"America/Los_Angeles","PAP":"America/Port-au-Prince","PAQ":"America/Anchorage","PAR":"Europe/Paris","PAS":"Europe/Athens","PAT":"Asia/Kolkata","PAU":"Asia/Yangon","PAV":"America/Belem","PAW":"Pacific/Port_Moresby","PAX":"America/Port-au-Prince","PAY":"Asia/Kuala_Lumpur","PAZ":"America/Mexico_City","PBA":"America/Anchorage","PBB":"America/Campo_Grande","PBC":"America/Mexico_City","PBD":"Asia/Kolkata","PBE":"America/Bogota","PBF":"America/Chicago","PBG":"America/New_York","PBH":"Asia/Thimphu","PBI":"America/New_York","PBJ":"Pacific/Efate","PBK":"America/Anchorage","PBL":"America/Caracas","PBM":"America/Paramaribo","PBN":"Africa/Luanda","PBO":"Australia/Perth","PBP":"America/Costa_Rica","PBQ":"America/Porto_Velho","PBR":"America/Guatemala","PBS":"Asia/Bangkok","PBT":"America/Asuncion","PBU":"Asia/Yangon","PBV":"America/Campo_Grande","PBX":"America/Campo_Grande","PBY":"Australia/Brisbane","PBZ":"Africa/Johannesburg","PCA":"America/Anchorage","PCB":"Asia/Jakarta","PCC":"America/Bogota","PCD":"America/Chicago","PCE":"America/Anchorage","PCG":"America/Guatemala","PCH":"America/Tegucigalpa","PCJ":"America/Asuncion","PCK":"America/Anchorage","PCL":"America/Lima","PCM":"America/Mexico_City","PCN":"Pacific/Auckland","PCO":"America/Mazatlan","PCP":"Africa/Sao_Tome","PCQ":"Asia/Vientiane","PCR":"America/Bogota","PCS":"America/Belem","PCT":"America/New_York","PCU":"America/Chicago","PCV":"America/Tijuana","PDA":"America/Bogota","PDB":"America/Anchorage","PDC":"Pacific/Noumea","PDD":"Africa/Maputo","PDE":"Australia/Adelaide","PDF":"America/Belem","PDG":"Asia/Jakarta","PDI":"Pacific/Port_Moresby","PDK":"America/New_York","PDL":"Atlantic/Azores","PDM":"America/Panama","PDN":"Australia/Adelaide","PDO":"Asia/Jakarta","PDP":"America/Montevideo","PDR":"America/Belem","PDS":"America/Matamoros","PDT":"America/Los_Angeles","PDU":"America/Montevideo","PDV":"Europe/Sofia","PDX":"America/Los_Angeles","PDZ":"America/Caracas","PEA":"Australia/Adelaide","PEB":"Africa/Maputo","PEC":"America/Anchorage","PED":"Europe/Prague","PEE":"Asia/Yekaterinburg","PEF":"Europe/Berlin","PEG":"Europe/Rome","PEH":"America/Argentina/Buenos_Aires","PEI":"America/Bogota","PEK":"Asia/Shanghai","PEL":"Africa/Maseru","PEM":"America/Lima","PEN":"Asia/Kuala_Lumpur","PEP":"Australia/Darwin","PEQ":"America/Chicago","PER":"Australia/Perth","PES":"Europe/Moscow","PET":"America/Sao_Paulo","PEU":"America/Tegucigalpa","PEV":"Europe/Budapest","PEW":"Asia/Karachi","PEX":"Europe/Moscow","PEY":"Australia/Adelaide","PEZ":"Europe/Moscow","PFA":"America/Anchorage","PFB":"America/Sao_Paulo","PFC":"America/Los_Angeles","PFD":"America/Anchorage","PFJ":"Atlantic/Reykjavik","PFO":"Asia/Nicosia","PFQ":"Asia/Tehran","PFR":"Africa/Lubumbashi","PGA":"America/Phoenix","PGB":"Pacific/Port_Moresby","PGC":"America/New_York","PGD":"America/New_York","PGE":"Pacific/Port_Moresby","PGF":"Europe/Paris","PGG":"America/Belem","PGH":"Asia/Kolkata","PGI":"Africa/Luanda","PGK":"Asia/Jakarta","PGL":"America/Chicago","PGM":"America/Anchorage","PGN":"Pacific/Port_Moresby","PGO":"America/Denver","PGP":"Africa/Sao_Tome","PGQ":"Asia/Makassar","PGR":"America/Chicago","PGS":"America/Phoenix","PGU":"Asia/Tehran","PGV":"America/New_York","PGX":"Europe/Paris","PGZ":"America/Sao_Paulo","PHA":"Asia/Ho_Chi_Minh","PHB":"America/Belem","PHC":"Africa/Lagos","PHD":"America/New_York","PHE":"Australia/Perth","PHF":"America/New_York","PHG":"Africa/Lagos","PHH":"Asia/Ho_Chi_Minh","PHI":"America/Belem","PHJ":"Australia/Sydney","PHK":"America/New_York","PHL":"America/New_York","PHM":"Europe/Berlin","PHN":"America/New_York","PHO":"America/Anchorage","PHP":"America/Chicago","PHQ":"Australia/Brisbane","PHR":"Pacific/Fiji","PHS":"Asia/Bangkok","PHT":"America/Chicago","PHU":"Asia/Ho_Chi_Minh","PHW":"Africa/Johannesburg","PHX":"America/Phoenix","PHY":"Asia/Bangkok","PHZ":"Asia/Bangkok","PIA":"America/Chicago","PIB":"America/Chicago","PIC":"America/Grand_Turk","PID":"America/Nassau","PIE":"America/New_York","PIF":"Asia/Taipei","PIG":"America/Porto_Velho","PIH":"America/Denver","PIK":"Europe/London","PIL":"America/Asuncion","PIM":"America/New_York","PIN":"America/Porto_Velho","PIO":"America/Lima","PIP":"America/Anchorage","PIQ":"America/Guyana","PIR":"America/Chicago","PIS":"Europe/Paris","PIT":"America/New_York","PIU":"America/Lima","PIV":"America/Sao_Paulo","PIW":"America/Winnipeg","PIX":"Atlantic/Azores","PIZ":"America/Anchorage","PJA":"Europe/Stockholm","PJB":"America/Phoenix","PJC":"America/Asuncion","PJG":"Asia/Karachi","PJM":"America/Costa_Rica","PJS":"America/Anchorage","PKA":"America/Anchorage","PKB":"America/New_York","PKC":"Asia/Kamchatka","PKD":"America/Chicago","PKE":"Australia/Sydney","PKF":"America/Chicago","PKG":"Asia/Kuala_Lumpur","PKH":"Europe/Athens","PKJ":"America/Guatemala","PKK":"Asia/Yangon","PKL":"Pacific/Auckland","PKM":"America/Guyana","PKN":"Asia/Jakarta","PKO":"Africa/Porto-Novo","PKP":"Pacific/Tahiti","PKR":"Asia/Kathmandu","PKS":"Asia/Vientiane","PKT":"Australia/Darwin","PKU":"Asia/Jakarta","PKV":"Europe/Moscow","PKW":"Africa/Gaborone","PKX":"Asia/Shanghai","PKY":"Asia/Jakarta","PKZ":"Asia/Vientiane","PLA":"America/Bogota","PLB":"America/New_York","PLC":"America/Bogota","PLD":"America/Costa_Rica","PLE":"Pacific/Port_Moresby","PLF":"Africa/Ndjamena","PLH":"Europe/London","PLI":"America/St_Vincent","PLJ":"America/Belize","PLK":"America/Chicago","PLL":"America/Porto_Velho","PLM":"Asia/Jakarta","PLN":"America/New_York","PLO":"Australia/Adelaide","PLP":"America/Panama","PLQ":"Europe/Vilnius","PLR":"America/Chicago","PLS":"America/Grand_Turk","PLT":"America/Bogota","PLU":"America/Sao_Paulo","PLV":"Europe/Kiev","PLW":"Asia/Makassar","PLX":"Asia/Almaty","PLY":"America/Indiana/Indianapolis","PLZ":"Africa/Johannesburg","PMA":"Africa/Dar_es_Salaam","PMB":"America/Chicago","PMC":"America/Santiago","PMD":"America/Los_Angeles","PME":"Europe/London","PMF":"Europe/Rome","PMG":"America/Campo_Grande","PMH":"America/New_York","PMI":"Europe/Madrid","PMK":"Australia/Brisbane","PML":"America/Anchorage","PMM":"Asia/Bangkok","PMN":"Pacific/Port_Moresby","PMO":"Europe/Rome","PMP":"Pacific/Port_Moresby","PMQ":"America/Argentina/Buenos_Aires","PMR":"Pacific/Auckland","PMS":"Asia/Damascus","PMT":"America/Guyana","PMU":"America/Anchorage","PMV":"America/Caracas","PMW":"America/Belem","PMX":"America/New_York","PMY":"America/Argentina/Buenos_Aires","PMZ":"America/Costa_Rica","PNA":"Europe/Madrid","PNB":"America/Belem","PNC":"America/Chicago","PND":"America/Belize","PNE":"America/New_York","PNF":"America/Anchorage","PNG":"America/Sao_Paulo","PNH":"Asia/Phnom_Penh","PNI":"Pacific/Pohnpei","PNJ":"Asia/Shanghai","PNK":"Asia/Jakarta","PNL":"Europe/Rome","PNN":"America/New_York","PNO":"America/Mexico_City","PNP":"Pacific/Port_Moresby","PNQ":"Asia/Kolkata","PNR":"Africa/Brazzaville","PNS":"America/Chicago","PNT":"America/Santiago","PNU":"America/Denver","PNV":"Europe/Vilnius","PNX":"America/Chicago","PNY":"Asia/Kolkata","PNZ":"America/Belem","POA":"America/Sao_Paulo","POB":"America/New_York","POC":"America/Los_Angeles","POD":"Africa/Dakar","POE":"America/Chicago","POF":"America/Chicago","POG":"Africa/Libreville","POH":"America/Chicago","POI":"America/La_Paz","POJ":"America/Sao_Paulo","POL":"Africa/Maputo","POM":"Pacific/Port_Moresby","PON":"America/Guatemala","POO":"America/Sao_Paulo","POP":"America/Santo_Domingo","POR":"Europe/Helsinki","POS":"America/Port_of_Spain","POT":"America/Jamaica","POU":"America/New_York","POV":"Europe/Bratislava","POW":"Europe/Ljubljana","POX":"Europe/Paris","POY":"America/Denver","POZ":"Europe/Warsaw","PPA":"America/Chicago","PPB":"America/Sao_Paulo","PPC":"America/Anchorage","PPD":"America/Puerto_Rico","PPE":"America/Hermosillo","PPF":"America/Chicago","PPG":"Pacific/Pago_Pago","PPH":"America/Caracas","PPI":"Australia/Adelaide","PPJ":"Asia/Jakarta","PPK":"Asia/Almaty","PPL":"Asia/Kathmandu","PPM":"America/New_York","PPN":"America/Bogota","PPO":"America/Nassau","PPP":"Australia/Brisbane","PPQ":"Pacific/Auckland","PPR":"Asia/Jakarta","PPS":"Asia/Manila","PPT":"Pacific/Tahiti","PPU":"Asia/Yangon","PPV":"America/Anchorage","PPW":"Europe/London","PPX":"Pacific/Port_Moresby","PPY":"America/Sao_Paulo","PPZ":"America/Caracas","PQC":"Asia/Ho_Chi_Minh","PQI":"America/New_York","PQM":"America/Mexico_City","PQQ":"Australia/Sydney","PQS":"America/Anchorage","PQT":"America/Godthab","PRA":"America/Argentina/Buenos_Aires","PRB":"America/Los_Angeles","PRC":"America/Phoenix","PRD":"Australia/Perth","PRE":"America/Bogota","PRF":"America/Anchorage","PRG":"Europe/Prague","PRH":"Asia/Bangkok","PRI":"Indian/Mahe","PRJ":"Europe/Rome","PRK":"Africa/Johannesburg","PRL":"America/Anchorage","PRM":"Europe/Lisbon","PRN":"Europe/Belgrade","PRO":"America/Chicago","PRP":"Europe/Paris","PRQ":"America/Argentina/Buenos_Aires","PRR":"America/Guyana","PRS":"Pacific/Guadalcanal","PRU":"Asia/Yangon","PRV":"Europe/Prague","PRW":"America/Chicago","PRX":"America/Chicago","PRY":"Africa/Johannesburg","PRZ":"America/Los_Angeles","PSA":"Europe/Rome","PSB":"America/New_York","PSC":"America/Los_Angeles","PSD":"Africa/Cairo","PSE":"America/Puerto_Rico","PSF":"America/New_York","PSG":"America/Anchorage","PSH":"Europe/Berlin","PSI":"Asia/Karachi","PSJ":"Asia/Makassar","PSK":"America/New_York","PSL":"Europe/London","PSM":"America/New_York","PSN":"America/Chicago","PSO":"America/Bogota","PSP":"America/Los_Angeles","PSQ":"America/New_York","PSR":"Europe/Rome","PSS":"America/Argentina/Buenos_Aires","PST":"America/Havana","PSU":"Asia/Jakarta","PSV":"Europe/London","PSW":"America/Sao_Paulo","PSX":"America/Chicago","PSY":"Atlantic/Stanley","PSZ":"America/La_Paz","PTA":"America/Anchorage","PTB":"America/New_York","PTC":"America/Anchorage","PTD":"America/Anchorage","PTF":"Pacific/Fiji","PTG":"Africa/Johannesburg","PTH":"America/Anchorage","PTI":"Australia/Brisbane","PTJ":"Australia/Sydney","PTK":"America/New_York","PTL":"America/Anchorage","PTM":"America/Caracas","PTN":"America/Chicago","PTO":"America/Sao_Paulo","PTP":"America/Guadeloupe","PTQ":"America/Belem","PTR":"America/Anchorage","PTS":"America/Chicago","PTT":"America/Chicago","PTU":"America/Anchorage","PTV":"America/Los_Angeles","PTW":"America/New_York","PTX":"America/Bogota","PTY":"America/Panama","PTZ":"America/Guayaquil","PUA":"Pacific/Port_Moresby","PUB":"America/Denver","PUC":"America/Denver","PUD":"America/Argentina/Buenos_Aires","PUE":"America/Panama","PUF":"Europe/Paris","PUG":"Australia/Adelaide","PUH":"America/Mexico_City","PUI":"Pacific/Port_Moresby","PUJ":"America/Santo_Domingo","PUK":"Pacific/Tahiti","PUL":"America/Los_Angeles","PUM":"Asia/Makassar","PUN":"Africa/Lubumbashi","PUO":"America/Anchorage","PUP":"Africa/Ouagadougou","PUQ":"America/Santiago","PUR":"America/La_Paz","PUS":"Asia/Seoul","PUT":"Asia/Kolkata","PUU":"America/Bogota","PUV":"Pacific/Noumea","PUW":"America/Los_Angeles","PUX":"America/Santiago","PUY":"Europe/Zagreb","PUZ":"America/Managua","PVA":"America/Bogota","PVC":"America/New_York","PVD":"America/New_York","PVE":"America/Panama","PVF":"America/Los_Angeles","PVG":"Asia/Shanghai","PVH":"America/Porto_Velho","PVI":"America/Sao_Paulo","PVK":"Europe/Athens","PVL":"America/New_York","PVN":"Europe/Sofia","PVO":"America/Guayaquil","PVR":"America/Mexico_City","PVS":"Asia/Kamchatka","PVU":"America/Denver","PVW":"America/Chicago","PVY":"America/Anchorage","PVZ":"America/New_York","PWA":"America/Chicago","PWD":"America/Denver","PWE":"Asia/Anadyr","PWI":"Africa/Addis_Ababa","PWK":"America/Chicago","PWL":"Asia/Jakarta","PWM":"America/New_York","PWN":"America/Nassau","PWO":"Africa/Lubumbashi","PWQ":"Asia/Almaty","PWR":"America/Anchorage","PWT":"America/Los_Angeles","PWY":"America/Denver","PXA":"Asia/Jakarta","PXH":"Australia/Adelaide","PXL":"America/Phoenix","PXM":"America/Mexico_City","PXO":"Europe/Lisbon","PXR":"Asia/Bangkok","PXS":"Europe/Madrid","PXU":"Asia/Ho_Chi_Minh","PYA":"America/Bogota","PYB":"Asia/Kolkata","PYC":"America/Panama","PYE":"Pacific/Rarotonga","PYG":"Asia/Kolkata","PYH":"America/Caracas","PYJ":"Asia/Yakutsk","PYL":"America/Anchorage","PYM":"America/New_York","PYN":"America/Bogota","PYO":"America/Guayaquil","PYR":"Europe/Athens","PYS":"America/Los_Angeles","PYV":"America/Panama","PYX":"Asia/Bangkok","PYY":"Asia/Bangkok","PZA":"America/Bogota","PZB":"Africa/Johannesburg","PZE":"Europe/London","PZH":"Asia/Karachi","PZI":"Asia/Shanghai","PZK":"Pacific/Rarotonga","PZL":"Africa/Johannesburg","PZO":"America/Caracas","PZU":"Africa/Khartoum","PZY":"Europe/Bratislava","QAC":"America/Sao_Paulo","QAK":"America/Sao_Paulo","QBC":"America/Vancouver","QBX":"America/Belem","QCJ":"America/Sao_Paulo","QCN":"America/Sao_Paulo","QCP":"America/Belem","QCR":"America/Sao_Paulo","QCU":"America/Godthab","QDB":"America/Campo_Grande","QDC":"America/Sao_Paulo","QDF":"America/Sao_Paulo","QDP":"America/Campo_Grande","QDV":"America/Sao_Paulo","QET":"Asia/Seoul","QFG":"America/Godthab","QFI":"America/Godthab","QFK":"Europe/Oslo","QFN":"America/Godthab","QFQ":"Europe/Oslo","QFT":"America/Godthab","QFX":"America/Godthab","QGC":"America/Sao_Paulo","QGF":"America/Sao_Paulo","QGP":"America/Sao_Paulo","QGQ":"America/Godthab","QGU":"Asia/Tokyo","QHB":"America/Sao_Paulo","QHN":"America/Sao_Paulo","QHV":"America/Sao_Paulo","QID":"America/Sao_Paulo","QIG":"America/Belem","QIQ":"America/Sao_Paulo","QIT":"America/Sao_Paulo","QJE":"America/Godthab","QJH":"America/Godthab","QJI":"America/Godthab","QLA":"Europe/London","QLR":"Europe/Lisbon","QLX":"Europe/Vienna","QMF":"America/Sao_Paulo","QMK":"America/Godthab","QMM":"Europe/Rome","QMQ":"Africa/Tripoli","QMV":"America/New_York","QNS":"America/Sao_Paulo","QNV":"America/Sao_Paulo","QOA":"America/Sao_Paulo","QOQ":"America/Godthab","QOW":"Africa/Lagos","QPG":"Asia/Singapore","QPK":"Europe/Berlin","QPW":"America/Godthab","QRA":"Africa/Johannesburg","QRC":"Pacific/Easter","QRE":"America/Campo_Grande","QRF":"America/Argentina/Buenos_Aires","QRH":"Europe/Amsterdam","QRM":"Australia/Brisbane","QRO":"America/Mexico_City","QRR":"Australia/Brisbane","QRW":"Africa/Lagos","QRY":"America/Godthab","QSC":"America/Sao_Paulo","QSF":"Africa/Algiers","QSM":"Europe/Berlin","QSR":"Europe/Rome","QSZ":"Asia/Shanghai","QTL":"America/Sao_Paulo","QUB":"Africa/Tripoli","QUF":"Europe/Tallinn","QUG":"Europe/London","QUN":"Asia/Seoul","QUO":"Africa/Lagos","QUP":"America/Godthab","QUT":"Asia/Tokyo","QUV":"America/Godthab","QUW":"America/Godthab","QVP":"America/Sao_Paulo","QWG":"America/New_York","QXC":"America/Belem","QXD":"America/Sao_Paulo","QYI":"Europe/Amsterdam","QZN":"Africa/Algiers","RAA":"Pacific/Port_Moresby","RAB":"Pacific/Port_Moresby","RAC":"America/Chicago","RAD":"America/Tortola","RAE":"Asia/Riyadh","RAF":"Africa/Cairo","RAG":"Pacific/Auckland","RAH":"Asia/Riyadh","RAI":"Atlantic/Cape_Verde","RAJ":"Asia/Kolkata","RAK":"Africa/Casablanca","RAL":"America/Los_Angeles","RAM":"Australia/Darwin","RAN":"Europe/Rome","RAO":"America/Sao_Paulo","RAP":"America/Denver","RAQ":"Asia/Makassar","RAR":"Pacific/Rarotonga","RAS":"Asia/Tehran","RAT":"Asia/Yekaterinburg","RAU":"Asia/Dhaka","RAV":"America/Bogota","RAW":"Pacific/Bougainville","RAX":"Pacific/Port_Moresby","RAY":"Europe/London","RAZ":"Asia/Karachi","RBA":"Africa/Casablanca","RBB":"America/Porto_Velho","RBC":"Australia/Sydney","RBD":"America/Chicago","RBE":"Asia/Phnom_Penh","RBF":"America/Los_Angeles","RBG":"America/Los_Angeles","RBH":"America/Anchorage","RBI":"Pacific/Fiji","RBJ":"Asia/Tokyo","RBK":"America/Los_Angeles","RBL":"America/Los_Angeles","RBM":"Europe/Berlin","RBN":"America/New_York","RBO":"America/La_Paz","RBP":"Pacific/Port_Moresby","RBQ":"America/La_Paz","RBR":"America/Rio_Branco","RBS":"Australia/Sydney","RBT":"Africa/Nairobi","RBU":"Australia/Perth","RBV":"Pacific/Guadalcanal","RBW":"America/New_York","RBX":"Africa/Juba","RBY":"America/Anchorage","RCA":"America/Denver","RCB":"Africa/Johannesburg","RCE":"America/Los_Angeles","RCH":"America/Bogota","RCK":"America/Chicago","RCL":"Pacific/Efate","RCM":"Australia/Brisbane","RCN":"Australia/Adelaide","RCO":"Europe/Paris","RCP":"America/Anchorage","RCQ":"America/Argentina/Buenos_Aires","RCR":"America/Indiana/Indianapolis","RCS":"Europe/London","RCT":"America/New_York","RCU":"America/Argentina/Buenos_Aires","RCY":"America/Nassau","RDA":"Australia/Darwin","RDB":"America/Anchorage","RDC":"America/Belem","RDD":"America/Los_Angeles","RDE":"Asia/Jayapura","RDG":"America/New_York","RDM":"America/Los_Angeles","RDN":"Asia/Kuala_Lumpur","RDO":"Europe/Warsaw","RDP":"Asia/Kolkata","RDR":"America/Chicago","RDS":"America/Argentina/Buenos_Aires","RDT":"Africa/Dakar","RDU":"America/New_York","RDV":"America/Anchorage","RDZ":"Europe/Paris","REA":"Pacific/Tahiti","REB":"Europe/Berlin","REC":"America/Belem","RED":"America/New_York","REE":"America/Chicago","REG":"Europe/Rome","REH":"America/New_York","REI":"America/Cayenne","REL":"America/Argentina/Buenos_Aires","REN":"Asia/Yekaterinburg","REO":"America/Los_Angeles","REP":"Asia/Phnom_Penh","RER":"America/Guatemala","RES":"America/Argentina/Buenos_Aires","RET":"Europe/Oslo","REU":"Europe/Madrid","REW":"Asia/Kolkata","REX":"America/Matamoros","REY":"America/La_Paz","REZ":"America/Sao_Paulo","RFA":"Africa/Bangui","RFD":"America/Chicago","RFG":"America/Chicago","RFK":"America/Chicago","RFN":"Atlantic/Reykjavik","RFP":"Pacific/Tahiti","RFR":"America/Costa_Rica","RFS":"America/Managua","RGA":"America/Argentina/Buenos_Aires","RGE":"Pacific/Port_Moresby","RGH":"Asia/Kolkata","RGI":"Pacific/Tahiti","RGK":"Asia/Krasnoyarsk","RGL":"America/Argentina/Buenos_Aires","RGN":"Asia/Yangon","RGR":"America/Chicago","RGS":"Europe/Madrid","RGT":"Asia/Jakarta","RHA":"Atlantic/Reykjavik","RHD":"America/Argentina/Buenos_Aires","RHE":"Europe/Paris","RHG":"Africa/Kigali","RHI":"America/Chicago","RHL":"Australia/Perth","RHN":"Africa/Windhoek","RHO":"Europe/Athens","RHP":"Asia/Kathmandu","RHT":"Asia/Shanghai","RHV":"America/Los_Angeles","RIA":"America/Sao_Paulo","RIB":"America/La_Paz","RIC":"America/New_York","RID":"America/Indiana/Indianapolis","RIE":"America/Chicago","RIF":"America/Denver","RIG":"America/Sao_Paulo","RIH":"America/Panama","RIJ":"America/Lima","RIL":"America/Denver","RIM":"America/Lima","RIN":"Pacific/Guadalcanal","RIR":"America/Los_Angeles","RIS":"Asia/Tokyo","RIT":"America/Panama","RIV":"America/Los_Angeles","RIW":"America/Denver","RIX":"Europe/Riga","RIY":"Asia/Aden","RIZ":"Asia/Shanghai","RJA":"Asia/Kolkata","RJB":"Asia/Kathmandu","RJH":"Asia/Dhaka","RJI":"Asia/Kolkata","RJK":"Europe/Zagreb","RJL":"Europe/Madrid","RJM":"Asia/Jayapura","RJN":"Asia/Tehran","RKA":"Pacific/Tahiti","RKC":"America/Los_Angeles","RKD":"America/New_York","RKE":"Europe/Copenhagen","RKH":"America/New_York","RKI":"Asia/Jakarta","RKO":"Asia/Jakarta","RKP":"America/Chicago","RKR":"America/Chicago","RKS":"America/Denver","RKT":"Asia/Dubai","RKU":"Pacific/Port_Moresby","RKV":"Atlantic/Reykjavik","RKW":"America/New_York","RKY":"Australia/Brisbane","RKZ":"Asia/Shanghai","RLA":"America/Chicago","RLD":"America/Los_Angeles","RLG":"Europe/Berlin","RLI":"America/Chicago","RLK":"Asia/Shanghai","RLO":"America/Argentina/Buenos_Aires","RLP":"Australia/Brisbane","RLR":"Indian/Antananarivo","RLT":"Africa/Niamey","RLU":"America/Anchorage","RMA":"Australia/Brisbane","RMB":"Asia/Muscat","RMC":"America/Chicago","RMD":"Asia/Kolkata","RME":"America/New_York","RMF":"Africa/Cairo","RMG":"America/New_York","RMI":"Europe/Rome","RMK":"Australia/Adelaide","RML":"Asia/Colombo","RMN":"Pacific/Port_Moresby","RMP":"America/Anchorage","RMQ":"Asia/Taipei","RMS":"Europe/Berlin","RMT":"Pacific/Gambier","RMU":"Europe/Madrid","RMY":"America/Los_Angeles","RNA":"Pacific/Guadalcanal","RNB":"Europe/Stockholm","RNC":"America/Chicago","RND":"America/Chicago","RNE":"Europe/Paris","RNG":"America/Denver","RNH":"America/Chicago","RNI":"America/Managua","RNJ":"Asia/Tokyo","RNL":"Pacific/Guadalcanal","RNM":"Asia/Muscat","RNN":"Europe/Copenhagen","RNO":"America/Los_Angeles","RNP":"Pacific/Majuro","RNR":"Pacific/Port_Moresby","RNS":"Europe/Paris","RNT":"America/Los_Angeles","RNU":"Asia/Kuala_Lumpur","RNZ":"America/Indiana/Indianapolis","ROA":"America/New_York","ROB":"Africa/Monrovia","ROC":"America/New_York","ROD":"Africa/Johannesburg","ROF":"America/Los_Angeles","ROG":"America/Chicago","ROH":"Australia/Brisbane","ROI":"Asia/Bangkok","ROK":"Australia/Brisbane","ROL":"America/Denver","RON":"America/Bogota","ROO":"America/Campo_Grande","ROP":"Pacific/Saipan","ROR":"Pacific/Palau","ROS":"America/Argentina/Buenos_Aires","ROT":"Pacific/Auckland","ROU":"Europe/Sofia","ROV":"Europe/Moscow","ROW":"America/Denver","ROX":"America/Chicago","ROY":"America/Argentina/Buenos_Aires","ROZ":"Europe/Madrid","RPA":"Asia/Kathmandu","RPB":"Australia/Darwin","RPM":"Australia/Darwin","RPN":"Asia/Jerusalem","RPR":"Asia/Kolkata","RPV":"Australia/Darwin","RPX":"America/Denver","RQA":"Asia/Shanghai","RRA":"Europe/Madrid","RRE":"Australia/Adelaide","RRG":"Indian/Mauritius","RRI":"Pacific/Guadalcanal","RRJ":"America/Sao_Paulo","RRK":"Asia/Kolkata","RRL":"America/Chicago","RRM":"Africa/Maputo","RRN":"America/Belem","RRO":"Europe/Rome","RRR":"Pacific/Tahiti","RRS":"Europe/Oslo","RRT":"America/Chicago","RRV":"Australia/Darwin","RSA":"America/Argentina/Buenos_Aires","RSB":"Australia/Brisbane","RSD":"America/Nassau","RSE":"Australia/Sydney","RSG":"America/Belem","RSH":"America/Anchorage","RSI":"America/Panama","RSJ":"America/Los_Angeles","RSK":"Asia/Jayapura","RSL":"America/Chicago","RSN":"America/Chicago","RSP":"America/Anchorage","RSS":"Africa/Khartoum","RST":"America/Chicago","RSU":"Asia/Seoul","RSW":"America/New_York","RSX":"America/New_York","RTA":"Pacific/Fiji","RTB":"America/Tegucigalpa","RTC":"Asia/Kolkata","RTD":"America/New_York","RTE":"America/Anchorage","RTG":"Asia/Makassar","RTI":"Asia/Makassar","RTL":"America/Chicago","RTM":"Europe/Amsterdam","RTN":"America/Denver","RTP":"Australia/Brisbane","RTS":"Australia/Perth","RTW":"Europe/Saratov","RTY":"Australia/Adelaide","RUA":"Africa/Kampala","RUD":"Asia/Tehran","RUF":"Asia/Jayapura","RUG":"Asia/Shanghai","RUH":"Asia/Riyadh","RUI":"America/Denver","RUK":"Asia/Kathmandu","RUL":"Indian/Maldives","RUM":"Asia/Kathmandu","RUN":"Indian/Reunion","RUP":"Asia/Kolkata","RUR":"Pacific/Tahiti","RUS":"Pacific/Guadalcanal","RUT":"America/New_York","RUU":"Pacific/Port_Moresby","RUV":"America/Guatemala","RUY":"America/Tegucigalpa","RVA":"Indian/Antananarivo","RVC":"Africa/Monrovia","RVD":"America/Sao_Paulo","RVE":"America/Bogota","RVH":"Europe/Moscow","RVI":"Europe/Moscow","RVK":"Europe/Oslo","RVN":"Europe/Helsinki","RVO":"Africa/Johannesburg","RVR":"America/Denver","RVS":"America/Chicago","RVT":"Australia/Perth","RVV":"Pacific/Tahiti","RVY":"America/Montevideo","RWB":"America/Anchorage","RWF":"America/Chicago","RWI":"America/New_York","RWL":"America/Denver","RWN":"Europe/Kiev","RWS":"America/Sao_Paulo","RXA":"Asia/Aden","RXE":"America/Denver","RXS":"Asia/Manila","RYB":"Europe/Moscow","RYG":"Europe/Oslo","RYK":"Asia/Karachi","RYL":"Africa/Lusaka","RYN":"Europe/Paris","RYO":"America/Argentina/Buenos_Aires","RZA":"America/Argentina/Buenos_Aires","RZE":"Europe/Warsaw","RZH":"Asia/Vladivostok","RZN":"Europe/Moscow","RZP":"Asia/Manila","RZR":"Asia/Tehran","RZS":"Asia/Karachi","RZZ":"America/New_York","SAA":"America/Denver","SAB":"America/Curacao","SAC":"America/Los_Angeles","SAD":"America/Phoenix","SAE":"America/Godthab","SAF":"America/Denver","SAG":"Asia/Kolkata","SAH":"Asia/Aden","SAI":"Europe/San_Marino","SAK":"Atlantic/Reykjavik","SAL":"America/El_Salvador","SAM":"Pacific/Port_Moresby","SAN":"America/Los_Angeles","SAP":"America/Tegucigalpa","SAQ":"America/Nassau","SAR":"America/Chicago","SAS":"America/Los_Angeles","SAT":"America/Chicago","SAU":"Asia/Makassar","SAV":"America/New_York","SAW":"Europe/Istanbul","SAX":"America/Panama","SAY":"Europe/Rome","SAZ":"Africa/Monrovia","SBA":"America/Los_Angeles","SBB":"America/Caracas","SBC":"Pacific/Port_Moresby","SBD":"America/Los_Angeles","SBE":"Pacific/Port_Moresby","SBF":"Asia/Kabul","SBG":"Asia/Jakarta","SBH":"America/Guadeloupe","SBI":"Africa/Conakry","SBJ":"America/Sao_Paulo","SBK":"Europe/Paris","SBL":"America/La_Paz","SBM":"America/Chicago","SBN":"America/Indiana/Indianapolis","SBO":"America/Denver","SBP":"America/Los_Angeles","SBQ":"Asia/Karachi","SBR":"Australia/Brisbane","SBS":"America/Denver","SBT":"Asia/Yekaterinburg","SBU":"Africa/Johannesburg","SBV":"Pacific/Bougainville","SBW":"Asia/Kuala_Lumpur","SBX":"America/Denver","SBY":"America/New_York","SBZ":"Europe/Bucharest","SCA":"America/Bogota","SCB":"America/Chicago","SCC":"America/Anchorage","SCD":"America/Tegucigalpa","SCE":"America/New_York","SCF":"America/Phoenix","SCG":"Australia/Brisbane","SCH":"America/New_York","SCI":"America/Caracas","SCJ":"America/Anchorage","SCK":"America/Los_Angeles","SCL":"America/Santiago","SCM":"America/Anchorage","SCN":"Europe/Berlin","SCO":"Asia/Aqtau","SCP":"Europe/Paris","SCQ":"Europe/Madrid","SCR":"Europe/Stockholm","SCS":"Europe/London","SCT":"Asia/Aden","SCU":"America/Havana","SCV":"Europe/Bucharest","SCW":"Europe/Moscow","SCX":"America/Mexico_City","SCY":"Pacific/Galapagos","SCZ":"Pacific/Guadalcanal","SDB":"Africa/Johannesburg","SDC":"America/Guyana","SDD":"Africa/Luanda","SDE":"America/Argentina/Buenos_Aires","SDF":"America/New_York","SDG":"Asia/Tehran","SDH":"America/Tegucigalpa","SDI":"Pacific/Port_Moresby","SDJ":"Asia/Tokyo","SDK":"Asia/Kuala_Lumpur","SDL":"Europe/Stockholm","SDM":"America/Los_Angeles","SDN":"Europe/Oslo","SDO":"Asia/Tokyo","SDP":"America/Anchorage","SDQ":"America/Santo_Domingo","SDR":"Europe/Madrid","SDS":"Asia/Tokyo","SDT":"Asia/Karachi","SDU":"America/Sao_Paulo","SDV":"Asia/Jerusalem","SDW":"Asia/Dhaka","SDX":"America/Phoenix","SDY":"America/Denver","SEA":"America/Los_Angeles","SEB":"Africa/Tripoli","SEC":"Europe/Paris","SED":"Asia/Jerusalem","SEE":"America/Los_Angeles","SEF":"America/New_York","SEG":"America/New_York","SEH":"Asia/Jayapura","SEK":"Asia/Magadan","SEM":"America/Chicago","SEN":"Europe/London","SEO":"Africa/Abidjan","SEP":"America/Chicago","SEQ":"Asia/Jakarta","SER":"America/Indiana/Indianapolis","SES":"America/Chicago","SET":"America/Belem","SEU":"Africa/Dar_es_Salaam","SEV":"Europe/Kiev","SEW":"Africa/Cairo","SEX":"Europe/Berlin","SEY":"Africa/Nouakchott","SEZ":"Indian/Mahe","SFA":"Africa/Tunis","SFB":"America/New_York","SFC":"America/Guadeloupe","SFD":"America/Caracas","SFE":"Asia/Manila","SFF":"America/Los_Angeles","SFG":"America/Marigot","SFH":"America/Tijuana","SFI":"Africa/Casablanca","SFJ":"America/Godthab","SFK":"America/Belem","SFL":"Atlantic/Cape_Verde","SFM":"America/New_York","SFN":"America/Argentina/Buenos_Aires","SFO":"America/Los_Angeles","SFP":"Australia/Brisbane","SFR":"America/Los_Angeles","SFS":"Asia/Manila","SFT":"Europe/Stockholm","SFU":"Pacific/Port_Moresby","SFV":"America/Sao_Paulo","SFW":"America/Panama","SFX":"America/Caracas","SFZ":"America/New_York","SGA":"Asia/Kabul","SGB":"Pacific/Port_Moresby","SGC":"Asia/Yekaterinburg","SGD":"Europe/Copenhagen","SGE":"Europe/Berlin","SGF":"America/Chicago","SGG":"America/Godthab","SGH":"America/New_York","SGI":"Asia/Karachi","SGJ":"Pacific/Port_Moresby","SGK":"Pacific/Port_Moresby","SGL":"Asia/Manila","SGM":"America/Mazatlan","SGN":"Asia/Ho_Chi_Minh","SGO":"Australia/Brisbane","SGP":"Australia/Perth","SGQ":"Asia/Makassar","SGR":"America/Chicago","SGT":"America/Chicago","SGU":"America/Denver","SGV":"America/Argentina/Buenos_Aires","SGW":"America/Anchorage","SGX":"Africa/Dar_es_Salaam","SGY":"America/Anchorage","SGZ":"Asia/Bangkok","SHA":"Asia/Shanghai","SHB":"Asia/Tokyo","SHC":"Africa/Addis_Ababa","SHD":"America/New_York","SHE":"Asia/Shanghai","SHF":"Asia/Shanghai","SHG":"America/Anchorage","SHH":"America/Anchorage","SHI":"Asia/Tokyo","SHJ":"Asia/Dubai","SHK":"Africa/Maseru","SHL":"Asia/Kolkata","SHM":"Asia/Tokyo","SHN":"America/Los_Angeles","SHO":"Africa/Mbabane","SHP":"Asia/Shanghai","SHQ":"Australia/Brisbane","SHR":"America/Denver","SHS":"Asia/Shanghai","SHT":"Australia/Sydney","SHU":"Australia/Darwin","SHV":"America/Chicago","SHW":"Asia/Riyadh","SHX":"America/Anchorage","SHY":"Africa/Dar_es_Salaam","SHZ":"Africa/Maseru","SIA":"Asia/Shanghai","SIB":"Africa/Brazzaville","SIC":"America/Panama","SID":"Atlantic/Cape_Verde","SIE":"Europe/Lisbon","SIF":"Asia/Kathmandu","SIG":"America/Puerto_Rico","SIH":"Asia/Kathmandu","SII":"Africa/Casablanca","SIJ":"Atlantic/Reykjavik","SIK":"America/Chicago","SIL":"Pacific/Port_Moresby","SIM":"Pacific/Port_Moresby","SIN":"Asia/Singapore","SIO":"Australia/Hobart","SIP":"Europe/Simferopol","SIQ":"Asia/Jakarta","SIR":"Europe/Zurich","SIS":"Africa/Johannesburg","SIT":"America/Anchorage","SIU":"America/Managua","SIV":"America/Indiana/Indianapolis","SIX":"Australia/Sydney","SIY":"America/Los_Angeles","SIZ":"Pacific/Port_Moresby","SJA":"America/Lima","SJB":"America/La_Paz","SJC":"America/Los_Angeles","SJD":"America/Mazatlan","SJE":"America/Bogota","SJF":"America/St_Thomas","SJG":"America/Bogota","SJH":"America/Bogota","SJI":"Asia/Manila","SJJ":"Europe/Sarajevo","SJK":"America/Sao_Paulo","SJL":"America/Porto_Velho","SJM":"America/Santo_Domingo","SJN":"America/Phoenix","SJO":"America/Costa_Rica","SJP":"America/Sao_Paulo","SJQ":"Africa/Lusaka","SJR":"America/Bogota","SJS":"America/La_Paz","SJT":"America/Chicago","SJU":"America/Puerto_Rico","SJV":"America/La_Paz","SJW":"Asia/Shanghai","SJX":"America/Belize","SJY":"Europe/Helsinki","SJZ":"Atlantic/Azores","SKA":"America/Los_Angeles","SKB":"America/St_Kitts","SKC":"Pacific/Port_Moresby","SKD":"Asia/Tashkent","SKE":"Europe/Oslo","SKF":"America/Chicago","SKG":"Europe/Athens","SKH":"Asia/Kathmandu","SKI":"Africa/Algiers","SKJ":"America/Anchorage","SKK":"America/Anchorage","SKL":"Europe/London","SKM":"America/Guyana","SKN":"Europe/Oslo","SKO":"Africa/Lagos","SKP":"Europe/Skopje","SKQ":"Africa/Maseru","SKR":"Africa/Addis_Ababa","SKS":"Europe/Copenhagen","SKT":"Asia/Karachi","SKU":"Europe/Athens","SKV":"Africa/Cairo","SKW":"America/Anchorage","SKX":"Europe/Moscow","SKY":"America/New_York","SKZ":"Asia/Karachi","SLA":"America/Argentina/Buenos_Aires","SLB":"America/Chicago","SLC":"America/Denver","SLD":"Europe/Bratislava","SLE":"America/Los_Angeles","SLF":"Asia/Riyadh","SLG":"America/Chicago","SLH":"Pacific/Efate","SLI":"Africa/Lusaka","SLJ":"Australia/Perth","SLK":"America/New_York","SLL":"Asia/Muscat","SLM":"Europe/Madrid","SLN":"America/Chicago","SLO":"America/Chicago","SLP":"America/Mexico_City","SLQ":"America/Anchorage","SLR":"America/Chicago","SLS":"Europe/Sofia","SLT":"America/Denver","SLU":"America/St_Lucia","SLV":"Asia/Kolkata","SLW":"America/Mexico_City","SLX":"America/Grand_Turk","SLY":"Asia/Yekaterinburg","SLZ":"America/Belem","SMA":"Atlantic/Azores","SMB":"America/Santiago","SMC":"America/Bogota","SMD":"America/Indiana/Indianapolis","SME":"America/New_York","SMF":"America/Los_Angeles","SMG":"America/Lima","SMH":"Pacific/Port_Moresby","SMI":"Europe/Athens","SMJ":"Pacific/Port_Moresby","SMK":"America/Anchorage","SML":"America/Nassau","SMM":"Asia/Kuala_Lumpur","SMN":"America/Denver","SMO":"America/Los_Angeles","SMP":"Pacific/Port_Moresby","SMQ":"Asia/Jakarta","SMR":"America/Bogota","SMS":"Indian/Antananarivo","SMT":"America/Campo_Grande","SMU":"America/Anchorage","SMV":"Europe/Zurich","SMW":"Africa/Casablanca","SMX":"America/Los_Angeles","SMY":"Africa/Dakar","SMZ":"America/Paramaribo","SNA":"America/Los_Angeles","SNB":"Australia/Darwin","SNC":"America/Guayaquil","SND":"Asia/Vientiane","SNE":"Atlantic/Cape_Verde","SNF":"America/Caracas","SNG":"America/La_Paz","SNH":"Australia/Brisbane","SNI":"Africa/Monrovia","SNJ":"America/Havana","SNK":"America/Chicago","SNL":"America/Chicago","SNM":"America/La_Paz","SNN":"Europe/Dublin","SNO":"Asia/Bangkok","SNP":"America/Anchorage","SNQ":"America/Tijuana","SNR":"Europe/Paris","SNS":"America/Los_Angeles","SNT":"America/Bogota","SNU":"America/Havana","SNV":"America/Caracas","SNW":"Asia/Yangon","SNX":"Asia/Tehran","SNY":"America/Denver","SNZ":"America/Belem","SOA":"Asia/Ho_Chi_Minh","SOB":"Europe/Budapest","SOC":"Asia/Jakarta","SOD":"America/Sao_Paulo","SOE":"Africa/Brazzaville","SOF":"Europe/Sofia","SOG":"Europe/Oslo","SOH":"America/Bogota","SOI":"Australia/Brisbane","SOJ":"Europe/Oslo","SOK":"Africa/Maseru","SOL":"America/Anchorage","SOM":"America/Caracas","SON":"Pacific/Efate","SOO":"Europe/Stockholm","SOP":"America/New_York","SOQ":"Asia/Jayapura","SOR":"Asia/Damascus","SOT":"Europe/Helsinki","SOU":"Europe/London","SOV":"America/Anchorage","SOW":"America/Phoenix","SOX":"America/Bogota","SOY":"Europe/London","SOZ":"Europe/Paris","SPA":"America/New_York","SPB":"America/St_Thomas","SPC":"Atlantic/Canary","SPD":"Asia/Dhaka","SPE":"Asia/Kuala_Lumpur","SPF":"America/Denver","SPG":"America/New_York","SPH":"Pacific/Port_Moresby","SPI":"America/Chicago","SPJ":"Europe/Athens","SPM":"Europe/Berlin","SPN":"Pacific/Saipan","SPO":"Europe/Madrid","SPP":"Africa/Luanda","SPQ":"America/Los_Angeles","SPR":"America/Belize","SPS":"America/Chicago","SPT":"Asia/Kuala_Lumpur","SPU":"Europe/Zagreb","SPV":"Pacific/Port_Moresby","SPW":"America/Chicago","SPX":"Africa/Cairo","SPY":"Africa/Abidjan","SPZ":"America/Chicago","SQA":"America/Los_Angeles","SQB":"America/Bogota","SQC":"Australia/Perth","SQD":"Asia/Shanghai","SQE":"America/Bogota","SQF":"America/Bogota","SQG":"Asia/Jakarta","SQH":"Asia/Ho_Chi_Minh","SQI":"America/Chicago","SQJ":"Asia/Shanghai","SQK":"Africa/Cairo","SQL":"America/Los_Angeles","SQM":"America/Sao_Paulo","SQN":"Asia/Jayapura","SQO":"Europe/Stockholm","SQP":"Australia/Brisbane","SQQ":"Europe/Vilnius","SQR":"Asia/Jayapura","SQS":"America/Belize","SQT":"Pacific/Port_Moresby","SQU":"America/Lima","SQV":"America/Los_Angeles","SQW":"Europe/Copenhagen","SQX":"America/Sao_Paulo","SQY":"America/Sao_Paulo","SQZ":"Europe/London","SRA":"America/Sao_Paulo","SRB":"America/La_Paz","SRC":"America/Chicago","SRD":"America/La_Paz","SRE":"America/La_Paz","SRF":"America/Los_Angeles","SRG":"Asia/Jakarta","SRH":"Africa/Ndjamena","SRI":"Asia/Makassar","SRJ":"America/La_Paz","SRK":"America/Thule","SRL":"America/Mazatlan","SRM":"Australia/Brisbane","SRN":"Australia/Hobart","SRO":"America/Bogota","SRP":"Europe/Oslo","SRQ":"America/New_York","SRS":"America/Bogota","SRT":"Africa/Kampala","SRU":"America/Los_Angeles","SRV":"America/Anchorage","SRW":"America/New_York","SRX":"Africa/Tripoli","SRY":"Asia/Tehran","SRZ":"America/La_Paz","SSA":"America/Belem","SSB":"America/St_Thomas","SSC":"America/New_York","SSD":"America/Bogota","SSE":"Asia/Kolkata","SSF":"America/Chicago","SSG":"Africa/Malabo","SSH":"Africa/Cairo","SSI":"America/New_York","SSJ":"Europe/Oslo","SSK":"Australia/Perth","SSL":"America/Bogota","SSM":"America/New_York","SSN":"Asia/Seoul","SSO":"America/Sao_Paulo","SSP":"Australia/Brisbane","SSQ":"America/Toronto","SSR":"Pacific/Efate","SSS":"Pacific/Port_Moresby","SST":"America/Argentina/Buenos_Aires","SSU":"America/New_York","SSV":"Asia/Manila","SSW":"America/Los_Angeles","SSX":"Africa/Johannesburg","SSY":"Africa/Luanda","SSZ":"America/Sao_Paulo","STA":"Europe/Copenhagen","STB":"America/Caracas","STC":"America/Chicago","STD":"America/Caracas","STE":"America/Chicago","STF":"Australia/Brisbane","STG":"America/Anchorage","STH":"Australia/Brisbane","STI":"America/Santo_Domingo","STJ":"America/Chicago","STK":"America/Denver","STL":"America/Chicago","STM":"America/Belem","STN":"Europe/London","STP":"America/Chicago","STQ":"America/New_York","STR":"Europe/Berlin","STS":"America/Los_Angeles","STT":"America/St_Thomas","STV":"Asia/Kolkata","STW":"Europe/Moscow","STX":"America/St_Thomas","STY":"America/Montevideo","STZ":"America/Campo_Grande","SUA":"America/New_York","SUB":"Asia/Jakarta","SUC":"America/Denver","SUD":"America/Chicago","SUE":"America/Chicago","SUF":"Europe/Rome","SUG":"Asia/Manila","SUH":"Asia/Muscat","SUI":"Asia/Tbilisi","SUJ":"Europe/Bucharest","SUK":"Asia/Vladivostok","SUL":"Asia/Karachi","SUM":"America/New_York","SUN":"America/Denver","SUO":"America/Los_Angeles","SUP":"Asia/Jakarta","SUQ":"America/Guayaquil","SUR":"America/Toronto","SUS":"America/Chicago","SUT":"Africa/Dar_es_Salaam","SUU":"America/Los_Angeles","SUV":"Pacific/Fiji","SUW":"America/Chicago","SUX":"America/Chicago","SUY":"Asia/Yakutsk","SUZ":"Pacific/Port_Moresby","SVA":"America/Anchorage","SVB":"Indian/Antananarivo","SVC":"America/Denver","SVD":"America/St_Vincent","SVE":"America/Los_Angeles","SVF":"Africa/Porto-Novo","SVG":"Europe/Oslo","SVH":"America/New_York","SVI":"America/Bogota","SVJ":"Europe/Oslo","SVK":"America/Belize","SVL":"Europe/Helsinki","SVM":"Australia/Brisbane","SVN":"America/New_York","SVO":"Europe/Moscow","SVP":"Africa/Luanda","SVQ":"Europe/Madrid","SVR":"America/Thule","SVS":"America/Anchorage","SVT":"Africa/Gaborone","SVU":"Pacific/Fiji","SVV":"America/Caracas","SVW":"America/Anchorage","SVX":"Asia/Yekaterinburg","SVY":"Pacific/Guadalcanal","SVZ":"America/Caracas","SWA":"Asia/Shanghai","SWB":"Australia/Perth","SWC":"Australia/Sydney","SWD":"America/Anchorage","SWE":"Pacific/Port_Moresby","SWF":"America/New_York","SWG":"Pacific/Port_Moresby","SWH":"Australia/Sydney","SWI":"Europe/London","SWJ":"Pacific/Efate","SWL":"Asia/Manila","SWM":"America/Campo_Grande","SWN":"Asia/Karachi","SWO":"America/Chicago","SWP":"Africa/Windhoek","SWQ":"Asia/Makassar","SWR":"Pacific/Port_Moresby","SWS":"Europe/London","SWT":"Asia/Omsk","SWU":"Asia/Seoul","SWV":"Asia/Magadan","SWW":"America/Chicago","SWX":"Africa/Gaborone","SWY":"Asia/Kuala_Lumpur","SWZ":"Australia/Sydney","SXA":"Pacific/Port_Moresby","SXB":"Europe/Paris","SXD":"Europe/Paris","SXE":"Australia/Sydney","SXF":"Europe/Berlin","SXG":"Africa/Lusaka","SXH":"Pacific/Port_Moresby","SXI":"Asia/Tehran","SXJ":"Asia/Shanghai","SXK":"Asia/Jayapura","SXL":"Europe/Dublin","SXM":"America/Curacao","SXN":"Africa/Gaborone","SXO":"America/Campo_Grande","SXP":"America/Anchorage","SXQ":"America/Anchorage","SXR":"Asia/Kolkata","SXS":"Asia/Kuala_Lumpur","SXT":"Asia/Kuala_Lumpur","SXU":"Africa/Addis_Ababa","SXV":"Asia/Kolkata","SXW":"Pacific/Port_Moresby","SXX":"America/Belem","SXY":"America/New_York","SXZ":"Europe/Istanbul","SYA":"America/Adak","SYB":"America/Anchorage","SYC":"America/Lima","SYD":"Australia/Sydney","SYE":"Asia/Aden","SYF":"America/Vancouver","SYG":"Europe/Oslo","SYI":"America/Chicago","SYJ":"Asia/Tehran","SYK":"Atlantic/Reykjavik","SYL":"America/Los_Angeles","SYM":"Asia/Shanghai","SYN":"America/Chicago","SYO":"Asia/Tokyo","SYP":"America/Panama","SYQ":"America/Costa_Rica","SYR":"America/New_York","SYS":"Asia/Yakutsk","SYT":"Europe/Paris","SYU":"Australia/Brisbane","SYV":"America/New_York","SYW":"Asia/Karachi","SYX":"Asia/Shanghai","SYY":"Europe/London","SYZ":"Asia/Tehran","SZA":"Africa/Luanda","SZB":"Asia/Kuala_Lumpur","SZC":"America/Costa_Rica","SZD":"Europe/London","SZE":"Africa/Addis_Ababa","SZF":"Europe/Istanbul","SZG":"Europe/Vienna","SZH":"Asia/Makassar","SZI":"Asia/Almaty","SZJ":"America/Havana","SZK":"Africa/Johannesburg","SZL":"America/Chicago","SZM":"Africa/Windhoek","SZN":"America/Los_Angeles","SZO":"Asia/Shanghai","SZP":"America/Los_Angeles","SZQ":"America/Argentina/Buenos_Aires","SZR":"Europe/Sofia","SZS":"Pacific/Auckland","SZT":"America/Mexico_City","SZU":"Africa/Bamako","SZV":"Asia/Shanghai","SZW":"Europe/Berlin","SZX":"Asia/Shanghai","SZY":"Europe/Warsaw","SZZ":"Europe/Warsaw","TAA":"Pacific/Guadalcanal","TAB":"America/Port_of_Spain","TAC":"Asia/Manila","TAD":"America/Denver","TAE":"Asia/Seoul","TAF":"Africa/Algiers","TAG":"Asia/Manila","TAH":"Pacific/Efate","TAI":"Asia/Aden","TAJ":"Pacific/Port_Moresby","TAK":"Asia/Tokyo","TAL":"America/Anchorage","TAM":"America/Mexico_City","TAN":"Australia/Brisbane","TAO":"Asia/Shanghai","TAP":"America/Mexico_City","TAQ":"Australia/Adelaide","TAR":"Europe/Rome","TAS":"Asia/Tashkent","TAT":"Europe/Bratislava","TAU":"America/Bogota","TAV":"Pacific/Pago_Pago","TAW":"America/Montevideo","TAX":"Asia/Jayapura","TAY":"Europe/Tallinn","TAZ":"Asia/Ashgabat","TBA":"Pacific/Port_Moresby","TBB":"Asia/Ho_Chi_Minh","TBC":"America/Phoenix","TBD":"America/Bogota","TBE":"Pacific/Port_Moresby","TBF":"Pacific/Tarawa","TBG":"Pacific/Port_Moresby","TBH":"Asia/Manila","TBI":"America/Nassau","TBJ":"Africa/Tunis","TBK":"Australia/Darwin","TBL":"Australia/Perth","TBM":"Asia/Pontianak","TBN":"America/Chicago","TBO":"Africa/Dar_es_Salaam","TBP":"America/Lima","TBR":"America/New_York","TBS":"Asia/Tbilisi","TBT":"America/Rio_Branco","TBU":"Pacific/Tongatapu","TBV":"Pacific/Majuro","TBW":"Europe/Moscow","TBY":"Africa/Gaborone","TBZ":"Asia/Tehran","TCA":"Australia/Darwin","TCB":"America/Nassau","TCC":"America/Denver","TCD":"America/Bogota","TCE":"Europe/Bucharest","TCF":"America/Tegucigalpa","TCG":"Asia/Shanghai","TCH":"Africa/Libreville","TCJ":"Pacific/Port_Moresby","TCK":"Pacific/Port_Moresby","TCL":"America/Chicago","TCM":"America/Los_Angeles","TCN":"America/Mexico_City","TCO":"America/Bogota","TCP":"Africa/Cairo","TCQ":"America/Lima","TCR":"Asia/Kolkata","TCS":"America/Denver","TCT":"America/Anchorage","TCU":"Africa/Johannesburg","TCV":"Africa/Maputo","TCW":"Australia/Sydney","TCX":"Asia/Tehran","TCY":"Africa/Windhoek","TCZ":"Asia/Shanghai","TDA":"America/Bogota","TDB":"Pacific/Port_Moresby","TDD":"America/La_Paz","TDG":"Asia/Manila","TDJ":"Africa/Djibouti","TDK":"Asia/Almaty","TDL":"America/Argentina/Buenos_Aires","TDN":"Australia/Perth","TDO":"America/Los_Angeles","TDR":"Australia/Brisbane","TDT":"Africa/Johannesburg","TDV":"Indian/Antananarivo","TDW":"America/Chicago","TDX":"Asia/Bangkok","TDZ":"America/New_York","TEA":"America/Tegucigalpa","TEB":"America/New_York","TEC":"America/Sao_Paulo","TED":"Europe/Copenhagen","TEE":"Africa/Algiers","TEF":"Australia/Perth","TEG":"Africa/Ouagadougou","TEH":"America/Anchorage","TEI":"Asia/Kolkata","TEK":"America/Anchorage","TEL":"Asia/Kuala_Lumpur","TEM":"Australia/Sydney","TEN":"Asia/Shanghai","TEO":"Pacific/Port_Moresby","TEP":"Pacific/Port_Moresby","TEQ":"Europe/Istanbul","TER":"Atlantic/Azores","TES":"Africa/Asmara","TET":"Africa/Maputo","TEU":"Pacific/Auckland","TEV":"Europe/Madrid","TEX":"America/Denver","TEY":"Atlantic/Reykjavik","TEZ":"Asia/Kolkata","TFB":"Pacific/Port_Moresby","TFF":"America/Porto_Velho","TFI":"Pacific/Port_Moresby","TFL":"America/Sao_Paulo","TFM":"Pacific/Port_Moresby","TFN":"Atlantic/Canary","TFR":"Africa/Cairo","TFS":"Atlantic/Canary","TFT":"Asia/Karachi","TFU":"Asia/Shanghai","TFY":"Africa/Casablanca","TGA":"Asia/Singapore","TGB":"Asia/Manila","TGC":"Asia/Kuala_Lumpur","TGD":"Europe/Podgorica","TGE":"America/Chicago","TGF":"Europe/Paris","TGG":"Asia/Kuala_Lumpur","TGH":"Pacific/Efate","TGI":"America/Lima","TGJ":"Pacific/Noumea","TGK":"Europe/Moscow","TGL":"Pacific/Port_Moresby","TGM":"Europe/Bucharest","TGN":"Australia/Sydney","TGO":"Asia/Shanghai","TGP":"Asia/Krasnoyarsk","TGQ":"America/Campo_Grande","TGR":"Africa/Algiers","TGS":"Africa/Maputo","TGT":"Africa/Dar_es_Salaam","TGU":"America/Tegucigalpa","TGV":"Europe/Sofia","TGZ":"America/Mexico_City","THA":"America/Chicago","THB":"Africa/Maseru","THC":"Africa/Monrovia","THD":"Asia/Ho_Chi_Minh","THE":"America/Belem","THG":"Australia/Brisbane","THH":"Pacific/Auckland","THI":"Africa/Nouakchott","THK":"Asia/Vientiane","THL":"Asia/Yangon","THM":"America/Chicago","THN":"Europe/Stockholm","THO":"Atlantic/Reykjavik","THP":"America/Denver","THQ":"Asia/Shanghai","THR":"Asia/Tehran","THS":"Asia/Bangkok","THT":"Africa/Nouakchott","THU":"America/Thule","THV":"America/New_York","THW":"Asia/Colombo","THX":"Asia/Krasnoyarsk","THY":"Africa/Johannesburg","THZ":"Africa/Niamey","TIA":"Europe/Tirane","TIB":"America/Bogota","TIC":"Pacific/Majuro","TID":"Africa/Algiers","TIE":"Africa/Addis_Ababa","TIF":"Asia/Riyadh","TIG":"Pacific/Port_Moresby","TIH":"Pacific/Tahiti","TII":"Asia/Kabul","TIJ":"America/Tijuana","TIK":"America/Chicago","TIM":"Asia/Jayapura","TIN":"Africa/Algiers","TIO":"Asia/Yangon","TIP":"Africa/Tripoli","TIQ":"Pacific/Saipan","TIR":"Asia/Kolkata","TIS":"Australia/Brisbane","TIU":"Pacific/Auckland","TIV":"Europe/Podgorica","TIW":"America/Los_Angeles","TIX":"America/New_York","TIY":"Africa/Nouakchott","TIZ":"Pacific/Port_Moresby","TJA":"America/La_Paz","TJB":"Asia/Jakarta","TJC":"America/Panama","TJG":"Asia/Makassar","TJH":"Asia/Tokyo","TJI":"America/Tegucigalpa","TJK":"Europe/Istanbul","TJL":"America/Campo_Grande","TJM":"Asia/Yekaterinburg","TJN":"Pacific/Tahiti","TJQ":"Asia/Jakarta","TJS":"Asia/Makassar","TJU":"Asia/Dushanbe","TJV":"Asia/Kolkata","TKA":"America/Anchorage","TKB":"Pacific/Port_Moresby","TKC":"Africa/Douala","TKD":"Africa/Accra","TKE":"America/Anchorage","TKF":"America/Los_Angeles","TKG":"Asia/Jakarta","TKH":"Asia/Bangkok","TKI":"America/Anchorage","TKJ":"America/Anchorage","TKK":"Pacific/Chuuk","TKL":"America/Anchorage","TKM":"America/Guatemala","TKN":"Asia/Tokyo","TKO":"Africa/Maseru","TKP":"Pacific/Tahiti","TKQ":"Africa/Dar_es_Salaam","TKR":"Asia/Dhaka","TKS":"Asia/Tokyo","TKT":"Asia/Bangkok","TKU":"Europe/Helsinki","TKV":"Pacific/Tahiti","TKW":"Pacific/Port_Moresby","TKX":"Pacific/Tahiti","TKY":"Australia/Perth","TKZ":"Pacific/Auckland","TLA":"America/Anchorage","TLB":"Asia/Karachi","TLC":"America/Mexico_City","TLD":"Africa/Gaborone","TLE":"Indian/Antananarivo","TLF":"America/Anchorage","TLG":"Pacific/Guadalcanal","TLH":"America/New_York","TLI":"Asia/Makassar","TLJ":"America/Anchorage","TLK":"Asia/Yakutsk","TLL":"Europe/Tallinn","TLM":"Africa/Algiers","TLN":"Europe/Paris","TLO":"Pacific/Port_Moresby","TLP":"Pacific/Port_Moresby","TLQ":"Asia/Shanghai","TLR":"America/Los_Angeles","TLS":"Europe/Paris","TLT":"America/Anchorage","TLU":"America/Bogota","TLV":"Asia/Jerusalem","TLW":"Pacific/Port_Moresby","TLX":"America/Santiago","TLY":"Asia/Vladivostok","TLZ":"America/Sao_Paulo","TMA":"America/New_York","TMB":"America/New_York","TMC":"Asia/Makassar","TMD":"Africa/Nouakchott","TME":"America/Bogota","TMF":"Indian/Maldives","TMG":"Asia/Kuala_Lumpur","TMH":"Asia/Jayapura","TMI":"Asia/Kathmandu","TMJ":"Asia/Tashkent","TML":"Africa/Accra","TMM":"Indian/Antananarivo","TMN":"Pacific/Tarawa","TMO":"America/Caracas","TMP":"Europe/Helsinki","TMQ":"Africa/Ouagadougou","TMR":"Africa/Algiers","TMS":"Africa/Sao_Tome","TMT":"America/Belem","TMU":"America/Costa_Rica","TMW":"Australia/Sydney","TMX":"Africa/Algiers","TMY":"Asia/Jayapura","TMZ":"Pacific/Auckland","TNA":"Asia/Shanghai","TNB":"Asia/Makassar","TNC":"America/Anchorage","TND":"America/Havana","TNE":"Asia/Tokyo","TNF":"Europe/Paris","TNG":"Africa/Casablanca","TNH":"Asia/Shanghai","TNI":"Asia/Kolkata","TNJ":"Asia/Jakarta","TNK":"America/Anchorage","TNL":"Europe/Kiev","TNM":"Antarctica/Palmer","TNN":"Asia/Taipei","TNO":"America/Costa_Rica","TNP":"America/Los_Angeles","TNQ":"Pacific/Kiritimati","TNR":"Indian/Antananarivo","TNS":"America/Edmonton","TNT":"America/New_York","TNU":"America/Chicago","TNV":"Pacific/Kiritimati","TNW":"America/Guayaquil","TNX":"Asia/Phnom_Penh","TNZ":"Asia/Ulaanbaatar","TOA":"America/Los_Angeles","TOB":"Africa/Tripoli","TOC":"America/New_York","TOD":"Asia/Kuala_Lumpur","TOE":"Africa/Tunis","TOF":"Asia/Tomsk","TOG":"America/Anchorage","TOH":"Pacific/Efate","TOI":"America/Chicago","TOJ":"Europe/Madrid","TOK":"Pacific/Bougainville","TOL":"America/New_York","TOM":"Africa/Bamako","TON":"Pacific/Bougainville","TOO":"America/Costa_Rica","TOP":"America/Chicago","TOQ":"America/Santiago","TOR":"America/Denver","TOS":"Europe/Oslo","TOT":"America/Paramaribo","TOU":"Pacific/Noumea","TOV":"America/Tortola","TOW":"America/Sao_Paulo","TOX":"Asia/Yekaterinburg","TOY":"Asia/Tokyo","TOZ":"Africa/Abidjan","TPA":"America/New_York","TPC":"America/Guayaquil","TPE":"Asia/Taipei","TPF":"America/New_York","TPG":"Asia/Kuala_Lumpur","TPH":"America/Los_Angeles","TPI":"Pacific/Port_Moresby","TPJ":"Asia/Kathmandu","TPK":"Asia/Jakarta","TPL":"America/Chicago","TPN":"America/Guayaquil","TPO":"America/Anchorage","TPP":"America/Lima","TPQ":"America/Mazatlan","TPR":"Australia/Perth","TPS":"Europe/Rome","TPT":"Africa/Monrovia","TPU":"Asia/Kathmandu","TPX":"Pacific/Tahiti","TQA":"America/Godthab","TQD":"Asia/Baghdad","TQI":"America/Godthab","TQL":"Asia/Yekaterinburg","TQN":"Asia/Kabul","TQP":"Australia/Brisbane","TQQ":"Asia/Makassar","TQR":"Europe/Rome","TQS":"America/Bogota","TRA":"Asia/Tokyo","TRB":"America/Bogota","TRC":"America/Mexico_City","TRD":"Europe/Oslo","TRE":"Europe/London","TRF":"Europe/Oslo","TRG":"Pacific/Auckland","TRH":"America/Los_Angeles","TRI":"America/New_York","TRJ":"Pacific/Port_Moresby","TRK":"Asia/Makassar","TRL":"America/Chicago","TRM":"America/Los_Angeles","TRN":"Europe/Rome","TRO":"Australia/Sydney","TRQ":"America/Rio_Branco","TRR":"Asia/Colombo","TRS":"Europe/Rome","TRT":"America/Denver","TRU":"America/Lima","TRV":"Asia/Kolkata","TRW":"Pacific/Tarawa","TRX":"America/Chicago","TRY":"Africa/Kampala","TRZ":"Asia/Kolkata","TSA":"Asia/Taipei","TSB":"Africa/Windhoek","TSC":"America/Guayaquil","TSD":"Africa/Johannesburg","TSE":"Asia/Almaty","TSF":"Europe/Rome","TSG":"America/Anchorage","TSH":"Africa/Lubumbashi","TSI":"Pacific/Port_Moresby","TSJ":"Asia/Tokyo","TSK":"Pacific/Port_Moresby","TSL":"America/Mexico_City","TSM":"America/Denver","TSN":"Asia/Shanghai","TSO":"Europe/London","TSP":"America/Los_Angeles","TSQ":"America/Sao_Paulo","TSR":"Europe/Bucharest","TSS":"America/New_York","TST":"Asia/Bangkok","TSU":"Pacific/Tarawa","TSV":"Australia/Brisbane","TSW":"Pacific/Port_Moresby","TSX":"Asia/Makassar","TSY":"Asia/Jakarta","TSZ":"Asia/Ulaanbaatar","TTA":"Africa/Casablanca","TTB":"Europe/Rome","TTC":"America/Santiago","TTD":"America/Los_Angeles","TTE":"Asia/Jayapura","TTG":"America/Argentina/Buenos_Aires","TTH":"Asia/Muscat","TTI":"Pacific/Tahiti","TTJ":"Asia/Tokyo","TTK":"Europe/London","TTL":"Pacific/Fiji","TTM":"America/Bogota","TTN":"America/New_York","TTO":"America/Chicago","TTQ":"America/Costa_Rica","TTR":"Asia/Makassar","TTS":"Indian/Antananarivo","TTT":"Asia/Taipei","TTU":"Africa/Casablanca","TUA":"America/Guayaquil","TUB":"Pacific/Tahiti","TUC":"America/Argentina/Buenos_Aires","TUD":"Africa/Dakar","TUE":"America/Panama","TUF":"Europe/Paris","TUG":"Asia/Manila","TUH":"America/Chicago","TUI":"Asia/Riyadh","TUK":"Asia/Karachi","TUL":"America/Chicago","TUM":"Australia/Sydney","TUN":"Africa/Tunis","TUO":"Pacific/Auckland","TUP":"America/Chicago","TUQ":"Africa/Ouagadougou","TUR":"America/Belem","TUS":"America/Phoenix","TUT":"Pacific/Port_Moresby","TUU":"Asia/Riyadh","TUV":"America/Caracas","TUW":"America/Panama","TUX":"America/Vancouver","TUY":"America/Mexico_City","TUZ":"America/Belem","TVA":"Indian/Antananarivo","TVC":"America/New_York","TVF":"America/Chicago","TVI":"America/New_York","TVL":"America/Los_Angeles","TVS":"Asia/Shanghai","TVU":"Pacific/Fiji","TVY":"Asia/Yangon","TWA":"America/Anchorage","TWB":"Australia/Brisbane","TWC":"Asia/Shanghai","TWD":"America/Los_Angeles","TWE":"America/Anchorage","TWF":"America/Denver","TWH":"America/Los_Angeles","TWN":"Australia/Brisbane","TWP":"Australia/Brisbane","TWT":"Asia/Manila","TWU":"Asia/Kuala_Lumpur","TWY":"Pacific/Port_Moresby","TWZ":"Pacific/Auckland","TXE":"Asia/Jakarta","TXF":"America/Belem","TXK":"America/Chicago","TXL":"Europe/Berlin","TXM":"Asia/Jayapura","TXN":"Asia/Shanghai","TXR":"Australia/Brisbane","TXU":"Africa/Abidjan","TYA":"Europe/Moscow","TYB":"Australia/Sydney","TYD":"Asia/Yakutsk","TYE":"America/Anchorage","TYF":"Europe/Stockholm","TYG":"Australia/Brisbane","TYL":"America/Lima","TYM":"America/Nassau","TYN":"Asia/Shanghai","TYP":"Australia/Darwin","TYR":"America/Chicago","TYS":"America/New_York","TYT":"America/Montevideo","TYZ":"America/Phoenix","TZA":"America/Belize","TZL":"Europe/Sarajevo","TZM":"America/Mexico_City","TZN":"America/Nassau","TZX":"Europe/Istanbul","UAB":"Europe/Istanbul","UAC":"America/Hermosillo","UAE":"Pacific/Port_Moresby","UAH":"Pacific/Marquesas","UAI":"Asia/Dili","UAK":"America/Godthab","UAL":"Africa/Luanda","UAM":"Pacific/Guam","UAP":"Pacific/Marquesas","UAQ":"America/Argentina/Buenos_Aires","UAR":"Africa/Casablanca","UAS":"Africa/Nairobi","UAX":"America/Guatemala","UBA":"America/Sao_Paulo","UBB":"Australia/Brisbane","UBI":"Pacific/Bougainville","UBJ":"Asia/Tokyo","UBN":"Asia/Ulaanbaatar","UBP":"Asia/Bangkok","UBR":"Asia/Jayapura","UBS":"America/Chicago","UBT":"America/Sao_Paulo","UBU":"Australia/Perth","UCA":"America/New_York","UCB":"Asia/Shanghai","UCC":"America/Los_Angeles","UCE":"America/Chicago","UCK":"Europe/Kiev","UCN":"Africa/Monrovia","UCT":"Europe/Moscow","UCY":"America/Chicago","UDA":"Australia/Brisbane","UDD":"America/Los_Angeles","UDE":"Europe/Amsterdam","UDI":"America/Sao_Paulo","UDJ":"Europe/Kiev","UDN":"Europe/Rome","UDO":"Asia/Vientiane","UDR":"Asia/Kolkata","UEE":"Australia/Hobart","UEL":"Africa/Maputo","UEO":"Asia/Tokyo","UER":"Europe/Madrid","UES":"America/Chicago","UET":"Asia/Karachi","UFA":"Asia/Yekaterinburg","UGA":"Asia/Ulaanbaatar","UGB":"America/Anchorage","UGC":"Asia/Tashkent","UGI":"America/Anchorage","UGL":"Antarctica/Palmer","UGN":"America/Chicago","UGO":"Africa/Luanda","UGS":"America/Anchorage","UGT":"Asia/Ulaanbaatar","UGU":"Asia/Jayapura","UHE":"Europe/Prague","UHF":"Europe/London","UIB":"America/Bogota","UIH":"Asia/Ho_Chi_Minh","UII":"America/Tegucigalpa","UIK":"Asia/Irkutsk","UIL":"America/Los_Angeles","UIN":"America/Chicago","UIO":"America/Guayaquil","UIP":"Europe/Paris","UIQ":"Pacific/Efate","UIR":"Australia/Sydney","UIT":"Pacific/Majuro","UIZ":"America/New_York","UJE":"Pacific/Majuro","UKA":"Africa/Nairobi","UKB":"Asia/Tokyo","UKG":"Asia/Vladivostok","UKH":"Asia/Muscat","UKI":"America/Los_Angeles","UKK":"Asia/Almaty","UKN":"America/Chicago","UKR":"Asia/Aden","UKS":"Europe/Simferopol","UKT":"America/New_York","UKU":"Pacific/Port_Moresby","UKX":"Asia/Irkutsk","ULA":"America/Argentina/Buenos_Aires","ULB":"Pacific/Efate","ULC":"America/Santiago","ULD":"Africa/Johannesburg","ULE":"Pacific/Port_Moresby","ULG":"Asia/Ulaanbaatar","ULH":"Asia/Riyadh","ULI":"Pacific/Chuuk","ULK":"Asia/Yakutsk","ULL":"Europe/London","ULM":"America/Chicago","ULN":"Asia/Ulaanbaatar","ULO":"Asia/Ulaanbaatar","ULP":"Australia/Brisbane","ULQ":"America/Bogota","ULS":"America/Bogota","ULU":"Africa/Kampala","ULV":"Europe/Samara","ULX":"Africa/Johannesburg","ULY":"Europe/Samara","ULZ":"Asia/Ulaanbaatar","UMB":"America/Anchorage","UMC":"Pacific/Port_Moresby","UMD":"America/Godthab","UME":"Europe/Stockholm","UMI":"America/Lima","UMM":"America/Anchorage","UMR":"Australia/Adelaide","UMS":"Asia/Yakutsk","UMT":"America/Anchorage","UMU":"America/Sao_Paulo","UMY":"Europe/Kiev","UMZ":"America/Chicago","UNA":"America/Belem","UNC":"America/Bogota","UND":"Asia/Kabul","UNE":"Africa/Maseru","UNG":"Pacific/Port_Moresby","UNI":"America/St_Vincent","UNK":"America/Anchorage","UNN":"Asia/Bangkok","UNR":"Asia/Ulaanbaatar","UNS":"America/Anchorage","UNT":"Europe/London","UNU":"America/Chicago","UOL":"Asia/Makassar","UON":"Asia/Vientiane","UOS":"America/Chicago","UOX":"America/Chicago","UPA":"America/Havana","UPB":"America/Havana","UPC":"America/Caracas","UPF":"Europe/Berlin","UPG":"Asia/Makassar","UPK":"America/Godthab","UPL":"America/Costa_Rica","UPN":"America/Mexico_City","UPP":"Pacific/Honolulu","UPR":"Pacific/Port_Moresby","UPV":"Europe/London","UQE":"America/Anchorage","URA":"Asia/Oral","URB":"America/Sao_Paulo","URC":"Asia/Shanghai","URD":"Europe/Berlin","URE":"Europe/Tallinn","URG":"America/Sao_Paulo","URI":"America/Bogota","URJ":"Asia/Yekaterinburg","URM":"America/Caracas","URN":"Asia/Kabul","URO":"Europe/Paris","URR":"America/Bogota","URS":"Europe/Moscow","URT":"Asia/Bangkok","URU":"Pacific/Port_Moresby","URY":"Asia/Riyadh","URZ":"Asia/Kabul","USA":"America/New_York","USH":"America/Argentina/Buenos_Aires","USI":"America/Guyana","USJ":"Asia/Almaty","USK":"Europe/Moscow","USL":"Australia/Perth","USM":"Asia/Bangkok","USN":"Asia/Seoul","USO":"Pacific/Port_Moresby","USQ":"Europe/Istanbul","USR":"Asia/Vladivostok","USS":"America/Havana","UST":"America/New_York","USU":"Asia/Manila","UTA":"Africa/Harare","UTB":"Australia/Brisbane","UTC":"Europe/Amsterdam","UTD":"Australia/Darwin","UTE":"Africa/Johannesburg","UTG":"Africa/Maseru","UTH":"Asia/Bangkok","UTI":"Europe/Helsinki","UTK":"Pacific/Majuro","UTM":"America/Chicago","UTN":"Africa/Johannesburg","UTO":"America/Anchorage","UTP":"Asia/Bangkok","UTR":"Asia/Bangkok","UTS":"Europe/Moscow","UTT":"Africa/Johannesburg","UTU":"America/Panama","UTW":"Africa/Johannesburg","UUA":"Europe/Moscow","UUD":"Asia/Irkutsk","UUK":"America/Anchorage","UUN":"Asia/Ulaanbaatar","UUS":"Asia/Sakhalin","UUU":"Pacific/Port_Moresby","UVA":"America/Chicago","UVE":"Pacific/Noumea","UVF":"America/St_Lucia","UVI":"America/Sao_Paulo","UVL":"Africa/Cairo","UVO":"Pacific/Port_Moresby","UWA":"America/New_York","UYL":"Africa/Khartoum","UYN":"Asia/Shanghai","UYU":"America/La_Paz","UZC":"Europe/Belgrade","UZH":"Asia/Riyadh","UZR":"Asia/Almaty","UZU":"America/Argentina/Buenos_Aires","VAA":"Europe/Helsinki","VAB":"America/Bogota","VAC":"Europe/Berlin","VAD":"America/New_York","VAF":"Europe/Paris","VAG":"America/Sao_Paulo","VAH":"America/La_Paz","VAI":"Pacific/Port_Moresby","VAK":"America/Anchorage","VAL":"America/Belem","VAM":"Indian/Maldives","VAN":"Europe/Istanbul","VAO":"Pacific/Guadalcanal","VAP":"America/Santiago","VAR":"Europe/Sofia","VAS":"Europe/Istanbul","VAT":"Indian/Antananarivo","VAU":"Pacific/Fiji","VAV":"Pacific/Tongatapu","VAW":"Europe/Oslo","VAZ":"Europe/Paris","VBA":"Asia/Yangon","VBC":"Asia/Yangon","VBG":"America/Los_Angeles","VBM":"America/Anchorage","VBP":"Asia/Yangon","VBS":"Europe/Rome","VBV":"Pacific/Fiji","VBY":"Europe/Stockholm","VCA":"Asia/Ho_Chi_Minh","VCB":"America/Anchorage","VCC":"Africa/Douala","VCD":"Australia/Darwin","VCE":"Europe/Rome","VCF":"America/Argentina/Buenos_Aires","VCH":"America/Montevideo","VCL":"Asia/Ho_Chi_Minh","VCP":"America/Sao_Paulo","VCR":"America/Caracas","VCS":"Asia/Ho_Chi_Minh","VCT":"America/Chicago","VCV":"America/Los_Angeles","VDA":"Asia/Jerusalem","VDB":"Europe/Oslo","VDC":"America/Belem","VDE":"Atlantic/Canary","VDF":"America/New_York","VDH":"Asia/Ho_Chi_Minh","VDI":"America/New_York","VDM":"America/Argentina/Buenos_Aires","VDO":"Asia/Ho_Chi_Minh","VDP":"America/Caracas","VDR":"America/Argentina/Buenos_Aires","VDS":"Europe/Oslo","VDU":"America/Chicago","VDY":"Asia/Kolkata","VDZ":"America/Anchorage","VEE":"America/Anchorage","VEG":"America/Guyana","VEJ":"Europe/Copenhagen","VEL":"America/Denver","VER":"America/Mexico_City","VEV":"Pacific/Guadalcanal","VEX":"America/Chicago","VEY":"Atlantic/Reykjavik","VFA":"Africa/Harare","VGA":"Asia/Kolkata","VGD":"Europe/Moscow","VGO":"Europe/Madrid","VGS":"America/Argentina/Buenos_Aires","VGT":"America/Los_Angeles","VGZ":"America/Bogota","VHC":"Africa/Luanda","VHM":"Europe/Stockholm","VHN":"America/Chicago","VHO":"Africa/Maputo","VHV":"Asia/Yakutsk","VHY":"Europe/Paris","VHZ":"Pacific/Tahiti","VIA":"America/Sao_Paulo","VIB":"America/Mazatlan","VIC":"Europe/Rome","VID":"Europe/Sofia","VIE":"Europe/Vienna","VIF":"Europe/Rome","VIG":"America/Caracas","VIH":"America/Chicago","VII":"Asia/Ho_Chi_Minh","VIJ":"America/Tortola","VIL":"Africa/Casablanca","VIN":"Europe/Kiev","VIQ":"Asia/Jayapura","VIR":"Africa/Johannesburg","VIS":"America/Los_Angeles","VIT":"Europe/Madrid","VIU":"Pacific/Guadalcanal","VIV":"Pacific/Port_Moresby","VIX":"America/Sao_Paulo","VIY":"Europe/Paris","VJB":"Africa/Maputo","VJI":"America/New_York","VJQ":"Africa/Maputo","VKG":"Asia/Ho_Chi_Minh","VKO":"Europe/Moscow","VKS":"America/Chicago","VKT":"Europe/Moscow","VKW":"America/Anchorage","VLA":"America/Chicago","VLC":"Europe/Madrid","VLD":"America/New_York","VLE":"America/Phoenix","VLG":"America/Argentina/Buenos_Aires","VLI":"Pacific/Efate","VLK":"Europe/Moscow","VLL":"Europe/Madrid","VLM":"America/La_Paz","VLN":"America/Caracas","VLO":"America/Los_Angeles","VLP":"America/Campo_Grande","VLR":"America/Santiago","VLS":"Pacific/Efate","VLU":"Europe/Moscow","VLV":"America/Caracas","VLY":"Europe/London","VME":"America/Argentina/Buenos_Aires","VMI":"America/Asuncion","VMU":"Pacific/Port_Moresby","VNA":"Asia/Vientiane","VNC":"America/New_York","VND":"Indian/Antananarivo","VNE":"Europe/Paris","VNG":"Asia/Vientiane","VNO":"Europe/Vilnius","VNR":"Australia/Brisbane","VNS":"Asia/Kolkata","VNX":"Africa/Maputo","VNY":"America/Los_Angeles","VOG":"Europe/Samara","VOH":"Indian/Antananarivo","VOI":"Africa/Monrovia","VOK":"America/Chicago","VOL":"Europe/Athens","VOT":"America/Sao_Paulo","VOZ":"Europe/Moscow","VPE":"Africa/Luanda","VPG":"Africa/Nairobi","VPN":"Atlantic/Reykjavik","VPS":"America/Chicago","VPY":"Africa/Maputo","VPZ":"America/Chicago","VQQ":"America/New_York","VQS":"America/Puerto_Rico","VRA":"America/Havana","VRB":"America/New_York","VRC":"Asia/Manila","VRE":"Africa/Johannesburg","VRK":"Europe/Helsinki","VRL":"Europe/Lisbon","VRN":"Europe/Rome","VRO":"America/Havana","VRS":"America/Chicago","VRU":"Africa/Johannesburg","VRY":"Europe/Oslo","VSA":"America/Mexico_City","VSE":"Europe/Lisbon","VSF":"America/New_York","VSO":"Asia/Ho_Chi_Minh","VST":"Europe/Stockholm","VTA":"America/Tegucigalpa","VTB":"Europe/Minsk","VTE":"Asia/Vientiane","VTF":"Pacific/Fiji","VTG":"Asia/Ho_Chi_Minh","VTL":"Europe/Paris","VTM":"Asia/Jerusalem","VTN":"America/Chicago","VTU":"America/Havana","VTZ":"Asia/Kolkata","VUP":"America/Bogota","VUS":"Europe/Moscow","VUU":"Africa/Blantyre","VVB":"Indian/Antananarivo","VVC":"America/Bogota","VVI":"America/La_Paz","VVK":"Europe/Stockholm","VVN":"America/Lima","VVO":"Asia/Vladivostok","VVZ":"Africa/Algiers","VXC":"Africa/Maputo","VXE":"Atlantic/Cape_Verde","VXO":"Europe/Stockholm","VYD":"Africa/Johannesburg","VYI":"Asia/Yakutsk","VYS":"America/Chicago","WAA":"America/Anchorage","WAB":"Pacific/Port_Moresby","WAC":"Africa/Addis_Ababa","WAD":"Indian/Antananarivo","WAE":"Asia/Riyadh","WAF":"Asia/Karachi","WAG":"Pacific/Auckland","WAH":"America/Chicago","WAI":"Indian/Antananarivo","WAJ":"Pacific/Port_Moresby","WAK":"Indian/Antananarivo","WAL":"America/New_York","WAM":"Indian/Antananarivo","WAN":"Australia/Brisbane","WAO":"Pacific/Port_Moresby","WAP":"America/Santiago","WAQ":"Indian/Antananarivo","WAR":"Asia/Jayapura","WAT":"Europe/Dublin","WAU":"Australia/Sydney","WAV":"Australia/Darwin","WAW":"Europe/Warsaw","WAX":"Africa/Tripoli","WAY":"America/New_York","WAZ":"Australia/Brisbane","WBA":"Asia/Jayapura","WBB":"America/Anchorage","WBC":"Pacific/Port_Moresby","WBD":"Indian/Antananarivo","WBE":"Indian/Antananarivo","WBG":"Europe/Berlin","WBI":"America/Denver","WBM":"Pacific/Port_Moresby","WBN":"America/New_York","WBO":"Indian/Antananarivo","WBQ":"America/Anchorage","WBR":"America/New_York","WBU":"America/Denver","WBW":"America/New_York","WCA":"America/Santiago","WCD":"Australia/Perth","WCH":"America/Santiago","WCR":"America/Anchorage","WDA":"Asia/Aden","WDB":"America/Anchorage","WDG":"America/Chicago","WDH":"Africa/Windhoek","WDI":"Australia/Brisbane","WDN":"America/Los_Angeles","WDR":"America/New_York","WDS":"Asia/Shanghai","WDY":"America/Anchorage","WEA":"America/Chicago","WED":"Pacific/Port_Moresby","WEF":"Asia/Shanghai","WEH":"Asia/Shanghai","WEI":"Australia/Brisbane","WEL":"Africa/Johannesburg","WEM":"Europe/London","WEP":"Pacific/Port_Moresby","WES":"Africa/Monrovia","WET":"Asia/Jayapura","WEW":"Australia/Sydney","WEX":"Europe/Dublin","WFB":"America/Anchorage","WFD":"Europe/London","WFI":"Indian/Antananarivo","WFK":"America/New_York","WGA":"Australia/Sydney","WGB":"Asia/Karachi","WGC":"Asia/Kolkata","WGE":"Australia/Sydney","WGL":"America/Guayaquil","WGN":"Asia/Shanghai","WGO":"America/New_York","WGP":"Asia/Makassar","WGT":"Australia/Sydney","WGU":"Pacific/Port_Moresby","WGY":"Africa/Libreville","WHD":"America/Anchorage","WHF":"Africa/Khartoum","WHK":"Pacific/Auckland","WHL":"Australia/Sydney","WHO":"Pacific/Auckland","WHP":"America/Los_Angeles","WHS":"Europe/London","WHT":"America/Chicago","WHU":"Asia/Shanghai","WIC":"Europe/London","WID":"Europe/Berlin","WIE":"Europe/Berlin","WIK":"Pacific/Auckland","WIL":"Africa/Nairobi","WIN":"Australia/Brisbane","WIO":"Australia/Sydney","WIR":"Pacific/Auckland","WIT":"Australia/Perth","WIU":"Pacific/Port_Moresby","WJA":"Pacific/Majuro","WJF":"America/Los_Angeles","WJR":"Africa/Nairobi","WJU":"Asia/Seoul","WKA":"Pacific/Auckland","WKB":"Australia/Sydney","WKF":"Africa/Johannesburg","WKI":"Africa/Harare","WKJ":"Asia/Tokyo","WKK":"America/Anchorage","WKL":"Pacific/Honolulu","WKN":"Pacific/Bougainville","WKR":"America/Nassau","WLA":"Australia/Perth","WLB":"America/Anchorage","WLC":"Australia/Sydney","WLD":"America/Chicago","WLE":"Australia/Brisbane","WLG":"Pacific/Auckland","WLH":"Pacific/Efate","WLK":"America/Anchorage","WLL":"Australia/Brisbane","WLM":"America/New_York","WLN":"America/Anchorage","WLO":"Australia/Darwin","WLP":"Australia/Perth","WLR":"America/Anchorage","WLS":"Pacific/Wallis","WLW":"America/Los_Angeles","WMA":"Indian/Antananarivo","WMB":"Australia/Sydney","WMC":"America/Los_Angeles","WMD":"Indian/Antananarivo","WME":"Australia/Perth","WMH":"America/Chicago","WMI":"Europe/Warsaw","WMK":"America/Anchorage","WML":"Indian/Antananarivo","WMN":"Indian/Antananarivo","WMO":"America/Anchorage","WMP":"Indian/Antananarivo","WMR":"Indian/Antananarivo","WMT":"Asia/Shanghai","WMV":"Indian/Antananarivo","WMX":"Asia/Jayapura","WNA":"America/Anchorage","WND":"Australia/Perth","WNE":"Africa/Accra","WNH":"Asia/Shanghai","WNI":"Asia/Makassar","WNN":"America/Winnipeg","WNP":"Asia/Manila","WNR":"Australia/Brisbane","WNS":"Asia/Karachi","WNU":"Pacific/Port_Moresby","WNZ":"Asia/Shanghai","WOA":"Pacific/Port_Moresby","WOB":"Europe/London","WOD":"America/Anchorage","WOE":"Europe/Amsterdam","WOG":"Australia/Darwin","WOI":"Africa/Monrovia","WOK":"America/Caracas","WOL":"Australia/Sydney","WON":"Australia/Brisbane","WOO":"America/Anchorage","WOR":"Indian/Antananarivo","WOT":"Asia/Taipei","WOW":"America/Anchorage","WPA":"America/Santiago","WPB":"Indian/Antananarivo","WPC":"America/Edmonton","WPK":"Australia/Brisbane","WPL":"America/Vancouver","WPM":"Pacific/Port_Moresby","WPO":"America/Denver","WPR":"America/Santiago","WPU":"America/Santiago","WRA":"Africa/Addis_Ababa","WRB":"America/New_York","WRE":"Pacific/Auckland","WRG":"America/Anchorage","WRH":"America/Anchorage","WRI":"America/New_York","WRL":"America/Denver","WRN":"Australia/Perth","WRO":"Europe/Warsaw","WRW":"Australia/Perth","WRY":"Europe/London","WRZ":"Asia/Colombo","WSA":"Pacific/Port_Moresby","WSB":"America/Anchorage","WSD":"America/Denver","WSF":"America/Anchorage","WSG":"America/New_York","WSH":"America/New_York","WSK":"Asia/Shanghai","WSM":"America/Anchorage","WSN":"America/Anchorage","WSO":"America/Paramaribo","WSP":"America/Managua","WSR":"Asia/Jayapura","WST":"America/New_York","WSU":"Pacific/Port_Moresby","WSX":"America/Los_Angeles","WSY":"Australia/Brisbane","WSZ":"Pacific/Auckland","WTA":"Indian/Antananarivo","WTB":"Australia/Brisbane","WTD":"America/Nassau","WTE":"Pacific/Majuro","WTK":"America/Anchorage","WTL":"America/Anchorage","WTN":"Europe/London","WTO":"Pacific/Majuro","WTP":"Pacific/Port_Moresby","WTR":"America/Phoenix","WTS":"Indian/Antananarivo","WTT":"Pacific/Port_Moresby","WTZ":"Pacific/Auckland","WUA":"Asia/Shanghai","WUD":"Australia/Adelaide","WUG":"Pacific/Port_Moresby","WUH":"Asia/Shanghai","WUI":"Australia/Perth","WUM":"Pacific/Port_Moresby","WUN":"Australia/Perth","WUS":"Asia/Shanghai","WUT":"Asia/Shanghai","WUU":"Africa/Juba","WUV":"Pacific/Port_Moresby","WUX":"Asia/Shanghai","WUZ":"Asia/Shanghai","WVB":"Africa/Windhoek","WVI":"America/Los_Angeles","WVK":"Indian/Antananarivo","WVL":"America/New_York","WVN":"Europe/Berlin","WWA":"America/Anchorage","WWD":"America/New_York","WWI":"Australia/Perth","WWK":"Pacific/Port_Moresby","WWP":"America/Anchorage","WWR":"America/Chicago","WWT":"America/Anchorage","WWY":"Australia/Sydney","WXN":"Asia/Shanghai","WYA":"Australia/Adelaide","WYB":"America/Anchorage","WYE":"Africa/Freetown","WYN":"Australia/Perth","WYS":"America/Denver","WZA":"Africa/Accra","WZQ":"Asia/Shanghai","WZY":"America/Nassau","XAI":"Asia/Shanghai","XAL":"America/Hermosillo","XAP":"America/Sao_Paulo","XAR":"Africa/Ouagadougou","XAU":"America/Cayenne","XAY":"Asia/Vientiane","XBB":"America/Vancouver","XBE":"America/Winnipeg","XBG":"Africa/Ouagadougou","XBJ":"Asia/Tehran","XBL":"Africa/Addis_Ababa","XBN":"Pacific/Port_Moresby","XBO":"Africa/Ouagadougou","XBR":"America/Toronto","XCH":"Indian/Christmas","XCL":"America/Regina","XCM":"America/Toronto","XCN":"Asia/Manila","XCO":"Australia/Sydney","XCR":"Europe/Paris","XDE":"Africa/Ouagadougou","XDJ":"Africa/Ouagadougou","XEN":"Asia/Shanghai","XEO":"America/Godthab","XEQ":"America/Godthab","XES":"America/Chicago","XEX":"Europe/Paris","XFN":"Asia/Shanghai","XFW":"Europe/Berlin","XGA":"Africa/Ouagadougou","XGB":"Europe/Paris","XGG":"Africa/Ouagadougou","XGL":"America/Winnipeg","XGN":"Africa/Luanda","XGR":"America/Toronto","XIC":"Asia/Shanghai","XIE":"Asia/Vientiane","XIG":"America/Belem","XIJ":"Asia/Kuwait","XIL":"Asia/Shanghai","XIN":"Asia/Shanghai","XIQ":"America/Godthab","XIY":"Asia/Shanghai","XJD":"Asia/Qatar","XKA":"Africa/Ouagadougou","XKH":"Asia/Vientiane","XKO":"America/Vancouver","XKS":"America/Winnipeg","XKY":"Africa/Ouagadougou","XLB":"America/Winnipeg","XLF":"America/Toronto","XLO":"Asia/Ho_Chi_Minh","XLS":"Africa/Dakar","XLU":"Africa/Ouagadougou","XLW":"Europe/Berlin","XMA":"Asia/Manila","XMC":"Australia/Sydney","XMD":"America/Chicago","XMG":"Asia/Kathmandu","XMH":"Pacific/Tahiti","XMI":"Africa/Dar_es_Salaam","XML":"Australia/Adelaide","XMN":"Asia/Shanghai","XMP":"America/Vancouver","XMS":"America/Guayaquil","XMY":"Australia/Brisbane","XNA":"America/Chicago","XNG":"Asia/Ho_Chi_Minh","XNH":"Asia/Baghdad","XNN":"Asia/Shanghai","XNT":"Asia/Shanghai","XNU":"Africa/Ouagadougou","XPA":"Africa/Ouagadougou","XPD":"America/Argentina/Buenos_Aires","XPK":"America/Winnipeg","XPL":"America/Tegucigalpa","XPP":"America/Winnipeg","XPR":"America/Denver","XPU":"America/Anchorage","XQC":"Asia/Baghdad","XQP":"America/Costa_Rica","XQU":"America/Vancouver","XRH":"Australia/Sydney","XRR":"America/Vancouver","XRY":"Europe/Madrid","XSB":"Asia/Dubai","XSC":"America/Grand_Turk","XSD":"America/Los_Angeles","XSE":"Africa/Ouagadougou","XSI":"America/Winnipeg","XSM":"America/New_York","XSO":"Asia/Manila","XSP":"Asia/Singapore","XTG":"Australia/Brisbane","XTL":"America/Winnipeg","XTO":"Australia/Brisbane","XTR":"Australia/Brisbane","XUZ":"Asia/Shanghai","XVL":"Asia/Ho_Chi_Minh","XWA":"America/Chicago","XYA":"Pacific/Guadalcanal","XYE":"Asia/Yangon","XYR":"Pacific/Port_Moresby","XYT":"Europe/Paris","XZA":"Africa/Ouagadougou","XZD":"Europe/Oslo","YAA":"America/Vancouver","YAB":"America/Iqaluit","YAC":"America/Winnipeg","YAD":"America/Winnipeg","YAE":"America/Vancouver","YAF":"America/Toronto","YAG":"America/Winnipeg","YAH":"America/Toronto","YAI":"America/Santiago","YAJ":"America/Vancouver","YAK":"America/Anchorage","YAL":"America/Vancouver","YAM":"America/Toronto","YAN":"Africa/Lubumbashi","YAO":"Africa/Douala","YAP":"Pacific/Chuuk","YAQ":"America/Vancouver","YAR":"America/Toronto","YAS":"Pacific/Fiji","YAT":"America/Toronto","YAU":"America/Toronto","YAV":"America/Vancouver","YAW":"America/Halifax","YAX":"America/Winnipeg","YAY":"America/St_Johns","YAZ":"America/Vancouver","YBA":"America/Edmonton","YBB":"America/Edmonton","YBC":"America/Toronto","YBD":"America/Vancouver","YBE":"America/Regina","YBF":"America/Vancouver","YBG":"America/Toronto","YBH":"America/Vancouver","YBI":"America/Halifax","YBJ":"America/Toronto","YBK":"America/Winnipeg","YBL":"America/Vancouver","YBM":"America/Vancouver","YBN":"America/Toronto","YBO":"America/Vancouver","YBP":"Asia/Shanghai","YBQ":"America/Vancouver","YBR":"America/Winnipeg","YBS":"America/Toronto","YBT":"America/Winnipeg","YBV":"America/Winnipeg","YBW":"America/Vancouver","YBX":"America/Blanc-Sablon","YBY":"America/Edmonton","YCA":"America/Vancouver","YCB":"America/Edmonton","YCC":"America/Toronto","YCD":"America/Vancouver","YCE":"America/Toronto","YCF":"America/Vancouver","YCG":"America/Vancouver","YCH":"America/Halifax","YCI":"America/Toronto","YCJ":"America/Vancouver","YCK":"America/Edmonton","YCL":"America/Halifax","YCM":"America/Toronto","YCN":"America/Toronto","YCO":"America/Edmonton","YCQ":"America/Dawson_Creek","YCR":"America/Winnipeg","YCS":"America/Winnipeg","YCT":"America/Edmonton","YCU":"Asia/Shanghai","YCW":"America/Vancouver","YCX":"America/Halifax","YCY":"America/Toronto","YCZ":"America/Edmonton","YDA":"America/Vancouver","YDB":"America/Vancouver","YDC":"America/Edmonton","YDE":"America/Halifax","YDF":"America/St_Johns","YDG":"America/Halifax","YDH":"America/St_Johns","YDI":"America/Halifax","YDJ":"America/Regina","YDK":"America/Toronto","YDL":"America/Vancouver","YDN":"America/Winnipeg","YDO":"America/Toronto","YDP":"America/Halifax","YDQ":"America/Dawson_Creek","YDR":"America/Regina","YDS":"America/Vancouver","YDT":"America/Vancouver","YDU":"America/Winnipeg","YDV":"America/Winnipeg","YDW":"America/Winnipeg","YDX":"America/Vancouver","YEC":"Asia/Seoul","YED":"America/Edmonton","YEG":"America/Edmonton","YEI":"Europe/Istanbul","YEK":"America/Winnipeg","YEL":"America/Toronto","YEM":"America/Toronto","YEN":"America/Regina","YEO":"Europe/London","YEP":"America/Vancouver","YEQ":"Pacific/Port_Moresby","YER":"America/Toronto","YES":"Asia/Tehran","YET":"America/Edmonton","YEU":"America/Winnipeg","YEV":"America/Edmonton","YEY":"America/Toronto","YFA":"America/Toronto","YFB":"America/Toronto","YFC":"America/Halifax","YFE":"America/Toronto","YFG":"America/Toronto","YFH":"America/Toronto","YFI":"America/Edmonton","YFJ":"America/Edmonton","YFL":"America/Vancouver","YFO":"America/Winnipeg","YFR":"America/Edmonton","YFS":"America/Edmonton","YFX":"America/St_Johns","YGA":"America/Toronto","YGB":"America/Vancouver","YGC":"America/Edmonton","YGE":"America/Vancouver","YGG":"America/Vancouver","YGH":"America/Edmonton","YGJ":"Asia/Tokyo","YGK":"America/Toronto","YGL":"America/Toronto","YGM":"America/Winnipeg","YGN":"America/Vancouver","YGO":"America/Winnipeg","YGP":"America/Toronto","YGQ":"America/Toronto","YGR":"America/Halifax","YGS":"America/Vancouver","YGT":"America/Toronto","YGV":"America/Toronto","YGW":"America/Toronto","YGX":"America/Winnipeg","YGY":"America/Toronto","YGZ":"America/Toronto","YHA":"America/St_Johns","YHB":"America/Regina","YHC":"America/Vancouver","YHD":"America/Winnipeg","YHE":"America/Vancouver","YHF":"America/Toronto","YHG":"America/St_Johns","YHH":"America/Vancouver","YHI":"America/Edmonton","YHK":"America/Edmonton","YHM":"America/Toronto","YHN":"America/Toronto","YHO":"America/Halifax","YHP":"America/Winnipeg","YHR":"America/Blanc-Sablon","YHS":"America/Vancouver","YHT":"America/Vancouver","YHU":"America/Toronto","YHY":"America/Edmonton","YHZ":"America/Halifax","YIA":"Asia/Jakarta","YIB":"America/Atikokan","YIC":"Asia/Shanghai","YIE":"Asia/Shanghai","YIF":"America/Blanc-Sablon","YIG":"America/Vancouver","YIH":"Asia/Shanghai","YIK":"America/Toronto","YIN":"Asia/Shanghai","YIO":"America/Toronto","YIP":"America/New_York","YIV":"America/Winnipeg","YIW":"Asia/Shanghai","YJA":"America/Edmonton","YJF":"America/Edmonton","YJN":"America/Toronto","YJO":"America/Vancouver","YJP":"America/Edmonton","YJT":"America/St_Johns","YKA":"America/Vancouver","YKC":"America/Regina","YKD":"America/Toronto","YKE":"America/Winnipeg","YKF":"America/Toronto","YKG":"America/Toronto","YKH":"Asia/Shanghai","YKJ":"America/Regina","YKK":"America/Vancouver","YKL":"America/Toronto","YKM":"America/Los_Angeles","YKN":"America/Chicago","YKO":"Europe/Istanbul","YKQ":"America/Toronto","YKS":"Asia/Yakutsk","YKT":"America/Vancouver","YKU":"America/Toronto","YKX":"America/Toronto","YKY":"America/Regina","YKZ":"America/Toronto","YLA":"America/Vancouver","YLB":"America/Edmonton","YLC":"America/Toronto","YLD":"America/Toronto","YLE":"America/Edmonton","YLF":"America/Toronto","YLG":"Australia/Perth","YLH":"America/Toronto","YLI":"Europe/Helsinki","YLJ":"America/Regina","YLL":"America/Edmonton","YLM":"America/Vancouver","YLN":"Asia/Shanghai","YLO":"America/Winnipeg","YLP":"America/Toronto","YLQ":"America/Toronto","YLR":"America/Winnipeg","YLS":"America/Toronto","YLT":"America/Winnipeg","YLW":"America/Vancouver","YLX":"Asia/Shanghai","YLY":"America/Vancouver","YMA":"America/Vancouver","YMB":"America/Vancouver","YMC":"America/Toronto","YMD":"America/Edmonton","YME":"America/Toronto","YMF":"America/Vancouver","YMG":"America/Toronto","YMH":"America/St_Johns","YMI":"America/Winnipeg","YMJ":"America/Regina","YMK":"Asia/Yekaterinburg","YML":"America/Toronto","YMM":"America/Edmonton","YMN":"America/Halifax","YMO":"America/Toronto","YMP":"America/Vancouver","YMR":"America/Vancouver","YMS":"America/Lima","YMT":"America/Toronto","YMU":"America/Vancouver","YMV":"America/Iqaluit","YMW":"America/Toronto","YMX":"America/Toronto","YNA":"America/Toronto","YNB":"Asia/Riyadh","YNC":"America/Toronto","YND":"America/Toronto","YNE":"America/Winnipeg","YNG":"America/New_York","YNH":"America/Edmonton","YNI":"America/Toronto","YNJ":"Asia/Shanghai","YNK":"America/Vancouver","YNL":"America/Regina","YNM":"America/Toronto","YNN":"Australia/Perth","YNO":"America/Winnipeg","YNP":"America/Halifax","YNR":"America/Winnipeg","YNS":"America/Toronto","YNT":"Asia/Shanghai","YNY":"Asia/Seoul","YNZ":"Asia/Shanghai","YOA":"America/Edmonton","YOC":"America/Vancouver","YOD":"America/Edmonton","YOE":"America/Edmonton","YOG":"America/Toronto","YOH":"America/Winnipeg","YOJ":"America/Edmonton","YOK":"Asia/Tokyo","YOL":"Africa/Lagos","YON":"Asia/Thimphu","YOO":"America/Toronto","YOP":"America/Edmonton","YOS":"America/Toronto","YOT":"Asia/Jerusalem","YOW":"America/Toronto","YOY":"America/Toronto","YPA":"America/Regina","YPB":"America/Vancouver","YPC":"America/Edmonton","YPD":"America/Toronto","YPE":"America/Edmonton","YPF":"America/Vancouver","YPG":"America/Winnipeg","YPH":"America/Toronto","YPI":"America/Vancouver","YPJ":"America/Toronto","YPL":"America/Atikokan","YPM":"America/Winnipeg","YPN":"America/Toronto","YPO":"America/Toronto","YPP":"America/Edmonton","YPQ":"America/Toronto","YPR":"America/Vancouver","YPS":"America/Halifax","YPT":"America/Vancouver","YPW":"America/Vancouver","YPX":"America/Toronto","YPY":"America/Edmonton","YPZ":"America/Vancouver","YQA":"America/Toronto","YQB":"America/Toronto","YQC":"America/Toronto","YQD":"America/Winnipeg","YQE":"America/Vancouver","YQF":"America/Edmonton","YQG":"America/Toronto","YQH":"America/Vancouver","YQI":"America/Halifax","YQJ":"America/Vancouver","YQK":"America/Winnipeg","YQL":"America/Edmonton","YQM":"America/Halifax","YQN":"America/Toronto","YQQ":"America/Vancouver","YQR":"America/Regina","YQS":"America/Toronto","YQT":"America/Toronto","YQU":"America/Edmonton","YQV":"America/Regina","YQW":"America/Regina","YQX":"America/St_Johns","YQY":"America/Halifax","YQZ":"America/Vancouver","YR6":"America/Vancouver","YRA":"America/Edmonton","YRB":"America/Winnipeg","YRC":"America/Vancouver","YRD":"America/Vancouver","YRE":"America/Winnipeg","YRF":"America/Halifax","YRG":"America/Halifax","YRI":"America/Toronto","YRJ":"America/Toronto","YRL":"America/Winnipeg","YRM":"America/Edmonton","YRN":"America/Vancouver","YRO":"America/Toronto","YRQ":"America/Toronto","YRR":"America/Vancouver","YRS":"America/Winnipeg","YRT":"America/Winnipeg","YRV":"America/Vancouver","YSA":"America/Halifax","YSB":"America/Toronto","YSC":"America/Toronto","YSD":"America/Edmonton","YSE":"America/Vancouver","YSF":"America/Regina","YSG":"America/Edmonton","YSH":"America/Toronto","YSI":"America/Toronto","YSJ":"America/Halifax","YSK":"America/Toronto","YSL":"America/Halifax","YSM":"America/Edmonton","YSN":"America/Vancouver","YSO":"America/Halifax","YSP":"America/Toronto","YSQ":"Asia/Shanghai","YSR":"America/Toronto","YST":"America/Winnipeg","YSU":"America/Halifax","YSV":"America/Halifax","YSX":"America/Vancouver","YSY":"America/Edmonton","YSZ":"America/Vancouver","YTA":"America/Toronto","YTB":"America/Vancouver","YTC":"America/Vancouver","YTD":"America/Winnipeg","YTE":"America/Toronto","YTF":"America/Toronto","YTG":"America/Vancouver","YTH":"America/Winnipeg","YTJ":"America/Toronto","YTK":"America/Toronto","YTL":"America/Winnipeg","YTM":"America/Toronto","YTN":"America/Toronto","YTP":"America/Vancouver","YTQ":"America/Toronto","YTR":"America/Toronto","YTS":"America/Toronto","YTT":"America/Regina","YTU":"America/Vancouver","YTX":"America/Vancouver","YTY":"Asia/Shanghai","YTZ":"America/Toronto","YUA":"Asia/Shanghai","YUB":"America/Edmonton","YUD":"America/Toronto","YUE":"Australia/Darwin","YUF":"America/Edmonton","YUL":"America/Toronto","YUM":"America/Phoenix","YUS":"Asia/Shanghai","YUT":"America/Winnipeg","YUX":"America/Toronto","YUY":"America/Toronto","YVB":"America/Toronto","YVC":"America/Regina","YVD":"Pacific/Port_Moresby","YVE":"America/Vancouver","YVG":"America/Edmonton","YVM":"America/Toronto","YVO":"America/Toronto","YVP":"America/Toronto","YVQ":"America/Edmonton","YVR":"America/Vancouver","YVT":"America/Regina","YVV":"America/Toronto","YVZ":"America/Winnipeg","YWA":"America/Toronto","YWB":"America/Toronto","YWF":"America/Halifax","YWG":"America/Winnipeg","YWH":"America/Vancouver","YWJ":"America/Edmonton","YWK":"America/Halifax","YWL":"America/Vancouver","YWM":"America/St_Johns","YWN":"America/Toronto","YWO":"America/Edmonton","YWP":"America/Toronto","YWQ":"America/Toronto","YWR":"America/Toronto","YWS":"America/Vancouver","YWY":"America/Edmonton","YXC":"America/Edmonton","YXE":"America/Regina","YXF":"America/Vancouver","YXH":"America/Edmonton","YXI":"America/Toronto","YXJ":"America/Dawson_Creek","YXK":"America/Toronto","YXL":"America/Winnipeg","YXN":"America/Winnipeg","YXP":"America/Toronto","YXQ":"America/Vancouver","YXR":"America/Toronto","YXS":"America/Vancouver","YXT":"America/Vancouver","YXU":"America/Toronto","YXX":"America/Vancouver","YXY":"America/Vancouver","YXZ":"America/Toronto","YYA":"Asia/Shanghai","YYB":"America/Toronto","YYC":"America/Edmonton","YYD":"America/Vancouver","YYE":"America/Dawson_Creek","YYF":"America/Vancouver","YYG":"America/Halifax","YYH":"America/Edmonton","YYI":"America/Winnipeg","YYJ":"America/Vancouver","YYL":"America/Winnipeg","YYM":"America/Edmonton","YYN":"America/Regina","YYQ":"America/Winnipeg","YYR":"America/Halifax","YYT":"America/St_Johns","YYU":"America/Toronto","YYW":"America/Toronto","YYY":"America/Toronto","YYZ":"America/Toronto","YZA":"America/Vancouver","YZC":"America/Vancouver","YZE":"America/Toronto","YZF":"America/Edmonton","YZG":"America/Toronto","YZH":"America/Edmonton","YZM":"America/St_Johns","YZP":"America/Vancouver","YZR":"America/Toronto","YZS":"America/Atikokan","YZT":"America/Vancouver","YZU":"America/Edmonton","YZV":"America/Toronto","YZW":"America/Vancouver","YZX":"America/Halifax","YZY":"Asia/Shanghai","YZZ":"America/Vancouver","ZAA":"America/Vancouver","ZAC":"America/Winnipeg","ZAD":"Europe/Zagreb","ZAG":"Europe/Zagreb","ZAH":"Asia/Tehran","ZAJ":"Asia/Kabul","ZAL":"America/Santiago","ZAM":"Asia/Manila","ZAO":"Europe/Paris","ZAR":"Africa/Lagos","ZAT":"Asia/Shanghai","ZAZ":"Europe/Madrid","ZBE":"Europe/Prague","ZBF":"America/Halifax","ZBK":"Europe/Podgorica","ZBL":"Australia/Brisbane","ZBM":"America/Toronto","ZBO":"Australia/Brisbane","ZBR":"Asia/Tehran","ZBY":"Asia/Vientiane","ZCL":"America/Mexico_City","ZCO":"America/Santiago","ZDY":"Asia/Dubai","ZEC":"Africa/Johannesburg","ZEG":"Asia/Jayapura","ZEL":"America/Vancouver","ZEM":"America/Toronto","ZEN":"Pacific/Port_Moresby","ZER":"Asia/Kolkata","ZFA":"America/Vancouver","ZFB":"America/Halifax","ZFD":"America/Regina","ZFL":"America/Winnipeg","ZFM":"America/Edmonton","ZFN":"America/Edmonton","ZFW":"America/Edmonton","ZGF":"America/Vancouver","ZGI":"America/Winnipeg","ZGL":"Australia/Brisbane","ZGM":"Africa/Lusaka","ZGR":"America/Winnipeg","ZGS":"America/Blanc-Sablon","ZGU":"Pacific/Efate","ZHA":"Asia/Shanghai","ZHM":"Asia/Dhaka","ZHP":"America/Edmonton","ZHY":"Asia/Shanghai","ZIA":"Europe/Moscow","ZIC":"America/Santiago","ZIG":"Africa/Dakar","ZIH":"America/Mexico_City","ZIS":"Africa/Tripoli","ZIX":"Asia/Yakutsk","ZIZ":"Asia/Karachi","ZJG":"America/Winnipeg","ZJN":"America/Winnipeg","ZKB":"Africa/Lusaka","ZKE":"America/Toronto","ZKG":"America/Blanc-Sablon","ZKL":"Asia/Shanghai","ZKM":"Africa/Libreville","ZKP":"Asia/Magadan","ZLO":"America/Mexico_City","ZLT":"America/Blanc-Sablon","ZLX":"Africa/Khartoum","ZMD":"America/Rio_Branco","ZMH":"America/Vancouver","ZMM":"America/Mexico_City","ZMT":"America/Vancouver","ZNA":"America/Vancouver","ZNC":"America/Anchorage","ZND":"Africa/Niamey","ZNE":"Australia/Perth","ZNU":"America/Vancouver","ZNZ":"Africa/Dar_es_Salaam","ZOF":"America/Vancouver","ZOS":"America/Santiago","ZPB":"America/Winnipeg","ZPC":"America/Santiago","ZPH":"America/New_York","ZPO":"America/Winnipeg","ZQN":"Pacific/Auckland","ZQS":"America/Vancouver","ZQW":"Europe/Berlin","ZQZ":"Asia/Shanghai","ZRH":"Europe/Zurich","ZRI":"Asia/Jayapura","ZRJ":"America/Winnipeg","ZRM":"Asia/Jayapura","ZSA":"America/Nassau","ZSE":"Indian/Reunion","ZSJ":"America/Winnipeg","ZSP":"America/Toronto","ZSS":"Africa/Abidjan","ZST":"America/Vancouver","ZSW":"America/Vancouver","ZTA":"Pacific/Tahiti","ZTB":"America/Blanc-Sablon","ZTH":"Europe/Athens","ZTM":"America/Winnipeg","ZTR":"Europe/Kiev","ZTS":"America/Vancouver","ZTU":"Asia/Baku","ZUC":"America/Winnipeg","ZUD":"America/Santiago","ZUE":"Africa/Abidjan","ZUH":"Asia/Shanghai","ZUL":"Asia/Riyadh","ZUM":"America/Halifax","ZVA":"Indian/Antananarivo","ZVG":"Australia/Perth","ZVK":"Asia/Vientiane","ZWA":"Indian/Antananarivo","ZWL":"America/Regina","ZWN":"Europe/Berlin","ZXQ":"Europe/Oslo","ZXT":"Asia/Baku","ZYI":"Asia/Shanghai","ZYL":"Asia/Dhaka","ZZO":"Asia/Vladivostok","ZZU":"Africa/Blantyre","ZZV":"America/New_York"}');
-;// CONCATENATED MODULE: ./src/matrix3/links/airlines/aaSabre.js
+;// CONCATENATED MODULE: ./src/matrix5/links/airlines/aaSabre.js
 
 
 
@@ -9467,21 +6074,17 @@ function printAaSabre() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/ac.js":
+/***/ "./src/matrix5/links/airlines/ac.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _settings_translations__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/translations.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("./src/matrix3/print/amadeus.js");
-/* harmony import */ var _unsafe_policy__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__("./src/unsafe-policy.ts");
-
-
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/print/amadeus.js");
+/* harmony import */ var _unsafe_policy__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/unsafe-policy.ts");
 
 
 
@@ -9564,7 +6167,7 @@ const acEditions = [
 ];
 
 function printAC() {
-  if (!(0,___WEBPACK_IMPORTED_MODULE_3__.anyCarriers)("AC")) {
+  if (!(0,___WEBPACK_IMPORTED_MODULE_1__.anyCarriers)("AC")) {
     return;
   }
 
@@ -9572,15 +6175,9 @@ function printAC() {
     var acUrl =
       "https://book.aircanada.com/pl/AConline/en/RedirectionServlet?FareRequest=YES&PRICING_MODE=0&fromThirdParty=YES";
     acUrl +=
-      "&country=" +
-      edition +
-      "&countryOfResidence=" +
-      edition +
-      (_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__["default"].itaLanguage == "de" || _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language == "de"
-        ? "&language=de"
-        : "&language=en");
+      "&country=" + edition + "&countryOfResidence=" + edition + "&language=en";
     // validate Passengers here: Max Paxcount = 7 (Infs not included) - >11 = Adult - InfSeat = Child
-    var pax = (0,___WEBPACK_IMPORTED_MODULE_3__.validatePax)({
+    var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
       maxPaxcount: 9,
       countInf: true,
       childAsAdult: 16,
@@ -9588,41 +6185,41 @@ function printAC() {
       childMinAge: 2,
     });
     if (!pax) {
-      (0,_utils__WEBPACK_IMPORTED_MODULE_7__.printNotification)("Error: Failed to validate Passengers in printAC");
+      (0,_utils__WEBPACK_IMPORTED_MODULE_5__.printNotification)("Error: Failed to validate Passengers in printAC");
       return;
     }
     var paxConfig = { allowinf: 0, youthage: 12 }; // AC does not allow booking of infants for int. flights
     var amadeusConfig = { sepcabin: 1, detailed: 1, allowpremium: 1 };
-    var tmpPax = (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_5__.getAmadeusPax)(pax, paxConfig);
+    var tmpPax = (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_3__.getAmadeusPax)(pax, paxConfig);
     acUrl += tmpPax.url;
     acUrl += "&numberOfAdults=" + tmpPax.adults;
     acUrl += "&numberOfInfants=" + tmpPax.infants;
     acUrl += "&numberOfYouth=" + tmpPax.youth;
     acUrl += "&numberOfChildren=" + tmpPax.children;
-    acUrl += "&tripType=" + (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_5__.getAmadeusTriptype)();
-    for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_4__.currentItin.itin.length; i++) {
+    acUrl += "&tripType=" + (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_3__.getAmadeusTriptype)();
+    for (var i = 0; i < _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.length; i++) {
       acUrl +=
         "&departure" +
         (i + 1) +
         "=" +
-        ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_4__.currentItin.itin[i].dep.day).slice(-2) +
+        ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].dep.day).slice(-2) +
         "/" +
-        ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_4__.currentItin.itin[i].dep.month).slice(-2) +
+        ("0" + _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].dep.month).slice(-2) +
         "/" +
-        _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_4__.currentItin.itin[i].dep.year +
+        _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].dep.year +
         "&org" +
         (i + 1) +
         "=" +
-        _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_4__.currentItin.itin[i].orig +
+        _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].orig +
         "&dest" +
         (i + 1) +
         "=" +
-        _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_4__.currentItin.itin[i].dest;
+        _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin[i].dest;
     }
-    acUrl += (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_5__.getAmadeusUrl)(amadeusConfig);
+    acUrl += (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_3__.getAmadeusUrl)(amadeusConfig);
     return acUrl;
   };
-  var acUrl = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].acEdition.toUpperCase());
+  var acUrl = createUrl(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].acEdition.toUpperCase());
   if (!acUrl) {
     return;
   }
@@ -9653,25 +6250,19 @@ function printAC() {
 function addACPromoControls(url) {
   var script = document.createElement("script");
   script.appendChild(
-    document.createTextNode((0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_6__.unsafeScript)("(" + addACPromo + ")();")),
+    document.createTextNode((0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_4__.unsafeScript)("(" + addACPromo + ")();")),
   );
   (
     document.body ||
     document.head ||
     document.documentElement
-  ).insertAdjacentHTML("beforeend", (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_6__.unsafeHTML)(script.outerHTML));
+  ).insertAdjacentHTML("beforeend", (0,_unsafe_policy__WEBPACK_IMPORTED_MODULE_4__.unsafeHTML)(script.outerHTML));
 
   var label = "Open";
-  if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language] !== undefined) {
-    if (_settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language]["open"] !== undefined) {
-      label = _settings_translations__WEBPACK_IMPORTED_MODULE_2__["default"][_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language]["open"];
-    }
-  }
-
   var extra =
     '<input type="input" id="ac-promo-input" size="8" style="display:none;margin:0 5px;"></input>';
   extra +=
-    '<label style="font-size:' + Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].linkFontsize) + '%;">';
+    '<label style="font-size:' + Number(_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].linkFontsize) + '%;">';
   extra +=
     '<a id="ac-promo-link" style="display:none" target="_blank" href="' +
     url +
@@ -9704,21 +6295,21 @@ function addACPromo() {
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_3__.register)("airlines", printAC);
-(0,_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__.registerSetting)("Air Canada", "acEdition", acEditions, "us");
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("airlines", printAC);
+(0,_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__.registerSetting)("Air Canada", "acEdition", acEditions, "us");
 
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/af.js":
+/***/ "./src/matrix5/links/airlines/af.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -9763,7 +6354,7 @@ function print() {
   const createUrl = function (edition) {
     const country = editions.find((e) => e.value === edition).country;
     return (
-      `https://${edition}/ams/exchange?language=${_settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language}&country=${country}&target=` +
+      `https://${edition}/ams/exchange?language=en&country=${country}&target=` +
       encodeURIComponent(
         `/search/summary?deviationValue=5&connections=${segs
           .map(
@@ -9816,13 +6407,13 @@ function print() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/as.js":
+/***/ "./src/matrix5/links/airlines/as.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -9893,14 +6484,14 @@ function printAS() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/az.js":
+/***/ "./src/matrix5/links/airlines/az.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -10045,15 +6636,15 @@ function printAZ() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/ba.js":
+/***/ "./src/matrix5/links/airlines/ba.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -10402,15 +6993,15 @@ function printBA() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/cz.js":
+/***/ "./src/matrix5/links/airlines/cz.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/print/amadeus.js");
 
 
 
@@ -10560,14 +7151,14 @@ function printCZ() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/dl.js":
+/***/ "./src/matrix5/links/airlines/dl.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -10672,16 +7263,16 @@ function printDL() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/ek.js":
+/***/ "./src/matrix5/links/airlines/ek.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
 
 
 
@@ -10886,16 +7477,16 @@ function formatDate(date) {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/ey.js":
+/***/ "./src/matrix5/links/airlines/ey.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var _print_links__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/print/links.tsx");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var _print_links__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/print/links.tsx");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/links/index.ts");
 
 
 
@@ -10973,14 +7564,14 @@ function printEY() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/ib.js":
+/***/ "./src/matrix5/links/airlines/ib.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _otas_travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _otas_travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/links/otas/travix.js");
 
 
 
@@ -11142,15 +7733,15 @@ function printIB() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/kl.js":
+/***/ "./src/matrix5/links/airlines/kl.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -11255,14 +7846,14 @@ function printKL() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/la.js":
+/***/ "./src/matrix5/links/airlines/la.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -11381,15 +7972,15 @@ function formatDate(date) {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/lh.js":
+/***/ "./src/matrix5/links/airlines/lh.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/print/amadeus.js");
 
 
 
@@ -11589,15 +8180,15 @@ function printLH() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/lx.js":
+/***/ "./src/matrix5/links/airlines/lx.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/print/amadeus.js");
 
 
 
@@ -11797,28 +8388,26 @@ function print() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/oa.js":
+/***/ "./src/matrix5/links/airlines/oa.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
-
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/print/amadeus.js");
 
 
 
 
 function printOA() {
-  if (!(0,___WEBPACK_IMPORTED_MODULE_1__.anyCarriers)("OA", "A3")) {
+  if (!(0,___WEBPACK_IMPORTED_MODULE_0__.anyCarriers)("OA", "A3")) {
     return;
   }
 
   var url =
     "https://e-ticket.olympicair.com/A3Responsive/dyn/air/booking/?BOOKING_FLOW=REVENUE&FLEXIBILITY=3&DISPLAY_TYPE=2&FORCE_OVERRIDE=TRUE&PRICING_TYPE=O";
-  var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
+  var pax = (0,___WEBPACK_IMPORTED_MODULE_0__.validatePax)({
     maxPaxcount: 9,
     countInf: false,
     childAsAdult: 12,
@@ -11826,7 +8415,7 @@ function printOA() {
     childMinAge: 2,
   });
   if (!pax) {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in printOA");
+    (0,_utils__WEBPACK_IMPORTED_MODULE_2__.printNotification)("Error: Failed to validate Passengers in printOA");
     return;
   }
   var paxConfig = { allowinf: 1, youthage: 0 };
@@ -11836,17 +8425,13 @@ function printOA() {
     allowpremium: 1,
     inctimes: 1,
   };
-  var tmpPax = (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusPax)(pax, paxConfig);
-  url += "&TRIP_TYPE=" + (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusTriptype)();
+  var tmpPax = (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_1__.getAmadeusPax)(pax, paxConfig);
+  url += "&TRIP_TYPE=" + (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_1__.getAmadeusTriptype)();
   url += tmpPax.url;
-  url += (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_2__.getAmadeusUrl)(amadeusConfig);
+  url += (0,_print_amadeus__WEBPACK_IMPORTED_MODULE_1__.getAmadeusUrl)(amadeusConfig);
   url +=
     "&SITE=E00KE00K&SKIN=skin_oa&SO_GL=%3CSO_GL%3E%09%3CGLOBAL_LIST%3E%09%09%3CNAME%3ESL_TRAVELLER_TYPE_LIST%3C%2FNAME%3E%09%09%3CLIST_ELEMENT%3E%3CCODE%3EADT%3C%2FCODE%3E%3CLIST_VALUE%3EAdult%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EADT%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E%09%09%3CLIST_ELEMENT%3E%3CCODE%3EB15%3C%2FCODE%3E%3CLIST_VALUE%3EYoung+adult%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EB15%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E%09%09%3CLIST_ELEMENT%3E%3CCODE%3EC07%3C%2FCODE%3E%3CLIST_VALUE%3EYouth%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EC07%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E%09%09%3CLIST_ELEMENT%3E%3CCODE%3EC03%3C%2FCODE%3E%3CLIST_VALUE%3EChild%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EC03%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E%09%09%3CLIST_ELEMENT%3E%3CCODE%3EINF%3C%2FCODE%3E%3CLIST_VALUE%3EInfant%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EINF%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E++++++++%3CLIST_ELEMENT%3E%3CCODE%3EUNN%3C%2FCODE%3E%3CLIST_VALUE%3EUMNR%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EN%3C%2FLIST_VALUE%3E%3CLIST_VALUE%3EUNN%3C%2FLIST_VALUE%3E%3C%2FLIST_ELEMENT%3E%09%3C%2FGLOBAL_LIST%3E%3C%2FSO_GL%3E&SO_SITE_ETKT_Q_OFFICE_ID=ATHA308OA&SO_SITE_OFFICE_ID=ATHA308OA&SO_SITE_POINT_OF_SALE=ATH&SO_SITE_POINT_OF_TICKETING=ATH&SO_SITE_PREBOOK_DURATION=I180&SO_SITE_QUEUE_OFFICE_ID=ATHA308OA&SO_SITE_SP_QUEUE_OFFICE_ID=ATHA308OA";
-  url +=
-    "&LANGUAGE=" +
-    (_settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language == "oa" || _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language == "de"
-      ? _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language.toUpperCase()
-      : "GB");
+  url += "&LANGUAGE=GB";
   url +=
     "&WDS_ADD_BOOK_NOW_BUTTON_EMAF=TRUE&WDS_ADVERTISING_PANEL_CONF_ACTIVATED=true&WDS_AFFILIATE_STATUS=C&WDS_AMOP_DISPLAY_PRIORITY=PAYPAL:SOFORT:KLARNA:EPS:IDEAL:BANCONTACT:ENTERCASH:ALIPAY:CUP&WDS_AMOP_FEE=PAYPAL:0;KLARNA:0;SOFORT:0;ENTERCASH:0;EPS:0;IDEAL:0;BANCONTACT:0;ALIPAY:0;CUP:0;&WDS_AMOP_FEE_APPLY=PER_TRANSACTION&WDS_AMOP_FEE_CALCULATION=PER&WDS_AMOP_LIST_ACTIVATED=PAYPAL;KLARNA;SOFORT;ENTERCASH;EPS;IDEAL;BANCONTACT;ALIPAY;CUP&WDS_AMOP_LIST_DEACTIVATED=&WDS_AMOP_TIME_LIMIT=PAYPAL:48;KLARNA:0;SOFORT:0;ENTERCASH:0;EPS:0;IDEAL:0;BANCONTACT:0;ALIPAY:24;CUP:24;&WDS_ANCILLARY_IN_MILES_ENABLED=TRUE&WDS_ASSISTANCE_REQUEST_ACTIVATED=TRUE&WDS_ATCOM_TIMEOUT=2000&WDS_AVAIL_PRICE_DISPLAY_TYPE=PER_ADT_WITH_TAX_NO_FEE&WDS_BAG_PLACEHOLDER_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_BAG_POLICY_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_BOOKING_LISTENER_URL=https://en.aegeanair.com/BookingListener.axd&WDS_BOUND_INDEX_EXPANDED=1&WDS_BUSINESS_MEAL_FARE_FAMILIES=BUSINESS:BUSINESTES:BUSINESSI&WDS_BUSINESS_MEAL_FREQUENT_FLYER_LEVELS=GOLD:SILVER&WDS_BUSINESS_MEAL_SUPPORTED=true&WDS_BUSINESS_ON_BOARD_DISPLAY_IN_LOGIN_PANEL=TRUE&WDS_BUSINESS_ON_BOARD_ENABLED=TRUE&WDS_BUSINESS_ON_BOARD_PAX_TYPE=ADT&WDS_CABIN_CLASS_DISPLAY=TRUE&WDS_CALENDAR_TO_UPSELL_FLEXIBLE_ACTIVATED=3&WDS_CALLCENTER_EMAIL=res1@aegeanair.com&WDS_CAR_ENABLED=FALSE&WDS_CAR_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_CC_FEE_CARD_TYPE=VI:0;CA:0;MA:0;AX:0;DC:0;TP:;&WDS_CC_FEE_NO_CARD=0&WDS_CC_FEE_ZERO_DISPLAYED=FALSE&WDS_CC_LIST=VI:CA:MA:AX:DC:TP&WDS_CFF_TOUSE=CFF01FEB14&WDS_CHANNEL=B2C&WDS_CLEAR_CONTENT_URL=https://en.aegeanair.com/PlainContent.axd&WDS_DEVICE_NAME=DESKTOP_UNKNOWN&WDS_DEVICE_OS=Windows_10&WDS_DEVICE_VIEWPORT=L&WDS_DISPLAY_EMAIL_IN_BROWSER_URL=https://en.aegeanair.com/ConfirmationEmail.axd&WDS_DISPLAY_FBA_AND_REFUNDABILITY_PER_BOUND_IN_SB=TRUE&WDS_DISPLAY_GREEK_RURAL_ID=FALSE&WDS_DISPLAY_RECEIPT=SHOW&WDS_DISPLAY_REGULATION_CONDITIONS_COUNTRY=FR&WDS_DISPLAY_REGULATION_CONDITIONS_LANG=FR&WDS_DONATION_PANEL_ACTIVATED=FALSE&WDS_DONATION_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_EMAF_BOOK_NOW_URL=https://en.aegeanair.com/PostHandler.axd&WDS_ENABLE_PARKING=FALSE&WDS_ENABLE_TOKEN=true&WDS_ENABLE_TOKEN_FOR_CAR=false&WDS_ENABLE_TOKEN_FOR_HOTEL=false&WDS_EPTS=unknown_call&WDS_EXTERNAL_CSS_URL=https://en.aegeanair.com/css/1A/responsive.css?v=10&WDS_EXTRAS_DEFAULT_PANEL_ORDER=BAGGAGE;MEALS;SPEQ;PETS;FASTTRACK;INSURANCE;PARKING;DONATION&WDS_FARE_COMPARISON_URL=https://en.aegeanair.com/FareFamilyComparison.axd&WDS_FARE_CONDITIONS_URL=https://en.aegeanair.com/ffc.axd&WDS_FASTTRACK_ELIGIBLE_AIRPORTS=LCA;ATH&WDS_FASTTRACK_ENABLED=TRUE&WDS_FASTTRACK_HANDLER_URL=https://en.aegeanair.com/FastTrackHandler.axd&WDS_FREQUENT_FLYER_PROGRAMS_OA_FLIGHTS=A3;AC;UA;MS;TK;NH;LH;SQ&WDS_GDPR_DISPLAY_PROMOS_CONFIRMATION_NO_CONSENT=FALSE&WDS_GDPR_HANDLER_URL=https://en.aegeanair.com/api/v1/members/checkgdpremailstatus&WDS_GO_TO_FINALIZE_URL=https://en.aegeanair.com/FinalizeRedirect.axd&WDS_GO_TO_MY_BOOKING_URL=https://en.aegeanair.com/MyBooking.axd&WDS_GO_TO_SEAT_SELECTION_URL=https://en.aegeanair.com/SeatRedirect.axd&WDS_HANDLE_SOS_AS_RM_FEE=TRUE&WDS_HOTEL_ENABLED=FALSE&WDS_HOTEL_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_HOTEL_POPUP_CONF_ACTIVATED=TRUE&WDS_HOTEL_POPUP_CONF_DELAY=10000&WDS_HOTEL_RECOMMENDATION_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_INSURANCE_ACTIVATED=TRUE&WDS_INSURANCE_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_INSURANCE_PRESELECT=NONE&WDS_LATE_LOGIN_ENABLED=TRUE&WDS_LATE_LOGIN_URL=https://en.aegeanair.com/api/v1/members/loyaltyauth&WDS_MEAL_FORBIDDEN_PAX_TYPE=INF&WDS_MEAL_HANDLER_URL=https://en.aegeanair.com/MealHandler.axd&WDS_MEAL_LIST_PROPOSED=BBML:BLML:CHML:DBML:FPML:GFML:KSML:LCML:LFML:NLML:LSML:MOML:HNML:SFML:VOML:VLML:AVML:VJML:VGML:RVML&WDS_MILES_EARNED_HANDLER_URL=https://en.aegeanair.com/AwardedMiles.axd&WDS_NEW_PROMOTION_TYPE=NONE&WDS_NEW_PROMOTION_WEBSERVICES_ENVIRONMENT=PRODUCTION&WDS_OBFEE_FROM_NEWPOLICY_ACTIVATED=TRUE&WDS_OLYMPIC_TRACKING=true&WDS_ONLY_DIRECT_REQUESTED=FALSE&WDS_PARKING_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_PETS_ENABLED=TRUE&WDS_PHONE_PRESELECT_COUNTRY_CODE=US&WDS_PLUSGRADE_ENABLED=false&WDS_PLUSGRADE_HANDLER_URL=https://en.aegeanair.com/PlusgradeHandler.axd&WDS_PROMO_SLOT_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_PROMOCODE_ROUTE_AUTHORIZED=FALSE&WDS_PROMOTION_RBD_LIST=P&WDS_REBOOKING_HIGHSEASON_DATE=&WDS_RESKIN=TRUE&WDS_SB_HOTEL_TIMEOUT=15000&WDS_SEAT_BANNER_URL=https://en.aegeanair.com/SeatBanner.axd&WDS_SEATMAP_ENABLED=TRUE&WDS_SMS_OPTION=SHOW&WDS_SMS_PROVIDER_EMAIL=aegean_bc@mpassltd.eu&WDS_SMS_SENDER_EMAIL=defineOA@amadeus.com&WDS_SPECIAL_MEAL_LIST=BBML:BLML:CHML:DBML:FPML:GFML:KSML:LCML:LFML:NLML:LSML:MOML:HNML:SFML:VOML:VLML:AVML:VJML:VGML:RVML&WDS_SPECIAL_MEAL_SUPPORTED=TRUE&WDS_SPEQ_ENABLED=TRUE&WDS_TAX_BREAKDOWN_REGULATION_ALLOW_LANG=FR&WDS_TEALEAF_ENABLED=TRUE&WDS_TTT_ENABLED=TRUE&WDS_TTT_PROMO_FARES_REG_EXP=^PR([0-9])+$&WDS_TTT_SELECTION_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_UMNR_ENTRY_OVERRIDE=WDS_HOTEL_ENABLED:FALSE;WDS_CAR_ENABLED:FALSE;WDS_TTT_ENABLED:false;WDS_FASTTRACK_ENABLED:false;WDS_ANCILLARY_IN_MILES:false;WDS_ENABLE_PARKING:false;WDS_ASSISTANCE_REQUEST_ACTIVATED:false;WDS_LATE_LOGIN_ENABLED:false;WDS_BUSINESS_ON_BOARD_ENABLED:false&WDS_URL_FACADE_ERROR=https://www.olympicair.com/en/Travel/Reservations/Tickets&WDS_URL_FACADE_NEWSEARCH=https://www.olympicair.com/en/Travel/Reservations/Tickets&WDS_URL_WAITING_CONTENT=https://en.aegeanair.com/WaitingPage.axd&WDS_USE_A3_SOS_INSURANCE_PANEL=TRUE&WDS_USEFUL_LINKS_PANEL_URL=https://en.aegeanair.com/PromoSlots.axd&WDS_VOUCHER_BANNER_ACTIVATED=TRUE&WDS_VOUCHER_BANNER_URL=https://en.aegeanair.com/PromoSlots.axd";
 
@@ -11856,20 +8441,20 @@ function printOA() {
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_1__.register)("airlines", printOA);
+(0,___WEBPACK_IMPORTED_MODULE_0__.register)("airlines", printOA);
 
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/os.js":
+/***/ "./src/matrix5/links/airlines/os.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/print/amadeus.js");
 
 
 
@@ -12070,13 +8655,13 @@ function print() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/ps.js":
+/***/ "./src/matrix5/links/airlines/ps.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _otas_travix__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _otas_travix__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/otas/travix.js");
 
 
 
@@ -12111,15 +8696,15 @@ function printPS() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/qf.js":
+/***/ "./src/matrix5/links/airlines/qf.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -12319,15 +8904,15 @@ function printQF() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/qr.js":
+/***/ "./src/matrix5/links/airlines/qr.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
 
 
 
@@ -12382,15 +8967,15 @@ function print() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/sn.js":
+/***/ "./src/matrix5/links/airlines/sn.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/print/amadeus.js");
+/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/userSettings.js");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _print_amadeus__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/print/amadeus.js");
 
 
 
@@ -12591,13 +9176,13 @@ function print() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/tk.js":
+/***/ "./src/matrix5/links/airlines/tk.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -12654,13 +9239,13 @@ function formatDate(time) {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/airlines/vs.js":
+/***/ "./src/matrix5/links/airlines/vs.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -12741,15 +9326,15 @@ function printVS() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/meta/jetcost.js":
+/***/ "./src/matrix5/links/meta/jetcost.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
 
 
 
@@ -12874,17 +9459,15 @@ function formatDate(date) {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/meta/kayak.js":
+/***/ "./src/matrix5/links/meta/kayak.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
 
 
 
@@ -12940,10 +9523,10 @@ const cabins = ["economy", "premium", "business", "first"];
 function print(method) {
   //example https://www.Kayak.ru/flights/MOW-CPH...OW/2016-05-20/
   // method: 0 = based on leg; 1 = based on segment
-  const segs = !method ? _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin : (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.getCurrentSegs)();
-  if (method && _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin.length === segs.length) return;
+  const segs = !method ? _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin : (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getCurrentSegs)();
+  if (method && _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.length === segs.length) return;
 
-  var pax = (0,___WEBPACK_IMPORTED_MODULE_2__.validatePax)({
+  var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
     maxPaxcount: 9,
     countInf: false,
     childAsAdult: 12,
@@ -12951,12 +9534,12 @@ function print(method) {
     childMinAge: 2,
   });
   if (!pax) {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_4__.printNotification)("Error: Failed to validate Passengers in printOvago");
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in printOvago");
     return;
   }
 
   const cabin =
-    cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getCabin)(Math.min(...(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.getCurrentSegs)().map((seg) => seg.cabin)))];
+    cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getCabin)(Math.min(...(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getCurrentSegs)().map((seg) => seg.cabin)))];
 
   const createUrl = function (host) {
     let url =
@@ -12964,14 +9547,14 @@ function print(method) {
       segs
         .map(
           (seg) =>
-            `${seg.orig}-${seg.dest}/${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(
+            `${seg.orig}-${seg.dest}/${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(
               seg.dep.month,
-            )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(seg.dep.day)}`,
+            )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(seg.dep.day)}`,
         )
         .join("/");
 
     if (pax.adults > 1 || pax.children.length || pax.infSeat || pax.infLap) {
-      url += `/${_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.numPax}adults`;
+      url += `/${_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.numPax}adults`;
     }
 
     if (pax.children.length || pax.infSeat || pax.infLap) {
@@ -13015,31 +9598,26 @@ function print(method) {
   return {
     url,
     title: "Kayak",
-    desc:
-      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language == "de"
-        ? `Benutze ${segs.length} Segment(e)`
-        : `Based on ${segs.length} segment(s)`,
+    desc: `Based on ${segs.length} segment(s)`,
     extra,
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_2__.register)("meta", () => print(0));
-(0,___WEBPACK_IMPORTED_MODULE_2__.register)("meta", () => print(1));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("meta", () => print(0));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("meta", () => print(1));
 
 
 /***/ }),
 
-/***/ "./src/matrix3/links/meta/momondo.js":
+/***/ "./src/matrix5/links/meta/momondo.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
 
 
 
@@ -13093,10 +9671,10 @@ function print(method) {
   //example https://www.Momondo.ru/flightsearch/?...false&NA=false
   //pax # &AD=2&CA=0,8 – not working with children (total amount of adults + kids goes to adult)
   // method: 0 = based on leg; 1 = based on segment
-  const segs = !method ? _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin : (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.getCurrentSegs)();
-  if (method && _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin.length === segs.length) return;
+  const segs = !method ? _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin : (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getCurrentSegs)();
+  if (method && _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.length === segs.length) return;
 
-  var pax = (0,___WEBPACK_IMPORTED_MODULE_2__.validatePax)({
+  var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
     maxPaxcount: 9,
     countInf: false,
     childAsAdult: 12,
@@ -13104,12 +9682,12 @@ function print(method) {
     childMinAge: 2,
   });
   if (!pax) {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_4__.printNotification)("Error: Failed to validate Passengers in printOvago");
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in printOvago");
     return;
   }
 
   const cabin =
-    cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getCabin)(Math.min(...(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.getCurrentSegs)().map((seg) => seg.cabin)))];
+    cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getCabin)(Math.min(...(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getCurrentSegs)().map((seg) => seg.cabin)))];
 
   var createUrl = function (host) {
     let url =
@@ -13117,14 +9695,14 @@ function print(method) {
       segs
         .map(
           (seg) =>
-            `${seg.orig}-${seg.dest}/${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(
+            `${seg.orig}-${seg.dest}/${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(
               seg.dep.month,
-            )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(seg.dep.day)}`,
+            )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(seg.dep.day)}`,
         )
         .join("/");
 
     if (pax.adults > 1 || pax.children.length || pax.infSeat || pax.infLap) {
-      url += `/${_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.numPax}adults`;
+      url += `/${_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.numPax}adults`;
     }
 
     if (pax.children.length || pax.infSeat || pax.infLap) {
@@ -13164,31 +9742,26 @@ function print(method) {
   return {
     url,
     title: "Momondo",
-    desc:
-      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language == "de"
-        ? `Benutze ${segs.length} Segment(e)`
-        : `Based on ${segs.length} segment(s)`,
+    desc: `Based on ${segs.length} segment(s)`,
     extra,
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_2__.register)("meta", () => print(0));
-(0,___WEBPACK_IMPORTED_MODULE_2__.register)("meta", () => print(1));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("meta", () => print(0));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("meta", () => print(1));
 
 
 /***/ }),
 
-/***/ "./src/matrix3/links/meta/skyscanner.js":
+/***/ "./src/matrix5/links/meta/skyscanner.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
 
 
 
@@ -13247,10 +9820,10 @@ var cabins = ["", "premiumeconomy", "business", "first"];
 function print(method) {
   //example https://www.skyscanner.ru/transport/d/stoc/2017-09-02/akl/akl/2017-09-16/stoc/akl/2017-09-29/syd?adults=1&children=0&adultsv2=1&childrenv2=&infants=0&cabinclass=economy&ref=day-view#results
   // method: 0 = based on leg; 1 = based on segment
-  const segs = !method ? _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin : (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.getCurrentSegs)();
-  if (method && _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin.length === segs.length) return;
+  const segs = !method ? _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin : (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getCurrentSegs)();
+  if (method && _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.length === segs.length) return;
 
-  var pax = (0,___WEBPACK_IMPORTED_MODULE_2__.validatePax)({
+  var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
     maxPaxcount: 8,
     countInf: false,
     childAsAdult: 12,
@@ -13258,12 +9831,12 @@ function print(method) {
     childMinAge: 2,
   });
   if (!pax) {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_4__.printNotification)("Error: Failed to validate Passengers in printOvago");
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in printOvago");
     return;
   }
 
   const cabin =
-    cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getCabin)(Math.min(...(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.getCurrentSegs)().map((seg) => seg.cabin)))];
+    cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getCabin)(Math.min(...(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getCurrentSegs)().map((seg) => seg.cabin)))];
 
   var createUrl = function (edition) {
     var url = `http://${edition.name}/transport/d/`;
@@ -13272,7 +9845,7 @@ function print(method) {
     url += segs
       .map(
         (seg) =>
-          `${seg.orig}/${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(seg.dep.month)}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(
+          `${seg.orig}/${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(seg.dep.month)}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(
             seg.dep.day,
           )}/${seg.dest}`,
       )
@@ -13310,31 +9883,26 @@ function print(method) {
   return {
     url,
     title: "Skyscanner",
-    desc:
-      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language == "de"
-        ? `Benutze ${segs.length} Segment(e)`
-        : `Based on ${segs.length} segment(s)`,
+    desc: `Based on ${segs.length} segment(s)`,
     extra,
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_2__.register)("meta", () => print(0));
-(0,___WEBPACK_IMPORTED_MODULE_2__.register)("meta", () => print(1));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("meta", () => print(0));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("meta", () => print(1));
 
 
 /***/ }),
 
-/***/ "./src/matrix3/links/meta/tripadvisor.js":
+/***/ "./src/matrix5/links/meta/tripadvisor.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
 
 
 
@@ -13403,10 +9971,10 @@ const cabins = ["0", "3", "1", "2"];
 
 function print(method) {
   // method: 0 = based on leg; 1 = based on segment
-  const segs = !method ? _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin : (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.getCurrentSegs)();
-  if (method && _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.currentItin.itin.length === segs.length) return;
+  const segs = !method ? _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin : (0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getCurrentSegs)();
+  if (method && _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.length === segs.length) return;
 
-  const pax = (0,___WEBPACK_IMPORTED_MODULE_2__.validatePax)({
+  const pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
     maxPaxcount: 8,
     countInf: false,
     childAsAdult: 12,
@@ -13414,12 +9982,12 @@ function print(method) {
     childMinAge: 2,
   });
   if (!pax) {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_4__.printNotification)("Error: Failed to validate Passengers in printOvago");
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in printOvago");
     return;
   }
 
   const cabin =
-    cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getCabin)(Math.min(...(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_3__.getCurrentSegs)().map((seg) => seg.cabin)))];
+    cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_0__.getCabin)(Math.min(...(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getCurrentSegs)().map((seg) => seg.cabin)))];
 
   const nonstop = method ? "yes" : "no";
 
@@ -13439,7 +10007,7 @@ function print(method) {
       segs
         .map(
           (seg, i) =>
-            `date${i * 2}=${seg.dep.year}${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(seg.dep.month)}${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(
+            `date${i * 2}=${seg.dep.year}${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(seg.dep.month)}${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(
               seg.dep.day,
             )}&airport${i * 2}=${seg.orig}&nearby${i * 2}=no&airport${
               i * 2 + 1
@@ -13468,29 +10036,26 @@ function print(method) {
   return {
     url,
     title: "Tripadvisor",
-    desc:
-      _settings_userSettings__WEBPACK_IMPORTED_MODULE_1__["default"].language == "de"
-        ? `Benutze ${segs.length} Segment(e)`
-        : `Based on ${segs.length} segment(s)`,
+    desc: `Based on ${segs.length} segment(s)`,
     extra,
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_2__.register)("meta", () => print(0));
-(0,___WEBPACK_IMPORTED_MODULE_2__.register)("meta", () => print(1));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("meta", () => print(0));
+(0,___WEBPACK_IMPORTED_MODULE_1__.register)("meta", () => print(1));
 
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/agoda.js":
+/***/ "./src/matrix5/links/otas/agoda.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
 
 
 
@@ -13630,14 +10195,14 @@ function print() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/cheapoair.js":
+/***/ "./src/matrix5/links/otas/cheapoair.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -13717,14 +10282,14 @@ function printCheapOair() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/edestinos.js":
+/***/ "./src/matrix5/links/otas/edestinos.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
+/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/links/otas/travix.js");
 
 
 
@@ -13814,15 +10379,15 @@ function print() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/edreams.js":
+/***/ "./src/matrix5/links/otas/edreams.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
 
 
 
@@ -13969,7 +10534,7 @@ function printEdreams(title, editions) {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/etraveli.js":
+/***/ "./src/matrix5/links/otas/etraveli.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -13977,8 +10542,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   createUrl: () => (/* binding */ createUrl)
 /* harmony export */ });
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -14110,14 +10675,14 @@ function printEtraveli() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/expedia.js":
+/***/ "./src/matrix5/links/otas/expedia.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -14348,14 +10913,14 @@ function printExpedia(title, editions) {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/flighthub.js":
+/***/ "./src/matrix5/links/otas/flighthub.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
+/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/links/otas/travix.js");
 
 
 
@@ -14388,15 +10953,15 @@ function print() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/hop2.js":
+/***/ "./src/matrix5/links/otas/hop2.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
 
 
 
@@ -14475,14 +11040,14 @@ function print() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/justfly.js":
+/***/ "./src/matrix5/links/otas/justfly.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
+/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/links/otas/travix.js");
 
 
 
@@ -14515,14 +11080,14 @@ function print() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/lucky2go.js":
+/***/ "./src/matrix5/links/otas/lucky2go.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix3/links/otas/travix.js");
+/* harmony import */ var _travix__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/links/otas/travix.js");
 
 
 
@@ -14584,14 +11149,14 @@ function printLucky2go() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/onetravel.js":
+/***/ "./src/matrix5/links/otas/onetravel.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/utils.js");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -14671,7 +11236,7 @@ function print() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/otas/travix.js":
+/***/ "./src/matrix5/links/otas/travix.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -14679,12 +11244,10 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   buildQueryString: () => (/* binding */ buildQueryString)
 /* harmony export */ });
-/* harmony import */ var _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/userSettings.js");
-/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__("./src/matrix3/utils.js");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
-/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
-
+/* harmony import */ var _utils__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__("./src/matrix5/utils.js");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/links/index.ts");
+/* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
 
 
 
@@ -14931,7 +11494,7 @@ const budgetairs = [
 const defaultCabins = ["Economy", "PremiumEconomy", "Business", "First"];
 
 function buildQueryString(cur, pos = "", lang = null, cabins = null) {
-  var pax = (0,___WEBPACK_IMPORTED_MODULE_1__.validatePax)({
+  var pax = (0,___WEBPACK_IMPORTED_MODULE_0__.validatePax)({
     maxPaxcount: 9,
     countInf: true,
     childAsAdult: 12,
@@ -14939,16 +11502,16 @@ function buildQueryString(cur, pos = "", lang = null, cabins = null) {
     childMinAge: 2,
   });
   if (!pax) {
-    (0,_utils__WEBPACK_IMPORTED_MODULE_4__.printNotification)("Error: Failed to validate Passengers in edestinos");
+    (0,_utils__WEBPACK_IMPORTED_MODULE_3__.printNotification)("Error: Failed to validate Passengers in edestinos");
     return;
   }
 
-  lang = lang || _settings_userSettings__WEBPACK_IMPORTED_MODULE_0__["default"].language || "en";
+  lang = lang || "en";
   cabins = cabins || defaultCabins;
 
   let url = `PointOfSaleCountry=${pos}&UserCurrency=${cur}&DisplayedPrice=${
-    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.price
-  }&DisplayedPriceCurrency=${cur}&UserLanguage=${lang}&TripType=${(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.getTripType)(
+    _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.price
+  }&DisplayedPriceCurrency=${cur}&UserLanguage=${lang}&TripType=${(0,_matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.getTripType)(
     "OneWay",
     "RoundTrip",
     "MultiCity",
@@ -14958,22 +11521,22 @@ function buildQueryString(cur, pos = "", lang = null, cabins = null) {
   url += "&InfantLap=" + pax.infLap;
 
   let j = 0;
-  _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_2__.currentItin.itin.forEach((itin, i) => {
+  _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__.currentItin.itin.forEach((itin, i) => {
     const slices = [];
 
     itin.seg.forEach((seg) => {
       j++;
       slices.push(j);
 
-      url += `&Cabin${j}=` + cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_3__.getCabin)(seg.cabin)];
+      url += `&Cabin${j}=` + cabins[(0,_settings_appSettings__WEBPACK_IMPORTED_MODULE_2__.getCabin)(seg.cabin)];
       url += `&Carrier${j}=` + seg.carrier;
       url += `&Origin${j}=` + seg.orig;
       url += `&Destination${j}=` + seg.dest;
       url += `&BookingCode${j}=` + seg.bookingclass;
       url += `&FlightNumber${j}=` + seg.fnr;
-      url += `&DepartureDate${j}=${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(
+      url += `&DepartureDate${j}=${seg.dep.year}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(
         seg.dep.month,
-      )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_4__.to2digits)(seg.dep.day)}`;
+      )}-${(0,_utils__WEBPACK_IMPORTED_MODULE_3__.to2digits)(seg.dep.day)}`;
       url += `&FareBasis${j}=` + seg.farebase;
     });
 
@@ -15011,19 +11574,19 @@ function print(displayName, editions, startValue) {
   };
 }
 
-(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => print("Vayama", travix, "www.vayama.ie"));
-(0,___WEBPACK_IMPORTED_MODULE_1__.register)("otas", () => print("BudgetAir", budgetairs, "www.budgetair.nl"));
+(0,___WEBPACK_IMPORTED_MODULE_0__.register)("otas", () => print("Vayama", travix, "www.vayama.ie"));
+(0,___WEBPACK_IMPORTED_MODULE_0__.register)("otas", () => print("BudgetAir", budgetairs, "www.budgetair.nl"));
 
 
 /***/ }),
 
-/***/ "./src/matrix3/links/other/gcm.js":
+/***/ "./src/matrix5/links/other/gcm.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
 
 
 
@@ -15058,13 +11621,13 @@ function printGCM() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links/other/wheretocredit.js":
+/***/ "./src/matrix5/links/other/wheretocredit.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/parse/itin.ts");
-/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix3/links/index.ts");
+/* harmony import */ var ___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/links/index.ts");
 
 
 
@@ -15086,55 +11649,55 @@ function printWheretocredit() {
 
 /***/ }),
 
-/***/ "./src/matrix3/links sync recursive .[jt]s$":
+/***/ "./src/matrix5/links sync recursive .[jt]s$":
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 var map = {
-	"./airlines/aa.js": "./src/matrix3/links/airlines/aa.js",
-	"./airlines/aaSabre.js": "./src/matrix3/links/airlines/aaSabre.js",
-	"./airlines/ac.js": "./src/matrix3/links/airlines/ac.js",
-	"./airlines/af.js": "./src/matrix3/links/airlines/af.js",
-	"./airlines/as.js": "./src/matrix3/links/airlines/as.js",
-	"./airlines/az.js": "./src/matrix3/links/airlines/az.js",
-	"./airlines/ba.js": "./src/matrix3/links/airlines/ba.js",
-	"./airlines/cz.js": "./src/matrix3/links/airlines/cz.js",
-	"./airlines/dl.js": "./src/matrix3/links/airlines/dl.js",
-	"./airlines/ek.js": "./src/matrix3/links/airlines/ek.js",
-	"./airlines/ey.js": "./src/matrix3/links/airlines/ey.js",
-	"./airlines/ib.js": "./src/matrix3/links/airlines/ib.js",
-	"./airlines/kl.js": "./src/matrix3/links/airlines/kl.js",
-	"./airlines/la.js": "./src/matrix3/links/airlines/la.js",
-	"./airlines/lh.js": "./src/matrix3/links/airlines/lh.js",
-	"./airlines/lx.js": "./src/matrix3/links/airlines/lx.js",
-	"./airlines/oa.js": "./src/matrix3/links/airlines/oa.js",
-	"./airlines/os.js": "./src/matrix3/links/airlines/os.js",
-	"./airlines/ps.js": "./src/matrix3/links/airlines/ps.js",
-	"./airlines/qf.js": "./src/matrix3/links/airlines/qf.js",
-	"./airlines/qr.js": "./src/matrix3/links/airlines/qr.js",
-	"./airlines/sn.js": "./src/matrix3/links/airlines/sn.js",
-	"./airlines/tk.js": "./src/matrix3/links/airlines/tk.js",
-	"./airlines/vs.js": "./src/matrix3/links/airlines/vs.js",
-	"./index.ts": "./src/matrix3/links/index.ts",
-	"./meta/jetcost.js": "./src/matrix3/links/meta/jetcost.js",
-	"./meta/kayak.js": "./src/matrix3/links/meta/kayak.js",
-	"./meta/momondo.js": "./src/matrix3/links/meta/momondo.js",
-	"./meta/skyscanner.js": "./src/matrix3/links/meta/skyscanner.js",
-	"./meta/tripadvisor.js": "./src/matrix3/links/meta/tripadvisor.js",
-	"./otas/agoda.js": "./src/matrix3/links/otas/agoda.js",
-	"./otas/cheapoair.js": "./src/matrix3/links/otas/cheapoair.js",
-	"./otas/edestinos.js": "./src/matrix3/links/otas/edestinos.js",
-	"./otas/edreams.js": "./src/matrix3/links/otas/edreams.js",
-	"./otas/etraveli.js": "./src/matrix3/links/otas/etraveli.js",
-	"./otas/expedia.js": "./src/matrix3/links/otas/expedia.js",
-	"./otas/flighthub.js": "./src/matrix3/links/otas/flighthub.js",
-	"./otas/hop2.js": "./src/matrix3/links/otas/hop2.js",
-	"./otas/justfly.js": "./src/matrix3/links/otas/justfly.js",
-	"./otas/lucky2go.js": "./src/matrix3/links/otas/lucky2go.js",
-	"./otas/onetravel.js": "./src/matrix3/links/otas/onetravel.js",
-	"./otas/priceline.ts": "./src/matrix3/links/otas/priceline.ts",
-	"./otas/travix.js": "./src/matrix3/links/otas/travix.js",
-	"./other/gcm.js": "./src/matrix3/links/other/gcm.js",
-	"./other/wheretocredit.js": "./src/matrix3/links/other/wheretocredit.js"
+	"./airlines/aa.js": "./src/matrix5/links/airlines/aa.js",
+	"./airlines/aaSabre.js": "./src/matrix5/links/airlines/aaSabre.js",
+	"./airlines/ac.js": "./src/matrix5/links/airlines/ac.js",
+	"./airlines/af.js": "./src/matrix5/links/airlines/af.js",
+	"./airlines/as.js": "./src/matrix5/links/airlines/as.js",
+	"./airlines/az.js": "./src/matrix5/links/airlines/az.js",
+	"./airlines/ba.js": "./src/matrix5/links/airlines/ba.js",
+	"./airlines/cz.js": "./src/matrix5/links/airlines/cz.js",
+	"./airlines/dl.js": "./src/matrix5/links/airlines/dl.js",
+	"./airlines/ek.js": "./src/matrix5/links/airlines/ek.js",
+	"./airlines/ey.js": "./src/matrix5/links/airlines/ey.js",
+	"./airlines/ib.js": "./src/matrix5/links/airlines/ib.js",
+	"./airlines/kl.js": "./src/matrix5/links/airlines/kl.js",
+	"./airlines/la.js": "./src/matrix5/links/airlines/la.js",
+	"./airlines/lh.js": "./src/matrix5/links/airlines/lh.js",
+	"./airlines/lx.js": "./src/matrix5/links/airlines/lx.js",
+	"./airlines/oa.js": "./src/matrix5/links/airlines/oa.js",
+	"./airlines/os.js": "./src/matrix5/links/airlines/os.js",
+	"./airlines/ps.js": "./src/matrix5/links/airlines/ps.js",
+	"./airlines/qf.js": "./src/matrix5/links/airlines/qf.js",
+	"./airlines/qr.js": "./src/matrix5/links/airlines/qr.js",
+	"./airlines/sn.js": "./src/matrix5/links/airlines/sn.js",
+	"./airlines/tk.js": "./src/matrix5/links/airlines/tk.js",
+	"./airlines/vs.js": "./src/matrix5/links/airlines/vs.js",
+	"./index.ts": "./src/matrix5/links/index.ts",
+	"./meta/jetcost.js": "./src/matrix5/links/meta/jetcost.js",
+	"./meta/kayak.js": "./src/matrix5/links/meta/kayak.js",
+	"./meta/momondo.js": "./src/matrix5/links/meta/momondo.js",
+	"./meta/skyscanner.js": "./src/matrix5/links/meta/skyscanner.js",
+	"./meta/tripadvisor.js": "./src/matrix5/links/meta/tripadvisor.js",
+	"./otas/agoda.js": "./src/matrix5/links/otas/agoda.js",
+	"./otas/cheapoair.js": "./src/matrix5/links/otas/cheapoair.js",
+	"./otas/edestinos.js": "./src/matrix5/links/otas/edestinos.js",
+	"./otas/edreams.js": "./src/matrix5/links/otas/edreams.js",
+	"./otas/etraveli.js": "./src/matrix5/links/otas/etraveli.js",
+	"./otas/expedia.js": "./src/matrix5/links/otas/expedia.js",
+	"./otas/flighthub.js": "./src/matrix5/links/otas/flighthub.js",
+	"./otas/hop2.js": "./src/matrix5/links/otas/hop2.js",
+	"./otas/justfly.js": "./src/matrix5/links/otas/justfly.js",
+	"./otas/lucky2go.js": "./src/matrix5/links/otas/lucky2go.js",
+	"./otas/onetravel.js": "./src/matrix5/links/otas/onetravel.js",
+	"./otas/priceline.ts": "./src/matrix5/links/otas/priceline.ts",
+	"./otas/travix.js": "./src/matrix5/links/otas/travix.js",
+	"./other/gcm.js": "./src/matrix5/links/other/gcm.js",
+	"./other/wheretocredit.js": "./src/matrix5/links/other/wheretocredit.js"
 };
 
 
@@ -15155,11 +11718,11 @@ webpackContext.keys = function webpackContextKeys() {
 };
 webpackContext.resolve = webpackContextResolve;
 module.exports = webpackContext;
-webpackContext.id = "./src/matrix3/links sync recursive .[jt]s$";
+webpackContext.id = "./src/matrix5/links sync recursive .[jt]s$";
 
 /***/ }),
 
-/***/ "./src/matrix3/print/amadeus.js":
+/***/ "./src/matrix5/print/amadeus.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -15168,7 +11731,7 @@ webpackContext.id = "./src/matrix3/links sync recursive .[jt]s$";
 /* harmony export */   getAmadeusTriptype: () => (/* binding */ getAmadeusTriptype),
 /* harmony export */   getAmadeusUrl: () => (/* binding */ getAmadeusUrl)
 /* harmony export */ });
-/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
+/* harmony import */ var _settings_appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
 /* harmony import */ var _matrix5_parse_itin__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("./src/matrix5/parse/itin.ts");
 
 
@@ -15404,7 +11967,7 @@ function getAmadeusTriptype() {
 
 /***/ }),
 
-/***/ "./src/matrix3/settings/paxSettings.js":
+/***/ "./src/matrix5/settings/paxSettings.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -15422,52 +11985,7 @@ function getAmadeusTriptype() {
 
 /***/ }),
 
-/***/ "./src/matrix3/settings/translations.js":
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-// Supported translations for the PowerTools interface:
-const de = {
-  use: "&Ouml;ffne ",
-  resultpage: {
-    "Dep:": "Abflug:",
-    "Arr:": "Ankunft:",
-    "Layover in": "Umst. in",
-    " to ": " nach ",
-    "Mon,": "Mo.,",
-    "Tue,": "Di.,",
-    "Wed,": "Mi.,",
-    "Thu,": "Do.,",
-    "Fri,": "Fr.,",
-    "Sat,": "Sa.,",
-    "Sun,": "So.,",
-    " Jan ": " Januar ",
-    " Feb ": " Februar ",
-    " Mar ": " M&auml,rz ",
-    " Apr ": " April ",
-    " May ": " Mai ",
-    " Jun ": " Juni ",
-    " Jul ": " Juli ",
-    " Aug ": " August ",
-    " Sep ": " September ",
-    " Oct ": " Oktober ",
-    " Nov ": " November ",
-    " Dec ": " Dezember ",
-    "OPERATED BY ": "Durchgef&uuml,hrt von ",
-  },
-};
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  de,
-});
-
-
-/***/ }),
-
-/***/ "./src/matrix3/settings/userSettings.js":
+/***/ "./src/matrix5/settings/userSettings.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
@@ -15478,35 +11996,13 @@ const de = {
 /* harmony export */   registeredSettings: () => (/* binding */ registeredSettings),
 /* harmony export */   saveUserSettings: () => (/* binding */ saveUserSettings)
 /* harmony export */ });
-/* harmony import */ var _appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix3/settings/appSettings.ts");
+/* harmony import */ var _appSettings__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("./src/matrix5/settings/appSettings.ts");
 
 
 const defaultSettings = {
-  timeformat: "12h", // replaces times on resultpage - valid: 12h / 24h
-  language: "en", // replaces several items on resultpage - valid: en / de
   linkFontsize: 100, // fontsize of links - valid: 50-200
   showAllAirlines: 0, // shows all airline links regardless of search results
-
-  // booleans to toggle specific settings:
-  enableDeviders: 1, // Print deviders in links after group (airlines/otas/other stuff) - valid: 0 / 1
-  enableInlineMode: 1, // enables inline mode - valid: 0 / 1
-  enableEditormode: 0, // prevents the script from automatically parsing the itinerary - valid: 0 / 1
   enableIMGautoload: 0, // enables images to auto load - valid: 0 / 1
-  enableFarerules: 1, // enables fare rule opening in new window - valid: 0 / 1
-  enablePricebreakdown: 1, // enables price breakdown - valid: 0 / 1
-  enableDarkmode: 0, // enables dark mode - valid: 0 / 1
-  enableMultiSearch: 1, // enables supporting multiple searches and search linking
-  enableHistory: 1, // enables search history
-  enablePlanefinder: 1, // enables Planefinder - click on flight numbers to open Planefinder for this flight - valid: 0 / 1
-  enableSeatguru: 1, // enables Seatguru - click on plane type to open Seatguru for this flight - valid: 0 / 1
-  enableWheretocredit: 1, // enables Wheretocredit - click on booking class to open wheretocredit for this flight - valid: 0 / 1
-
-  /** @type {{ ts: string, savedSearch: string, url: string }[]} history */
-  history: [], // search history
-
-  /** @type {{ ts: string, savedSearch: string, url: string }[]} history */
-  pins: [], // search history
-
   enableAffiliates: 1,
 };
 
@@ -15550,18 +12046,14 @@ async function loadUserSettings() {
 
 /***/ }),
 
-/***/ "./src/matrix3/utils.js":
+/***/ "./src/matrix5/utils.js":
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   clearNotification: () => (/* binding */ clearNotification),
-/* harmony export */   exRE: () => (/* binding */ exRE),
 /* harmony export */   findtarget: () => (/* binding */ findtarget),
 /* harmony export */   findtargets: () => (/* binding */ findtargets),
 /* harmony export */   getRandomInt: () => (/* binding */ getRandomInt),
-/* harmony export */   hasClass: () => (/* binding */ hasClass),
-/* harmony export */   monthnameToNumber: () => (/* binding */ monthnameToNumber),
 /* harmony export */   monthnumberToName: () => (/* binding */ monthnumberToName),
 /* harmony export */   printNotification: () => (/* binding */ printNotification),
 /* harmony export */   to2digits: () => (/* binding */ to2digits),
@@ -15572,7 +12064,7 @@ async function loadUserSettings() {
 /* harmony export */   toggleVis: () => (/* binding */ toggleVis),
 /* harmony export */   uuidv4: () => (/* binding */ uuidv4)
 /* harmony export */ });
-/* unused harmony exports padChars, toDate, dayDiff */
+/* unused harmony exports hasClass, clearNotification, exRE, padChars, monthnameToNumber, toDate, dayDiff */
 function findtarget(className, nth) {
   return document.getElementsByClassName(className)[(nth || 1) - 1];
 }
@@ -15720,221 +12212,6 @@ function _interopRequireDefault(obj) {
 }
 module.exports = _interopRequireDefault, module.exports.__esModule = true, module.exports["default"] = module.exports;
 
-/***/ }),
-
-/***/ "./node_modules/dom-chef/index.js":
-/***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
-/* harmony export */ });
-/* unused harmony export h */
-var svgTagNames = [
-	"a",
-	"altGlyph",
-	"altGlyphDef",
-	"altGlyphItem",
-	"animate",
-	"animateColor",
-	"animateMotion",
-	"animateTransform",
-	"animation",
-	"audio",
-	"canvas",
-	"circle",
-	"clipPath",
-	"color-profile",
-	"cursor",
-	"defs",
-	"desc",
-	"discard",
-	"ellipse",
-	"feBlend",
-	"feColorMatrix",
-	"feComponentTransfer",
-	"feComposite",
-	"feConvolveMatrix",
-	"feDiffuseLighting",
-	"feDisplacementMap",
-	"feDistantLight",
-	"feDropShadow",
-	"feFlood",
-	"feFuncA",
-	"feFuncB",
-	"feFuncG",
-	"feFuncR",
-	"feGaussianBlur",
-	"feImage",
-	"feMerge",
-	"feMergeNode",
-	"feMorphology",
-	"feOffset",
-	"fePointLight",
-	"feSpecularLighting",
-	"feSpotLight",
-	"feTile",
-	"feTurbulence",
-	"filter",
-	"font",
-	"font-face",
-	"font-face-format",
-	"font-face-name",
-	"font-face-src",
-	"font-face-uri",
-	"foreignObject",
-	"g",
-	"glyph",
-	"glyphRef",
-	"handler",
-	"hkern",
-	"iframe",
-	"image",
-	"line",
-	"linearGradient",
-	"listener",
-	"marker",
-	"mask",
-	"metadata",
-	"missing-glyph",
-	"mpath",
-	"path",
-	"pattern",
-	"polygon",
-	"polyline",
-	"prefetch",
-	"radialGradient",
-	"rect",
-	"script",
-	"set",
-	"solidColor",
-	"stop",
-	"style",
-	"svg",
-	"switch",
-	"symbol",
-	"tbreak",
-	"text",
-	"textArea",
-	"textPath",
-	"title",
-	"tref",
-	"tspan",
-	"unknown",
-	"use",
-	"video",
-	"view",
-	"vkern"
-];
-
-const svgTags = new Set(svgTagNames);
-svgTags.delete('a');
-svgTags.delete('audio');
-svgTags.delete('canvas');
-svgTags.delete('iframe');
-svgTags.delete('script');
-svgTags.delete('video');
-// Copied from Preact
-const IS_NON_DIMENSIONAL = /acit|ex(?:s|g|n|p|$)|rph|ows|mnc|ntw|ine[ch]|zoo|^ord/i;
-const isFragment = (type) => {
-    return type === DocumentFragment;
-};
-const setCSSProps = (element, style) => {
-    for (const [name, value] of Object.entries(style)) {
-        if (name.startsWith('-')) {
-            element.style.setProperty(name, value);
-        }
-        else if (typeof value === 'number' && !IS_NON_DIMENSIONAL.test(name)) {
-            element.style[name] = `${value}px`;
-        }
-        else {
-            element.style[name] = value;
-        }
-    }
-};
-const create = (type) => {
-    if (typeof type === 'string') {
-        if (svgTags.has(type)) {
-            return document.createElementNS('http://www.w3.org/2000/svg', type);
-        }
-        return document.createElement(type);
-    }
-    if (isFragment(type)) {
-        return document.createDocumentFragment();
-    }
-    return type(type.defaultProps);
-};
-const setAttribute = (element, name, value) => {
-    if (value === undefined || value === null) {
-        return;
-    }
-    // Naive support for xlink namespace
-    // Full list: https://github.com/facebook/react/blob/1843f87/src/renderers/dom/shared/SVGDOMPropertyConfig.js#L258-L264
-    if (/^xlink[AHRST]/.test(name)) {
-        element.setAttributeNS('http://www.w3.org/1999/xlink', name.replace('xlink', 'xlink:').toLowerCase(), value);
-    }
-    else {
-        element.setAttribute(name, value);
-    }
-};
-const addChildren = (parent, children) => {
-    for (const child of children) {
-        if (child instanceof Node) {
-            parent.appendChild(child);
-        }
-        else if (Array.isArray(child)) {
-            addChildren(parent, child);
-        }
-        else if (typeof child !== 'boolean' &&
-            typeof child !== 'undefined' &&
-            child !== null) {
-            parent.appendChild(document.createTextNode(child));
-        }
-    }
-};
-const h = (type, attributes, ...children) => {
-    var _a;
-    const element = create(type);
-    addChildren(element, children);
-    if (element instanceof DocumentFragment || !attributes) {
-        return element;
-    }
-    // Set attributes
-    for (let [name, value] of Object.entries(attributes)) {
-        if (name === 'htmlFor') {
-            name = 'for';
-        }
-        if (name === 'class' || name === 'className') {
-            const existingClassname = (_a = element.getAttribute('class')) !== null && _a !== void 0 ? _a : '';
-            setAttribute(element, 'class', (existingClassname + ' ' + String(value)).trim());
-        }
-        else if (name === 'style') {
-            setCSSProps(element, value);
-        }
-        else if (name.startsWith('on')) {
-            const eventName = name.slice(2).toLowerCase().replace(/^-/, '');
-            element.addEventListener(eventName, value);
-        }
-        else if (name === 'dangerouslySetInnerHTML' && '__html' in value) {
-            element.innerHTML = value.__html;
-        }
-        else if (name !== 'key' && value !== false) {
-            setAttribute(element, name, value === true ? '' : value);
-        }
-    }
-    return element;
-};
-// Improve TypeScript support for DocumentFragment
-// https://github.com/Microsoft/TypeScript/issues/20469
-const React = {
-    createElement: h,
-    Fragment: typeof DocumentFragment === 'function' ? DocumentFragment : () => { }
-};
-
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (React);
-
-
-
 /***/ })
 
 /******/ 	});
@@ -15996,7 +12273,6 @@ const React = {
 var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be isolated against other modules in the chunk.
 (() => {
-__webpack_require__("./src/matrix3/index.js");
 __webpack_require__("./src/matrix5/index.ts");
 
 })();

@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.56.0] - 2025-01-04
+
+Edited by IAkH
+
+- removed matrix3-specific code and settings
+- updated to manifest3
+
 ## [0.55.14] - 2023-11-09
 
 Edited by IAkH
