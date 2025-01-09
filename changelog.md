@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.56.1] - 2025-01-09
+
+Edited by IAkH
+
+- fixed Chrome extension for newer browsers
+
 ## [0.56.0] - 2025-01-04
 
 Edited by IAkH
